@@ -33,22 +33,23 @@ class CropImagesController extends Controller {
      * @return void
      */
     public function index() {
-        if (!isset($_SESSION['user_id'])) {
-            header("Location: " . ($_ENV['BASE_URL'] ?? '') . "/user/login");
-            exit;
-        }
-
         if (!isset($_SESSION['can_crop']) || $_SESSION['can_crop'] !== true) {
             header("Location: " . ($_ENV['BASE_URL'] ?? '') . "/images");
             exit;
         }
 
         $imagesModel = new ImagesModel();
-        
         $lastImage = null;
-        if (method_exists($imagesModel, 'getLastImageByUserId')) {
+
+        if (isset($_SESSION['current_image_id'])) {
+            $imgId = $_SESSION['current_image_id'];
+            $result = $imagesModel->getImageById($imgId, null); 
+            if ($result) {
+                $lastImage = (array) $result;
+            }
+        }
+        elseif (isset($_SESSION['user_id']) && method_exists($imagesModel, 'getLastImageByUserId')) {
             $result = $imagesModel->getLastImageByUserId($_SESSION['user_id']);
-            
             if ($result) {
                 $lastImage = (array) $result;
             }
@@ -67,13 +68,7 @@ class CropImagesController extends Controller {
      * @return void
      */
     public function process() {
-
-        if (!isset($_SESSION['user_id'])) {
-            echo json_encode(["status" => "error", "message" => "access denied"]);
-            exit;
-        }
-
-        $user_id = $_SESSION['user_id'];
+        $user_id = $_SESSION['user_id'] ?? null;
 
         if (!isset($_FILES['cropped_image']) || !isset($_POST['size'])) {
             echo json_encode(["status" => "error", "message" => "données manquantes"]);
@@ -157,7 +152,8 @@ class CropImagesController extends Controller {
 
             $model = new ImagesModel();
             
-            $idToUpdate = null;
+            $idToUpdate = $_POST['image_id'] ?? $_SESSION['current_image_id'] ?? null;
+
             if (isset($_POST['image_id'])) {
                 $idToUpdate = $_POST['image_id'];
             } else {

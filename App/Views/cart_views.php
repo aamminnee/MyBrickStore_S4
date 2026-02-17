@@ -38,9 +38,6 @@
         <?php if (empty($items)): ?>
             
             <div class="empty-cart-state">
-                <div class="empty-illustration">
-                    🧱
-                </div>
                 <h3><?= $t['cart_empty_block_title'] ?? "C'est bien vide ici !" ?></h3>
                 <p><?= $t['cart_empty_block_text'] ?? 'Commencez par créer votre première mosaïque personnalisée.' ?></p>
                 <a href="<?= $_ENV['BASE_URL'] ?>/index.php" class="btn-create">
@@ -70,7 +67,7 @@
                             <div class="card-info">
                                 <div class="info-top">
                                     <h3><?= $t['cart_product_title'] ?? 'Mosaïque Personnalisée' ?></h3>
-                                    <span class="badge badge-<?= $i_style ?>"><?= ucfirst($item['style'] ?? 'Standard') ?></span>
+                                    <span class="badge badge-<?= $i_style ?>"><?= ucfirst($i_style ?? 'Standard') ?></span>
 
                                 </div>
                                 

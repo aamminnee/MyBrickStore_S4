@@ -277,6 +277,18 @@
     opacity: 0.8;
 }
 
+.style-rentabilite .card-visual { border-left: 5px solid var(--lego-green, #27ae60); }
+.badge-rentabilite { background-color: var(--lego-green, #27ae60); color: white; }
+
+.style-libre .card-visual { border-left: 5px solid var(--lego-red, #e74c3c); }
+.badge-libre { background-color: var(--lego-red, #e74c3c); color: white; }
+
+.style-stock .card-visual { border-left: 5px solid var(--lego-yellow, #f1c40f); }
+.badge-stock { background-color: var(--lego-yellow, #f1c40f); color: #333; }
+
+.style-minimisation .card-visual { border-left: 5px solid var(--lego-blue, #2980b9); }
+.badge-minimisation { background-color: var(--lego-blue, #2980b9); color: white; }
+
 @media (max-width: 900px) {
     .cart-layout {
         grid-template-columns: 1fr;

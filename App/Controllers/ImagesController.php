@@ -53,26 +53,6 @@ class ImagesController extends Controller {
     public function upload() {
         header('Content-Type: application/json');
 
-        // security check 1: user must be logged in
-        if (!isset($_SESSION['user_id'])) {
-            echo json_encode([
-                'status' => 'error', 
-                'message' => 'Vous devez être connecté pour créer une mosaïque.',
-                'redirect' => ($_ENV['BASE_URL'] ?? '') . '/user/login'
-            ]);
-            exit;
-        }
-
-        // security check 2: account must be active (validated email)
-        if (($_SESSION['status'] ?? '') !== 'valide') {
-            http_response_code(401);
-            echo json_encode([
-                "status" => "error",
-                "message" => "Vous devez être connecté pour accéder à cette ressource."
-            ]);
-            exit;
-        }
-
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['image_input'])) {
             $file = $_FILES['image_input'];
 
@@ -94,9 +74,11 @@ class ImagesController extends Controller {
 
             try {
                 $model = new ImagesModel();
-                $imageId = $model->saveCustomerImage($_SESSION['user_id'], $imgData, $fileName, $fileType);
+                $userId = $_SESSION['user_id'] ?? null;
+                $imageId = $model->saveCustomerImage($userId, $imgData, $fileName, $fileType);
 
                 $_SESSION['can_crop'] = true;
+                $_SESSION['current_image_id'] = $imageId;
 
                 echo json_encode([
                     'status' => 'success', 
