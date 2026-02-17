@@ -1,0 +1,87 @@
+.admin-container {
+    max-width: 1400px;
+    margin: 40px auto;
+    padding: 0 30px;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    color: #2c3e50;
+}
+
+.admin-container h1 {
+    font-size: 2.5rem;
+    color: #1a202c;
+    margin-bottom: 40px;
+    position: relative;
+    display: inline-block;
+}
+
+.admin-container h1::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 4px;
+    background: linear-gradient(90deg, #006CB7, #009ce0);
+    margin-top: 10px;
+    border-radius: 2px;
+}
+
+.admin-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    border: 1px solid #f0f2f5;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.admin-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+}
+
+.admin-card h3 {
+    margin-top: 0;
+    font-size: 1.4rem;
+    color: #4a5568;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #edf2f7;
+    padding-bottom: 15px;
+}
+
+.admin-card p {
+    color: #718096;
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.stats-placeholder {
+    background-color: #f8fafc;
+    border-radius: 12px;
+    padding: 10px;
+    border: 1px solid #e2e8f0;
+    overflow: hidden; 
+}
+
+.stats-placeholder iframe {
+    width: 100%;
+    min-height: 600px;
+    border: none;
+    border-radius: 8px;
+    display: block;
+}
+
+.btn-primary {
+    display: inline-block;
+    background-color: #006CB7;
+    color: white;
+    padding: 12px 25px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
+
+.btn-primary:hover {
+    background-color: #005090;
+}

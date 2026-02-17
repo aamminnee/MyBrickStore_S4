@@ -1,0 +1,49 @@
+ --- debut de la maintenance automatique des stocks jeu. 08 janv. 2026 19:40:34 CET ---
+execution de refill...
+java.io.IOException: Cannot get the challenge: status code is 502
+	at fr.univ_eiffel.legotools.factory.api.AccountRefiller.fetchChallenge(AccountRefiller.java:35)
+	at fr.univ_eiffel.legotools.factory.api.AccountRefiller.refill(AccountRefiller.java:80)
+	at fr.univ_eiffel.legotools.App.runRefill(App.java:82)
+	at fr.univ_eiffel.legotools.App.main(App.java:43)
+execution de restock...
+// erreur init table factorybrick : Access denied for user 'admin'@'localhost' (using password: NO)
+Préparation de la commande massive (75 unités par brique)...
+java.sql.SQLException: Access denied for user 'admin'@'localhost' (using password: NO)
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:130)
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:122)
+	at com.mysql.cj.jdbc.ConnectionImpl.createNewIO(ConnectionImpl.java:815)
+	at com.mysql.cj.jdbc.ConnectionImpl.<init>(ConnectionImpl.java:438)
+	at com.mysql.cj.jdbc.ConnectionImpl.getInstance(ConnectionImpl.java:241)
+	at com.mysql.cj.jdbc.NonRegisteringDriver.connect(NonRegisteringDriver.java:189)
+	at java.sql/java.sql.DriverManager.getConnection(DriverManager.java:683)
+	at java.sql/java.sql.DriverManager.getConnection(DriverManager.java:230)
+	at fr.univ_eiffel.legotools.factory.StockManager.getConnection(StockManager.java:52)
+	at fr.univ_eiffel.legotools.factory.StockManager.getAllBrickTypes(StockManager.java:262)
+	at fr.univ_eiffel.legotools.App.runFullRestock(App.java:300)
+	at fr.univ_eiffel.legotools.App.main(App.java:49)
+Aucune brique trouvée en base.
+execution de l'analyse proactive...
+// erreur init table factorybrick : Access denied for user 'admin'@'localhost' (using password: NO)
+Analyse proactive du stock...
+// erreur lecture populaires : Access denied for user 'admin'@'localhost' (using password: NO)
+java.sql.SQLException: Access denied for user 'admin'@'localhost' (using password: NO)
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:130)
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:122)
+	at com.mysql.cj.jdbc.ConnectionImpl.createNewIO(ConnectionImpl.java:815)
+	at com.mysql.cj.jdbc.ConnectionImpl.<init>(ConnectionImpl.java:438)
+	at com.mysql.cj.jdbc.ConnectionImpl.getInstance(ConnectionImpl.java:241)
+	at com.mysql.cj.jdbc.NonRegisteringDriver.connect(NonRegisteringDriver.java:189)
+	at java.sql/java.sql.DriverManager.getConnection(DriverManager.java:683)
+	at java.sql/java.sql.DriverManager.getConnection(DriverManager.java:230)
+	at fr.univ_eiffel.legotools.factory.StockManager.getConnection(StockManager.java:52)
+	at fr.univ_eiffel.legotools.factory.StockManager.getStockCounts(StockManager.java:73)
+	at fr.univ_eiffel.legotools.App.runProactiveOrder(App.java:205)
+	at fr.univ_eiffel.legotools.App.main(App.java:47)
+Stock suffisant, pas de commande nécessaire.
+--- maintenance terminee --- --- debut de la maintenance automatique des stocks lun. 12 janv. 2026 12:00:01 CET ---
+execution de refill (minage)...
+ERREUR : Variables d'environnement manquantes (LEGOFACTORY_EMAIL, KEY, URL)
+ERREUR : Variables d'environnement manquantes (LEGOFACTORY_EMAIL, KEY, URL)
+execution de l'analyse proactive...
+ERREUR : Variables d'environnement manquantes (LEGOFACTORY_EMAIL, KEY, URL)
+--- maintenance terminee ---

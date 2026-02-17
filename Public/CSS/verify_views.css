@@ -1,0 +1,132 @@
+:root {
+    --lego-red: #D92328;
+    --lego-blue: #006CB7;
+    --text-dark: #1e293b;
+    --bg-light: #f8f9fa;
+    --header-height: 90px;
+}
+
+.verify-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    min-height: calc(100vh - var(--header-height));
+    background-color: var(--bg-light);
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.verify-container {
+    background: #ffffff;
+    width: 100%;
+    max-width: 400px; 
+    padding: 40px 30px;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0,0,0,0.02);
+    text-align: center; 
+    animation: fadeIn 0.4s ease-out;
+}
+
+.icon-lock {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    background: #f1f5f9;
+    width: 80px;
+    height: 80px;
+    line-height: 80px;
+    border-radius: 50%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.verify-container h2 {
+    margin: 0 0 10px 0;
+    font-size: 1.8rem;
+    color: var(--text-dark);
+    font-weight: 800;
+}
+
+.verify-desc {
+    color: #64748b;
+    font-size: 0.95rem;
+    margin-bottom: 30px;
+    line-height: 1.5;
+}
+
+.code-input {
+    width: 100%;
+    padding: 15px;
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center; 
+    letter-spacing: 10px; 
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    background-color: #f8fafc;
+    color: var(--text-dark);
+    font-family: 'Monaco', 'Courier New', monospace;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.code-input::placeholder {
+    color: #cbd5e1;
+    letter-spacing: 5px;
+}
+
+.code-input:focus {
+    outline: none;
+    border-color: var(--lego-blue); 
+    background-color: #fff;
+    box-shadow: 0 0 0 4px rgba(0, 108, 183, 0.15);
+    transform: translateY(-2px);
+}
+
+.btn-submit {
+    width: 100%;
+    margin-top: 25px;
+    background-color: var(--lego-red);
+    color: white;
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    box-shadow: 0 4px 6px rgba(217, 35, 40, 0.2);
+}
+
+.btn-submit:hover {
+    background-color: #b91c20;
+    transform: translateY(-2px);
+}
+
+.verify-footer {
+    margin-top: 25px;
+}
+
+.back-link {
+    color: #64748b;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.back-link:hover {
+    color: var(--lego-blue);
+    text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+    .verify-container {
+        padding: 30px 20px;
+    }
+    .code-input {
+        font-size: 1.5rem;
+        letter-spacing: 5px;
+    }
+}

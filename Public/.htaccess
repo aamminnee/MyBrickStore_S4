@@ -1,0 +1,15 @@
+# fichier : SAE_S3_BUT2_INFO/Public/.htaccess
+
+# activation du moteur de réécriture
+RewriteEngine On
+
+# force la racine du projet pour la réécriture
+# cela aide apache à comprendre où il se trouve par rapport à localhost
+RewriteBase /SAE_S3_BUT2_INFO/Public/
+
+# si le fichier ou dossier demandé n'existe pas physiquement
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+
+# on redirige tout vers index.php avec le paramètre p
+RewriteRule ^(.*)$ index.php?p=$1 [QSA,L]

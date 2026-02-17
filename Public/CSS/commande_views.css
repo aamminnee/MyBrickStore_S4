@@ -1,0 +1,299 @@
+:root {
+    --lego-red: #D92328;
+    --lego-red-dark: #b31217;
+    --lego-blue: #006CB7;
+    --lego-blue-dark: #004c82;
+    --lego-yellow: #FFCF00;
+    --lego-green: #00852B; 
+    
+    --text-dark: #1e293b;
+    --text-grey: #64748b;
+    --bg-base: #f4f7f6;
+    
+    --font-heading: 'Fredoka', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --header-height: 90px;
+}
+
+body {
+    background-color: var(--bg-base);
+    background-image: radial-gradient(#e2e8f0 2px, transparent 2.5px);
+    background-size: 30px 30px;
+    font-family: var(--font-body);
+    color: var(--text-dark);
+}
+
+.orders-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 60px 20px;
+    min-height: calc(100vh - var(--header-height));
+}
+
+.btn-home-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: var(--text-grey);
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 10px 20px;
+    background-color: white;
+    border-radius: 50px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.btn-home-back:hover {
+    color: var(--lego-blue);
+    transform: translateX(-5px);
+    border-color: var(--lego-blue);
+    box-shadow: 0 6px 15px rgba(0, 108, 183, 0.1);
+}
+
+.page-title {
+    text-align: center;
+    color: var(--text-dark);
+    margin: 40px 0 60px 0;
+    font-family: var(--font-heading);
+    font-size: 2.8rem;
+    position: relative;
+    display: block;
+}
+
+.page-title::after {
+    content: '';
+    display: block;
+    width: 80px;
+    height: 6px;
+    background-color: var(--lego-yellow);
+    margin: 15px auto 0;
+    border-radius: 3px;
+}
+
+.orders-list {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.order-card {
+    display: grid;
+    grid-template-columns: 180px 1fr 200px;
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px -5px rgba(0,0,0,0.05);
+    border: 1px solid rgba(0,0,0,0.03);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.order-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px -10px rgba(0,0,0,0.1);
+    border-color: var(--lego-blue);
+}
+
+.order-visual {
+    background-color: #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+    border-right: 1px solid #e2e8f0;
+}
+
+.order-visual img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    max-height: 140px;
+    border-radius: 8px;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+    transition: transform 0.3s;
+}
+
+.order-card:hover .order-visual img {
+    transform: scale(1.05);
+}
+
+.no-image {
+    color: var(--text-grey);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.order-info {
+    padding: 25px 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.info-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.order-ref {
+    font-family: var(--font-heading);
+    font-size: 1.3rem;
+    color: var(--text-dark);
+}
+
+.order-date {
+    font-size: 0.9rem;
+    color: var(--text-grey);
+    background: #f8fafc;
+    padding: 4px 10px;
+    border-radius: 6px;
+}
+
+.info-status { margin-bottom: 15px; }
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 14px;
+    border-radius: 30px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-payée, .status-paid { 
+    background-color: #dcfce7; color: #166534; border: 1px solid #bbf7d0; 
+}
+.status-en_cours, .status-pending { 
+    background-color: #fef9c3; color: #854d0e; border: 1px solid #fde047; 
+}
+.status-annulée, .status-cancelled { 
+    background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca; 
+}
+
+.info-price {
+    font-size: 1rem;
+    color: var(--text-grey);
+}
+
+.price-val {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    color: var(--text-dark);
+    margin-left: 5px;
+}
+
+.order-actions {
+    background-color: #fcfcfc;
+    border-left: 1px solid #e2e8f0;
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 15px;
+}
+
+.btn-details, .btn-invoice {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+    text-align: center;
+}
+
+.btn-details {
+    background-color: var(--lego-blue);
+    color: white;
+    box-shadow: 0 4px 0 var(--lego-blue-dark);
+    border: none;
+}
+.btn-details:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 0 var(--lego-blue-dark);
+}
+.btn-details:active {
+    transform: translateY(2px);
+    box-shadow: none;
+}
+
+.btn-invoice {
+    background-color: white;
+    color: var(--text-grey);
+    border: 2px solid #e2e8f0;
+}
+.btn-invoice:hover {
+    border-color: var(--lego-red);
+    color: var(--lego-red);
+    background-color: #fff5f5;
+}
+
+.empty-state {
+    text-align: center;
+    background: white;
+    padding: 80px 20px;
+    border-radius: 24px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.empty-state p {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    color: var(--text-grey);
+    margin-bottom: 30px;
+}
+
+.btn-action {
+    display: inline-block;
+    background-color: var(--lego-red);
+    color: white;
+    padding: 15px 40px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 0 var(--lego-red-dark);
+    transition: all 0.2s;
+}
+.btn-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 0 var(--lego-red-dark);
+}
+
+@media (max-width: 900px) {
+    .order-card {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto;
+    }
+
+    .order-visual {
+        border-right: none;
+        border-bottom: 1px solid #e2e8f0;
+        height: 200px;
+    }
+    .order-visual img { max-height: 180px; }
+
+    .order-actions {
+        border-left: none;
+        border-top: 1px solid #e2e8f0;
+        flex-direction: row;
+    }
+    .btn-details, .btn-invoice { flex: 1; }
+    
+    .info-header { flex-direction: column; align-items: flex-start; gap: 5px; }
+}

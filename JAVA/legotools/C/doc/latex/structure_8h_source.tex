@@ -1,0 +1,71 @@
+\doxysection{structure.\+h}
+\hypertarget{structure_8h_source}{}\label{structure_8h_source}\index{code/dependance/structure.h@{code/dependance/structure.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#ifndef\ STRUCTURE\_H}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#define\ STRUCTURE\_H}}
+\DoxyCodeLine{00003\ }
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <stdlib.h>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <stdio.h>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <assert.h>}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ <limits.h>}}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#define\ DEBUG\_LOAD\ 1}}
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#define\ MAX\_COLORS\ 275}}
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#define\ UNMATCHED\ -\/1}}
+\DoxyCodeLine{00015\ }
+\DoxyCodeLine{00020\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct\ }\{}
+\DoxyCodeLine{00021\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structRGB_a0381b0481ac4611ecc7649abb833dce1}{R}};\ }
+\DoxyCodeLine{00022\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structRGB_a820881c588793516e38b5cb6bcd90fdd}{G}};\ }
+\DoxyCodeLine{00023\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structRGB_a1235a66161e944fc682697218f0d9180}{B}};\ }
+\DoxyCodeLine{00024\ \}\ \mbox{\hyperlink{structRGB}{RGB}};}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00033\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct\ }\{}
+\DoxyCodeLine{00034\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structImage_a595f4a107e489e95919cc75da68cd38a}{W}};\ \ \ \ \ \ }
+\DoxyCodeLine{00035\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structImage_a5fccd596f6a7a7ee60ac2220acdfc53b}{H}};\ \ \ \ \ \ }
+\DoxyCodeLine{00036\ \ \ \ \ \mbox{\hyperlink{structRGB}{RGB}}*\ \mbox{\hyperlink{structImage_a8822c1a076560eab08976ce5be9b9b13}{rgb}};\ \ \ }
+\DoxyCodeLine{00037\ \}\ \mbox{\hyperlink{structImage}{Image}};}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00046\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct\ }\{}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structBriqueList_adabeece1f4508f2c4776138cfa3f20cb}{nShape}};\ \ \ }
+\DoxyCodeLine{00048\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structBriqueList_ad1b1aee6fc27ea44ac855a5074d8a5c8}{nCol}};\ \ \ \ \ }
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structBriqueList_a04a63d6d8cbd57c740573bbd9ff74901}{nBrique}};\ \ }
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{keywordtype}{int}*\ \mbox{\hyperlink{structBriqueList_ad9789192dc8ca17d7fa1a2f8d9761eb9}{W}};\ \ \ \ \ \ \ }
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keywordtype}{int}*\ \mbox{\hyperlink{structBriqueList_a4d140c29d1ec3668e1f0bfe32801c680}{H}};\ \ \ \ \ \ \ }
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keywordtype}{int}*\ \mbox{\hyperlink{structBriqueList_a20f230d5174e04f48053d64c19017d17}{T}};\ \ \ \ \ \ \ }
+\DoxyCodeLine{00055\ \ \ \ \ \mbox{\hyperlink{structRGB}{RGB}}*\ \mbox{\hyperlink{structBriqueList_a857ec74b48644ede07c7b929f182e5cd}{col}};\ \ \ \ \ }
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{keywordtype}{int}*\ \mbox{\hyperlink{structBriqueList_a502a62dd3b6a1417d5c4bad49ed6f0e4}{bCol}};\ \ \ \ }
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{keywordtype}{int}*\ \mbox{\hyperlink{structBriqueList_a05178e5d8048aaeb81e9a16a31d7650d}{bShape}};\ \ }
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{keywordtype}{float}*\ \mbox{\hyperlink{structBriqueList_a5f926f1415b5362b97df98c01b84e0f1}{bPrix}};\ }
+\DoxyCodeLine{00060\ \ \ \ \ \textcolor{keywordtype}{int}*\ \mbox{\hyperlink{structBriqueList_aa30c2af349d1de2a98bc6a9dc39c82e8}{bStock}};\ \ }
+\DoxyCodeLine{00061\ \}\ \mbox{\hyperlink{structBriqueList}{BriqueList}};}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00067\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct\ }\{}
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structSolItem_a6fcf1c55aa63c4c21916b09760cc1cab}{iBrique}};\ }
+\DoxyCodeLine{00069\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structSolItem_a2c4164410bd7c7ea35b6a44463ba6b44}{x}};\ \ \ \ \ \ \ }
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structSolItem_a9bed8855a508e2098a08499bcaf8c889}{y}};\ \ \ \ \ \ \ }
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structSolItem_a853255a396224957e4787bc04e5a15ad}{rot}};\ \ \ \ \ }
+\DoxyCodeLine{00072\ \}\ \mbox{\hyperlink{structSolItem}{SolItem}};}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00078\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct\ }\{}
+\DoxyCodeLine{00079\ \ \ \ \ \textcolor{keywordtype}{long}\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structSolution_a788aa901157e9bfa863ecc51cd61bfa8}{length}};\ \ \ \ \ \ }
+\DoxyCodeLine{00080\ \ \ \ \ \textcolor{keywordtype}{long}\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structSolution_af1a13e649affce99bd349915fa67f3a7}{totalError}};\ \ }
+\DoxyCodeLine{00081\ \ \ \ \ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{structSolution_aa290597d01abacebf8f525b56bb75927}{cost}};\ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00082\ \ \ \ \ \textcolor{keywordtype}{long}\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structSolution_ad76ac5d5a9c3d6d4ff972f37969f2029}{stock}};\ \ \ \ \ \ \ }
+\DoxyCodeLine{00083\ \ \ \ \ \mbox{\hyperlink{structSolItem}{SolItem}}*\ \mbox{\hyperlink{structSolution_a617777a42cc122b88ec60f2780a05d2c}{array}};\ \ \ \ \ \ \ }
+\DoxyCodeLine{00084\ \}\ \mbox{\hyperlink{structSolution}{Solution}};}
+\DoxyCodeLine{00085\ }
+\DoxyCodeLine{00090\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct\ }\{\ }
+\DoxyCodeLine{00091\ \ \ \ \ \textcolor{keywordtype}{int}\ w;\ }
+\DoxyCodeLine{00092\ \ \ \ \ \textcolor{keywordtype}{int}\ h;\ }
+\DoxyCodeLine{00093\ \}\ \mbox{\hyperlink{structShapeWH}{ShapeWH}};}
+\DoxyCodeLine{00094\ }
+\DoxyCodeLine{00099\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct\ }\{}
+\DoxyCodeLine{00100\ \ \ \ \ \textcolor{keywordtype}{int}\ w;}
+\DoxyCodeLine{00101\ \ \ \ \ \textcolor{keywordtype}{int}\ h;}
+\DoxyCodeLine{00102\ \ \ \ \ \textcolor{keywordtype}{int}\ aire;}
+\DoxyCodeLine{00103\ \}\ \mbox{\hyperlink{structDimension}{Dimension}};}
+\DoxyCodeLine{00104\ }
+\DoxyCodeLine{00105\ \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}

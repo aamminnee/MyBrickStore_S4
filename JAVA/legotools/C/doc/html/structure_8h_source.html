@@ -1,0 +1,203 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Module Pavage C:  Fichier source de code/dependance/structure.h</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">Module Pavage C<span id="projectnumber">&#160;v4.1</span>
+   </div>
+   <div id="projectbrief">Moteur de calcul haute performance pour la génération de plans LEGO.</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Généré par Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Recherche');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function() { init_codefold(0); });
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Chargement...</div>
+<div class="SRStatus" id="Searching">Recherche...</div>
+<div class="SRStatus" id="NoMatches">Aucune correspondance</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_050edd66366d13764f98250ef6db77f6.html">code</a></li><li class="navelem"><a class="el" href="dir_65b13761e9addf8c79da31fe6329a2c5.html">dependance</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">structure.h</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef STRUCTURE_H</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define STRUCTURE_H</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;stdlib.h&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;stdio.h&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;assert.h&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;limits.h&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#define DEBUG_LOAD 1</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#define MAX_COLORS 275</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#define UNMATCHED -1</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="foldopen" id="foldopen00020" data-start="{" data-end="};">
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structRGB.html">   20</a></span><span class="keyword">typedef</span> <span class="keyword">struct </span>{</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="structRGB.html#a0381b0481ac4611ecc7649abb833dce1">   21</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structRGB.html#a0381b0481ac4611ecc7649abb833dce1">R</a>; </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structRGB.html#a820881c588793516e38b5cb6bcd90fdd">   22</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structRGB.html#a820881c588793516e38b5cb6bcd90fdd">G</a>; </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structRGB.html#a1235a66161e944fc682697218f0d9180">   23</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structRGB.html#a1235a66161e944fc682697218f0d9180">B</a>; </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>} <a class="code hl_struct" href="structRGB.html">RGB</a>;</div>
+</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="foldopen" id="foldopen00033" data-start="{" data-end="};">
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structImage.html">   33</a></span><span class="keyword">typedef</span> <span class="keyword">struct </span>{</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structImage.html#a595f4a107e489e95919cc75da68cd38a">   34</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structImage.html#a595f4a107e489e95919cc75da68cd38a">W</a>;      </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structImage.html#a5fccd596f6a7a7ee60ac2220acdfc53b">   35</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structImage.html#a5fccd596f6a7a7ee60ac2220acdfc53b">H</a>;      </div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structImage.html#a8822c1a076560eab08976ce5be9b9b13">   36</a></span>    <a class="code hl_struct" href="structRGB.html">RGB</a>* <a class="code hl_variable" href="structImage.html#a8822c1a076560eab08976ce5be9b9b13">rgb</a>;   </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>} <a class="code hl_struct" href="structImage.html">Image</a>;</div>
+</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="foldopen" id="foldopen00046" data-start="{" data-end="};">
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structBriqueList.html">   46</a></span><span class="keyword">typedef</span> <span class="keyword">struct </span>{</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structBriqueList.html#adabeece1f4508f2c4776138cfa3f20cb">   47</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structBriqueList.html#adabeece1f4508f2c4776138cfa3f20cb">nShape</a>;   </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="structBriqueList.html#ad1b1aee6fc27ea44ac855a5074d8a5c8">   48</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structBriqueList.html#ad1b1aee6fc27ea44ac855a5074d8a5c8">nCol</a>;     </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="structBriqueList.html#a04a63d6d8cbd57c740573bbd9ff74901">   49</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structBriqueList.html#a04a63d6d8cbd57c740573bbd9ff74901">nBrique</a>;  </div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="structBriqueList.html#ad9789192dc8ca17d7fa1a2f8d9761eb9">   51</a></span>    <span class="keywordtype">int</span>* <a class="code hl_variable" href="structBriqueList.html#ad9789192dc8ca17d7fa1a2f8d9761eb9">W</a>;       </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="structBriqueList.html#a4d140c29d1ec3668e1f0bfe32801c680">   52</a></span>    <span class="keywordtype">int</span>* <a class="code hl_variable" href="structBriqueList.html#a4d140c29d1ec3668e1f0bfe32801c680">H</a>;       </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="structBriqueList.html#a20f230d5174e04f48053d64c19017d17">   53</a></span>    <span class="keywordtype">int</span>* <a class="code hl_variable" href="structBriqueList.html#a20f230d5174e04f48053d64c19017d17">T</a>;       </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="structBriqueList.html#a857ec74b48644ede07c7b929f182e5cd">   55</a></span>    <a class="code hl_struct" href="structRGB.html">RGB</a>* <a class="code hl_variable" href="structBriqueList.html#a857ec74b48644ede07c7b929f182e5cd">col</a>;     </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="structBriqueList.html#a502a62dd3b6a1417d5c4bad49ed6f0e4">   57</a></span>    <span class="keywordtype">int</span>* <a class="code hl_variable" href="structBriqueList.html#a502a62dd3b6a1417d5c4bad49ed6f0e4">bCol</a>;    </div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="structBriqueList.html#a05178e5d8048aaeb81e9a16a31d7650d">   58</a></span>    <span class="keywordtype">int</span>* <a class="code hl_variable" href="structBriqueList.html#a05178e5d8048aaeb81e9a16a31d7650d">bShape</a>;  </div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="structBriqueList.html#a5f926f1415b5362b97df98c01b84e0f1">   59</a></span>    <span class="keywordtype">float</span>* <a class="code hl_variable" href="structBriqueList.html#a5f926f1415b5362b97df98c01b84e0f1">bPrix</a>; </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="structBriqueList.html#aa30c2af349d1de2a98bc6a9dc39c82e8">   60</a></span>    <span class="keywordtype">int</span>* <a class="code hl_variable" href="structBriqueList.html#aa30c2af349d1de2a98bc6a9dc39c82e8">bStock</a>;  </div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>} <a class="code hl_struct" href="structBriqueList.html">BriqueList</a>;</div>
+</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="foldopen" id="foldopen00067" data-start="{" data-end="};">
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="structSolItem.html">   67</a></span><span class="keyword">typedef</span> <span class="keyword">struct </span>{</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="structSolItem.html#a6fcf1c55aa63c4c21916b09760cc1cab">   68</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structSolItem.html#a6fcf1c55aa63c4c21916b09760cc1cab">iBrique</a>; </div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="structSolItem.html#a2c4164410bd7c7ea35b6a44463ba6b44">   69</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structSolItem.html#a2c4164410bd7c7ea35b6a44463ba6b44">x</a>;       </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="structSolItem.html#a9bed8855a508e2098a08499bcaf8c889">   70</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structSolItem.html#a9bed8855a508e2098a08499bcaf8c889">y</a>;       </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="structSolItem.html#a853255a396224957e4787bc04e5a15ad">   71</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structSolItem.html#a853255a396224957e4787bc04e5a15ad">rot</a>;     </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>} <a class="code hl_struct" href="structSolItem.html">SolItem</a>;</div>
+</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="foldopen" id="foldopen00078" data-start="{" data-end="};">
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="structSolution.html">   78</a></span><span class="keyword">typedef</span> <span class="keyword">struct </span>{</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="structSolution.html#a788aa901157e9bfa863ecc51cd61bfa8">   79</a></span>    <span class="keywordtype">long</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="structSolution.html#a788aa901157e9bfa863ecc51cd61bfa8">length</a>;      </div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="structSolution.html#af1a13e649affce99bd349915fa67f3a7">   80</a></span>    <span class="keywordtype">long</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="structSolution.html#af1a13e649affce99bd349915fa67f3a7">totalError</a>;  </div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="structSolution.html#aa290597d01abacebf8f525b56bb75927">   81</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structSolution.html#aa290597d01abacebf8f525b56bb75927">cost</a>;          </div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="structSolution.html#ad76ac5d5a9c3d6d4ff972f37969f2029">   82</a></span>    <span class="keywordtype">long</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="structSolution.html#ad76ac5d5a9c3d6d4ff972f37969f2029">stock</a>;       </div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno"><a class="line" href="structSolution.html#a617777a42cc122b88ec60f2780a05d2c">   83</a></span>    <a class="code hl_struct" href="structSolItem.html">SolItem</a>* <a class="code hl_variable" href="structSolution.html#a617777a42cc122b88ec60f2780a05d2c">array</a>;       </div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>} <a class="code hl_struct" href="structSolution.html">Solution</a>;</div>
+</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
+<div class="foldopen" id="foldopen00090" data-start="{" data-end="};">
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno"><a class="line" href="structShapeWH.html">   90</a></span><span class="keyword">typedef</span> <span class="keyword">struct </span>{ </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keywordtype">int</span> w; </div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keywordtype">int</span> h; </div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>} <a class="code hl_struct" href="structShapeWH.html">ShapeWH</a>;</div>
+</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
+<div class="foldopen" id="foldopen00099" data-start="{" data-end="};">
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno"><a class="line" href="structDimension.html">   99</a></span><span class="keyword">typedef</span> <span class="keyword">struct </span>{</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="keywordtype">int</span> w;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <span class="keywordtype">int</span> h;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="keywordtype">int</span> aire;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>} <a class="code hl_struct" href="structDimension.html">Dimension</a>;</div>
+</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span> </div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="astructBriqueList_html"><div class="ttname"><a href="structBriqueList.html">BriqueList</a></div><div class="ttdoc">Catalogue complet des briques disponibles (chargé depuis briques.txt).</div><div class="ttdef"><b>Definition</b> structure.h:46</div></div>
+<div class="ttc" id="astructBriqueList_html_a04a63d6d8cbd57c740573bbd9ff74901"><div class="ttname"><a href="structBriqueList.html#a04a63d6d8cbd57c740573bbd9ff74901">BriqueList::nBrique</a></div><div class="ttdeci">int nBrique</div><div class="ttdef"><b>Definition</b> structure.h:49</div></div>
+<div class="ttc" id="astructBriqueList_html_a05178e5d8048aaeb81e9a16a31d7650d"><div class="ttname"><a href="structBriqueList.html#a05178e5d8048aaeb81e9a16a31d7650d">BriqueList::bShape</a></div><div class="ttdeci">int * bShape</div><div class="ttdef"><b>Definition</b> structure.h:58</div></div>
+<div class="ttc" id="astructBriqueList_html_a20f230d5174e04f48053d64c19017d17"><div class="ttname"><a href="structBriqueList.html#a20f230d5174e04f48053d64c19017d17">BriqueList::T</a></div><div class="ttdeci">int * T</div><div class="ttdef"><b>Definition</b> structure.h:53</div></div>
+<div class="ttc" id="astructBriqueList_html_a4d140c29d1ec3668e1f0bfe32801c680"><div class="ttname"><a href="structBriqueList.html#a4d140c29d1ec3668e1f0bfe32801c680">BriqueList::H</a></div><div class="ttdeci">int * H</div><div class="ttdef"><b>Definition</b> structure.h:52</div></div>
+<div class="ttc" id="astructBriqueList_html_a502a62dd3b6a1417d5c4bad49ed6f0e4"><div class="ttname"><a href="structBriqueList.html#a502a62dd3b6a1417d5c4bad49ed6f0e4">BriqueList::bCol</a></div><div class="ttdeci">int * bCol</div><div class="ttdef"><b>Definition</b> structure.h:57</div></div>
+<div class="ttc" id="astructBriqueList_html_a5f926f1415b5362b97df98c01b84e0f1"><div class="ttname"><a href="structBriqueList.html#a5f926f1415b5362b97df98c01b84e0f1">BriqueList::bPrix</a></div><div class="ttdeci">float * bPrix</div><div class="ttdef"><b>Definition</b> structure.h:59</div></div>
+<div class="ttc" id="astructBriqueList_html_a857ec74b48644ede07c7b929f182e5cd"><div class="ttname"><a href="structBriqueList.html#a857ec74b48644ede07c7b929f182e5cd">BriqueList::col</a></div><div class="ttdeci">RGB * col</div><div class="ttdef"><b>Definition</b> structure.h:55</div></div>
+<div class="ttc" id="astructBriqueList_html_aa30c2af349d1de2a98bc6a9dc39c82e8"><div class="ttname"><a href="structBriqueList.html#aa30c2af349d1de2a98bc6a9dc39c82e8">BriqueList::bStock</a></div><div class="ttdeci">int * bStock</div><div class="ttdef"><b>Definition</b> structure.h:60</div></div>
+<div class="ttc" id="astructBriqueList_html_ad1b1aee6fc27ea44ac855a5074d8a5c8"><div class="ttname"><a href="structBriqueList.html#ad1b1aee6fc27ea44ac855a5074d8a5c8">BriqueList::nCol</a></div><div class="ttdeci">int nCol</div><div class="ttdef"><b>Definition</b> structure.h:48</div></div>
+<div class="ttc" id="astructBriqueList_html_ad9789192dc8ca17d7fa1a2f8d9761eb9"><div class="ttname"><a href="structBriqueList.html#ad9789192dc8ca17d7fa1a2f8d9761eb9">BriqueList::W</a></div><div class="ttdeci">int * W</div><div class="ttdef"><b>Definition</b> structure.h:51</div></div>
+<div class="ttc" id="astructBriqueList_html_adabeece1f4508f2c4776138cfa3f20cb"><div class="ttname"><a href="structBriqueList.html#adabeece1f4508f2c4776138cfa3f20cb">BriqueList::nShape</a></div><div class="ttdeci">int nShape</div><div class="ttdef"><b>Definition</b> structure.h:47</div></div>
+<div class="ttc" id="astructDimension_html"><div class="ttname"><a href="structDimension.html">Dimension</a></div><div class="ttdoc">Structure étendue avec calcul d'aire pré-calculé.</div><div class="ttdef"><b>Definition</b> structure.h:99</div></div>
+<div class="ttc" id="astructImage_html"><div class="ttname"><a href="structImage.html">Image</a></div><div class="ttdoc">Structure représentant l'image source pixelisée.</div><div class="ttdef"><b>Definition</b> structure.h:33</div></div>
+<div class="ttc" id="astructImage_html_a595f4a107e489e95919cc75da68cd38a"><div class="ttname"><a href="structImage.html#a595f4a107e489e95919cc75da68cd38a">Image::W</a></div><div class="ttdeci">int W</div><div class="ttdef"><b>Definition</b> structure.h:34</div></div>
+<div class="ttc" id="astructImage_html_a5fccd596f6a7a7ee60ac2220acdfc53b"><div class="ttname"><a href="structImage.html#a5fccd596f6a7a7ee60ac2220acdfc53b">Image::H</a></div><div class="ttdeci">int H</div><div class="ttdef"><b>Definition</b> structure.h:35</div></div>
+<div class="ttc" id="astructImage_html_a8822c1a076560eab08976ce5be9b9b13"><div class="ttname"><a href="structImage.html#a8822c1a076560eab08976ce5be9b9b13">Image::rgb</a></div><div class="ttdeci">RGB * rgb</div><div class="ttdef"><b>Definition</b> structure.h:36</div></div>
+<div class="ttc" id="astructRGB_html"><div class="ttname"><a href="structRGB.html">RGB</a></div><div class="ttdoc">Représente un pixel avec ses composantes Rouge, Vert, Bleu.</div><div class="ttdef"><b>Definition</b> structure.h:20</div></div>
+<div class="ttc" id="astructRGB_html_a0381b0481ac4611ecc7649abb833dce1"><div class="ttname"><a href="structRGB.html#a0381b0481ac4611ecc7649abb833dce1">RGB::R</a></div><div class="ttdeci">int R</div><div class="ttdef"><b>Definition</b> structure.h:21</div></div>
+<div class="ttc" id="astructRGB_html_a1235a66161e944fc682697218f0d9180"><div class="ttname"><a href="structRGB.html#a1235a66161e944fc682697218f0d9180">RGB::B</a></div><div class="ttdeci">int B</div><div class="ttdef"><b>Definition</b> structure.h:23</div></div>
+<div class="ttc" id="astructRGB_html_a820881c588793516e38b5cb6bcd90fdd"><div class="ttname"><a href="structRGB.html#a820881c588793516e38b5cb6bcd90fdd">RGB::G</a></div><div class="ttdeci">int G</div><div class="ttdef"><b>Definition</b> structure.h:22</div></div>
+<div class="ttc" id="astructShapeWH_html"><div class="ttname"><a href="structShapeWH.html">ShapeWH</a></div><div class="ttdoc">Structure utilitaire simple pour stocker des dimensions.</div><div class="ttdef"><b>Definition</b> structure.h:90</div></div>
+<div class="ttc" id="astructSolItem_html"><div class="ttname"><a href="structSolItem.html">SolItem</a></div><div class="ttdoc">Représente une brique posée dans la solution finale.</div><div class="ttdef"><b>Definition</b> structure.h:67</div></div>
+<div class="ttc" id="astructSolItem_html_a2c4164410bd7c7ea35b6a44463ba6b44"><div class="ttname"><a href="structSolItem.html#a2c4164410bd7c7ea35b6a44463ba6b44">SolItem::x</a></div><div class="ttdeci">int x</div><div class="ttdef"><b>Definition</b> structure.h:69</div></div>
+<div class="ttc" id="astructSolItem_html_a6fcf1c55aa63c4c21916b09760cc1cab"><div class="ttname"><a href="structSolItem.html#a6fcf1c55aa63c4c21916b09760cc1cab">SolItem::iBrique</a></div><div class="ttdeci">int iBrique</div><div class="ttdef"><b>Definition</b> structure.h:68</div></div>
+<div class="ttc" id="astructSolItem_html_a853255a396224957e4787bc04e5a15ad"><div class="ttname"><a href="structSolItem.html#a853255a396224957e4787bc04e5a15ad">SolItem::rot</a></div><div class="ttdeci">int rot</div><div class="ttdef"><b>Definition</b> structure.h:71</div></div>
+<div class="ttc" id="astructSolItem_html_a9bed8855a508e2098a08499bcaf8c889"><div class="ttname"><a href="structSolItem.html#a9bed8855a508e2098a08499bcaf8c889">SolItem::y</a></div><div class="ttdeci">int y</div><div class="ttdef"><b>Definition</b> structure.h:70</div></div>
+<div class="ttc" id="astructSolution_html"><div class="ttname"><a href="structSolution.html">Solution</a></div><div class="ttdoc">Contient le résultat complet d'un algorithme de pavage.</div><div class="ttdef"><b>Definition</b> structure.h:78</div></div>
+<div class="ttc" id="astructSolution_html_a617777a42cc122b88ec60f2780a05d2c"><div class="ttname"><a href="structSolution.html#a617777a42cc122b88ec60f2780a05d2c">Solution::array</a></div><div class="ttdeci">SolItem * array</div><div class="ttdef"><b>Definition</b> structure.h:83</div></div>
+<div class="ttc" id="astructSolution_html_a788aa901157e9bfa863ecc51cd61bfa8"><div class="ttname"><a href="structSolution.html#a788aa901157e9bfa863ecc51cd61bfa8">Solution::length</a></div><div class="ttdeci">long int length</div><div class="ttdef"><b>Definition</b> structure.h:79</div></div>
+<div class="ttc" id="astructSolution_html_aa290597d01abacebf8f525b56bb75927"><div class="ttname"><a href="structSolution.html#aa290597d01abacebf8f525b56bb75927">Solution::cost</a></div><div class="ttdeci">double cost</div><div class="ttdef"><b>Definition</b> structure.h:81</div></div>
+<div class="ttc" id="astructSolution_html_ad76ac5d5a9c3d6d4ff972f37969f2029"><div class="ttname"><a href="structSolution.html#ad76ac5d5a9c3d6d4ff972f37969f2029">Solution::stock</a></div><div class="ttdeci">long int stock</div><div class="ttdef"><b>Definition</b> structure.h:82</div></div>
+<div class="ttc" id="astructSolution_html_af1a13e649affce99bd349915fa67f3a7"><div class="ttname"><a href="structSolution.html#af1a13e649affce99bd349915fa67f3a7">Solution::totalError</a></div><div class="ttdeci">long int totalError</div><div class="ttdef"><b>Definition</b> structure.h:80</div></div>
+</div><!-- fragment --></div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Généré par&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8
+</small></address>
+</body>
+</html>

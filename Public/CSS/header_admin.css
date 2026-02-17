@@ -1,0 +1,95 @@
+.header-admin {
+    background-color: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    padding: 0 20px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.header-admin .header-container {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-admin .logo img {
+    height: 60px;
+    width: auto;
+    transition: transform 0.2s;
+}
+
+.header-admin .logo:hover img {
+    transform: scale(1.05);
+}
+
+.header-admin .main-nav {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.header-admin .nav-link {
+    text-decoration: none;
+    color: #6b7280;
+    font-weight: 500;
+    font-size: 0.95rem;
+    padding: 8px 0;
+    position: relative;
+    transition: color 0.2s ease;
+}
+
+.header-admin .nav-link:hover {
+    color: #006CB7; 
+}
+
+.header-admin .nav-link::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 0;
+    left: 0;
+    background-color: #006CB7;
+    transition: width 0.3s;
+}
+
+.header-admin .nav-link:hover::after {
+    width: 100%;
+}
+
+.header-admin .btn-outline {
+    border: 1px solid #e5e7eb;
+    background-color: transparent;
+    color: #D92328;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.header-admin .btn-outline:hover {
+    background-color: #FEF2F2;
+    border-color: #D92328;
+}
+
+@media (max-width: 768px) {
+    .header-admin .main-nav {
+        gap: 15px;
+    }
+    .header-admin .nav-link {
+        font-size: 0.85rem;
+    }
+    .header-admin .logo img {
+        height: 30px;
+    }
+}

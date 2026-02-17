@@ -1,0 +1,55 @@
+\doxysection{Référence de la structure Image}
+\hypertarget{structImage}{}\label{structImage}\index{Image@{Image}}
+
+
+Structure représentant l\textquotesingle{}image source pixelisée.  
+
+
+
+
+{\ttfamily \#include $<$structure.\+h$>$}
+
+
+
+Graphe de collaboration de Image\+:
+% FIG 0
+\doxysubsubsection*{Champs de données}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{structImage_a595f4a107e489e95919cc75da68cd38a}{W}}
+\item 
+int \mbox{\hyperlink{structImage_a5fccd596f6a7a7ee60ac2220acdfc53b}{H}}
+\item 
+\mbox{\hyperlink{structRGB}{RGB}} \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{structImage_a8822c1a076560eab08976ce5be9b9b13}{rgb}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Description détaillée}
+Structure représentant l\textquotesingle{}image source pixelisée. 
+
+Les pixels sont stockés dans un tableau 1D unique pour optimiser le cache. L\textquotesingle{}accès se fait via la formule \+: y \texorpdfstring{$\ast$}{*} W + x. 
+
+\doxysubsection{Documentation des champs}
+\Hypertarget{structImage_a5fccd596f6a7a7ee60ac2220acdfc53b}\label{structImage_a5fccd596f6a7a7ee60ac2220acdfc53b} 
+\index{Image@{Image}!H@{H}}
+\index{H@{H}!Image@{Image}}
+\doxysubsubsection{\texorpdfstring{H}{H}}
+{\footnotesize\ttfamily int Image\+::H}
+
+Hauteur de l\textquotesingle{}image \Hypertarget{structImage_a8822c1a076560eab08976ce5be9b9b13}\label{structImage_a8822c1a076560eab08976ce5be9b9b13} 
+\index{Image@{Image}!rgb@{rgb}}
+\index{rgb@{rgb}!Image@{Image}}
+\doxysubsubsection{\texorpdfstring{rgb}{rgb}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structRGB}{RGB}}\texorpdfstring{$\ast$}{*} Image\+::rgb}
+
+Tableau des pixels \Hypertarget{structImage_a595f4a107e489e95919cc75da68cd38a}\label{structImage_a595f4a107e489e95919cc75da68cd38a} 
+\index{Image@{Image}!W@{W}}
+\index{W@{W}!Image@{Image}}
+\doxysubsubsection{\texorpdfstring{W}{W}}
+{\footnotesize\ttfamily int Image\+::W}
+
+Largeur de l\textquotesingle{}image 
+
+La documentation de cette structure a été générée à partir du fichier suivant \+:\begin{DoxyCompactItemize}
+\item 
+code/dependance/structure.\+h\end{DoxyCompactItemize}

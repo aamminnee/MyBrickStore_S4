@@ -1,0 +1,235 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+.invoice-wrapper {
+    background-color: #e0e0e0;
+    min-height: 100vh; 
+    width: 100%;
+    padding-top: 40px;
+    padding-bottom: 40px;
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    color: #333;
+    
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.invoice-controls {
+    width: 100%;
+    max-width: 210mm;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.invoice-notes {
+    width: 50%; 
+    font-size: 0.85rem; 
+    color: #666;
+}
+
+.btn-back, .btn-download {
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 14px;
+    border: none;
+}
+
+.btn-back {
+    background-color: #666;
+    color: white;
+}
+
+.btn-download {
+    background-color: #d01012;
+    color: white;
+}
+
+.btn-download:hover {
+    background-color: #b00b0d;
+}
+
+.invoice-paper {
+    background-color: white;
+    width: 100%;
+    max-width: 210mm;
+    min-height: 297mm; 
+    padding: 40px; 
+    box-sizing: border-box;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    position: relative;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.paper-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
+
+.logo-text {
+    margin: 0;
+    font-size: 28px;
+    text-transform: uppercase;
+    color: #333;
+}
+
+.logo-text .highlight {
+    color: #d01012;
+}
+
+.company-address {
+    margin-top: 10px;
+    font-size: 13px;
+    color: #555;
+    line-height: 1.4;
+}
+
+.invoice-title {
+    margin: 0;
+    font-size: 32px;
+    color: #ddd; 
+    text-align: right;
+    letter-spacing: 2px;
+    padding-right: 5px; 
+}
+
+.item-ref {
+    font-size: 0.8em; 
+    color: #666; 
+    font-style: italic;
+}
+ 
+.meta-table {
+    margin-top: 10px;
+    font-size: 14px;
+    text-align: right;
+}
+
+.meta-table th {
+    padding-right: 10px;
+    color: #777;
+    font-weight: normal;
+}
+
+.separator {
+    border: 0;
+    border-top: 2px solid #eee;
+    margin: 20px 0 40px 0;
+}
+
+.client-section {
+    margin-bottom: 40px;
+}
+
+.client-box {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-left: 4px solid #333;
+    width: 50%;
+}
+
+.section-title {
+    margin: 0 0 10px 0;
+    font-size: 12px;
+    text-transform: uppercase;
+    color: #888;
+}
+
+.client-details {
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.items-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+}
+
+.items-table th {
+    background-color: #333;
+    color: white;
+    padding: 12px;
+    text-align: left;
+    text-transform: uppercase;
+    font-size: 12px;
+}
+
+.items-table td {
+    padding: 15px 12px;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+}
+
+.text-right { 
+    text-align: right; 
+    padding-right: 20px; 
+    font-weight: 500; 
+    color: #555;
+}
+
+.delivery-row { background-color: #fcfcfc; }
+.text-center { text-align: center; }
+.bold { font-weight: bold; }
+.financial-totals {width: 45%;}
+
+.totals-section {
+    display: flex;
+    margin-top: 30px; 
+    justify-content: space-between; 
+    align-items: flex-start;
+}
+
+.totals-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.totals-table th { 
+    text-align: left; 
+    padding: 5px; 
+    color: #555; 
+    font-weight: normal; 
+    font-size: 13px; 
+}
+
+.totals-table td { 
+    text-align: right; 
+    padding: 5px; 
+    font-weight: bold; 
+    font-size: 14px; 
+}
+
+.note-box {
+    background: #f8f9fa; 
+    padding: 10px; 
+    border-radius: 5px; 
+    border: 1px solid #eee
+}
+
+.grand-total th, .grand-total td {
+    border-top: 2px solid #333;
+    padding-top: 15px;
+    font-size: 18px;
+    color: #d01012;
+    background-color: #f4f4f4;
+}
+
+.paper-footer {
+    margin-top: 80px;
+    text-align: center;
+    color: #999;
+    font-size: 12px;
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+}

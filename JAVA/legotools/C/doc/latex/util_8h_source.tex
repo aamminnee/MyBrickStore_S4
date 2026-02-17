@@ -1,0 +1,40 @@
+\doxysection{util.\+h}
+\hypertarget{util_8h_source}{}\label{util_8h_source}\index{code/dependance/util.h@{code/dependance/util.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#ifndef\ UTIL\_H}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#define\ UTIL\_H}}
+\DoxyCodeLine{00003\ }
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}structure.h"{}}}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00013\ FILE*\ open\_with\_dir(\textcolor{keywordtype}{char}*\ dir,\ \textcolor{keywordtype}{char}*\ name,\ \textcolor{keywordtype}{char}*\ mode);}
+\DoxyCodeLine{00014\ }
+\DoxyCodeLine{00016\ \textcolor{keywordtype}{int}\ charToMask(\textcolor{keywordtype}{char}\ c);}
+\DoxyCodeLine{00017\ }
+\DoxyCodeLine{00019\ \textcolor{keywordtype}{int}\ coordToMask(\textcolor{keywordtype}{int}\ dx,\ \textcolor{keywordtype}{int}\ dy,\ \textcolor{keywordtype}{int}\ W);}
+\DoxyCodeLine{00020\ }
+\DoxyCodeLine{00022\ \textcolor{keywordtype}{int}\ trou\_str\_to\_int(\textcolor{keywordtype}{char}*\ buffer);}
+\DoxyCodeLine{00023\ }
+\DoxyCodeLine{00025\ \textcolor{keywordtype}{void}\ trou\_int\_to\_str(\textcolor{keywordtype}{int}\ T,\ \textcolor{keywordtype}{char}*\ buffer);}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00028\ \textcolor{keywordtype}{int}\ getIndex(\textcolor{keywordtype}{int}\ x,\ \textcolor{keywordtype}{int}\ y,\ \mbox{\hyperlink{structImage}{Image}}*\ I);}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00031\ \textcolor{keywordtype}{int}\ getBrickFor(\mbox{\hyperlink{structBriqueList}{BriqueList}}*\ B,\ \textcolor{keywordtype}{int}\ shape,\ \textcolor{keywordtype}{int}\ col);}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00037\ \textcolor{keywordtype}{int}\ compute\_error\_for\_shape\_at(\textcolor{keywordtype}{int}\ iBrique,\ \textcolor{keywordtype}{int}\ x0,\ \textcolor{keywordtype}{int}\ y0,\ \textcolor{keywordtype}{int}\ rot,\ \mbox{\hyperlink{structBriqueList}{BriqueList}}*\ B,\ \mbox{\hyperlink{structImage}{Image}}*\ I);}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00044\ \textcolor{keywordtype}{int}\ rect\_is\_uncovered(\textcolor{keywordtype}{int}\ x0,\ \textcolor{keywordtype}{int}\ y0,\ \textcolor{keywordtype}{int}\ w,\ \textcolor{keywordtype}{int}\ h,\ \mbox{\hyperlink{structImage}{Image}}*\ I,\ \textcolor{keywordtype}{int}*\ covered);}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00047\ \textcolor{keywordtype}{void}\ mark\_rect\_covered(\textcolor{keywordtype}{int}\ x0,\ \textcolor{keywordtype}{int}\ y0,\ \textcolor{keywordtype}{int}\ w,\ \textcolor{keywordtype}{int}\ h,\ \mbox{\hyperlink{structImage}{Image}}*\ I,\ \textcolor{keywordtype}{int}*\ covered);}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00050\ \textcolor{keywordtype}{int}\ choisir\_brique1x1\_disponible(\mbox{\hyperlink{structBriqueList}{BriqueList}}*\ B,\ \textcolor{keywordtype}{int}\ col,\ \textcolor{keywordtype}{int}*\ used);}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00057\ \textcolor{keywordtype}{int}\ rect\_has\_uniform\_closest(\textcolor{keywordtype}{int}\ x0,\ \textcolor{keywordtype}{int}\ y0,\ \textcolor{keywordtype}{int}\ w,\ \textcolor{keywordtype}{int}\ h,\ \mbox{\hyperlink{structImage}{Image}}*\ I,\ \textcolor{keywordtype}{int}*\ closestColor,\ \textcolor{keywordtype}{int}\ colTarget);}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00060\ \textcolor{keywordtype}{int}\ comparer\_aire(\textcolor{keyword}{const}\ \textcolor{keywordtype}{void}*\ a,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{void}*\ b);}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00063\ \textcolor{keywordtype}{int}\ is\_area\_compatible(\mbox{\hyperlink{structImage}{Image}}*\ I,\ \textcolor{keywordtype}{int}\ x,\ \textcolor{keywordtype}{int}\ y,\ \textcolor{keywordtype}{int}\ w,\ \textcolor{keywordtype}{int}\ h,\ \mbox{\hyperlink{structRGB}{RGB}}\ bColor,\ \textcolor{keywordtype}{int}\ tolerance);}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}

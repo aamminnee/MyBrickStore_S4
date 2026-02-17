@@ -1,0 +1,3 @@
+User-agent: *
+Disallow: /
+# bloque tous les robots d'indexation sur l'ensemble du site

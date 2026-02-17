@@ -1,0 +1,136 @@
+:root {
+    --lego-red: #D92328;  
+    --lego-red-hover: #b91c20;
+    --lego-blue: #006CB7;   
+    --lego-blue-hover: #005596;
+    --lego-yellow: #FFD500;
+    --text-dark: #1a1a1a;
+    --text-grey: #666666;
+    --bg-color: #f8f9fa;
+    --border-color: #e2e8f0;
+    --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.08);
+    --font-main: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --header-height: 80px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    background-color: var(--bg-color);
+    font-family: var(--font-main);
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.main-content, .main-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+    width: 100%;
+}
+
+.login-container, .register-container {
+    background: #ffffff;
+    width: 100%;
+    max-width: 420px;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: var(--shadow-soft);
+    border: 1px solid rgba(0,0,0,0.02);
+    animation: slideUp 0.5s ease-out;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+h2 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    text-align: center;
+    color: var(--text-dark);
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.error-msg {
+    background-color: #fff5f5;
+    color: #e53e3e;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    text-align: center;
+    border: 1px solid #fed7d7;
+    margin-bottom: 20px;
+}
+
+.form-group { margin-bottom: 18px; }
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-dark);
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: all 0.2s;
+    background-color: #fcfcfc;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--lego-blue);
+    background-color: #fff;
+    box-shadow: 0 0 0 4px rgba(0, 108, 183, 0.1);
+}
+
+.form-group small {
+    display: block;
+    margin-top: 5px;
+    color: var(--text-grey);
+    font-size: 0.8rem;
+}
+
+.captcha-group {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border-color);
+}
+.captcha-visual { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px; }
+.captcha-input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ddd; text-align: center; }
+#captcha-refresh { border: none; background: transparent; font-size: 1.2rem; cursor: pointer; color: var(--lego-blue); }
+
+.btn-submit {
+    width: 100%;
+    background-color: var(--lego-red);
+    color: white;
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.2s, transform 0.1s;
+    margin-top: 10px;
+}
+.btn-submit:hover { background-color: var(--lego-red-hover); transform: translateY(-1px); }
+
+.login-footer { margin-top: 25px; text-align: center; font-size: 0.9rem; color: var(--text-grey); border-top: 1px solid var(--border-color); padding-top: 20px; }
+.login-footer p { margin: 8px 0; }
+.login-footer a { color: var(--lego-blue); text-decoration: none; font-weight: 600; }
+.login-footer a:hover { text-decoration: underline; }

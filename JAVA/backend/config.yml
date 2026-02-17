@@ -1,0 +1,10 @@
+unit_price: "0.01"
+unit_time: 2ms
+price_decrease_factor: 0.90
+time_decrease_factor: 0.90
+proof_of_work_cost: 3
+proof_of_work_reward: 1.0
+secret: "foobar"
+signing_private_key: "MC4CAQAwBQYDK2VwBCIEIK/mUL0Dp66CWFQ6YCezrixm2sCi3WJ+Fo4hwl2wMyuv"
+lanes: 8
+email_pattern: ".*@.*"

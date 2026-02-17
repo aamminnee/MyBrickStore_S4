@@ -1,0 +1,119 @@
+\doxysection{Référence de la structure Brique\+List}
+\hypertarget{structBriqueList}{}\label{structBriqueList}\index{BriqueList@{BriqueList}}
+
+
+Catalogue complet des briques disponibles (chargé depuis briques.\+txt).  
+
+
+
+
+{\ttfamily \#include $<$structure.\+h$>$}
+
+
+
+Graphe de collaboration de Brique\+List\+:
+% FIG 0
+\doxysubsubsection*{Champs de données}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{structBriqueList_adabeece1f4508f2c4776138cfa3f20cb}{n\+Shape}}
+\item 
+int \mbox{\hyperlink{structBriqueList_ad1b1aee6fc27ea44ac855a5074d8a5c8}{n\+Col}}
+\item 
+int \mbox{\hyperlink{structBriqueList_a04a63d6d8cbd57c740573bbd9ff74901}{n\+Brique}}
+\item 
+int \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{structBriqueList_ad9789192dc8ca17d7fa1a2f8d9761eb9}{W}}
+\item 
+int \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{structBriqueList_a4d140c29d1ec3668e1f0bfe32801c680}{H}}
+\item 
+int \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{structBriqueList_a20f230d5174e04f48053d64c19017d17}{T}}
+\item 
+\mbox{\hyperlink{structRGB}{RGB}} \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{structBriqueList_a857ec74b48644ede07c7b929f182e5cd}{col}}
+\item 
+int \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{structBriqueList_a502a62dd3b6a1417d5c4bad49ed6f0e4}{b\+Col}}
+\item 
+int \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{structBriqueList_a05178e5d8048aaeb81e9a16a31d7650d}{b\+Shape}}
+\item 
+float \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{structBriqueList_a5f926f1415b5362b97df98c01b84e0f1}{b\+Prix}}
+\item 
+int \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{structBriqueList_aa30c2af349d1de2a98bc6a9dc39c82e8}{b\+Stock}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Description détaillée}
+Catalogue complet des briques disponibles (chargé depuis briques.\+txt). 
+
+Utilise une architecture "{}\+Structure of Arrays"{} (SoA) \+: plusieurs tableaux parallèles au lieu d\textquotesingle{}un tableau de structures. 
+
+\doxysubsection{Documentation des champs}
+\Hypertarget{structBriqueList_a502a62dd3b6a1417d5c4bad49ed6f0e4}\label{structBriqueList_a502a62dd3b6a1417d5c4bad49ed6f0e4} 
+\index{BriqueList@{BriqueList}!bCol@{bCol}}
+\index{bCol@{bCol}!BriqueList@{BriqueList}}
+\doxysubsubsection{\texorpdfstring{bCol}{bCol}}
+{\footnotesize\ttfamily int\texorpdfstring{$\ast$}{*} Brique\+List\+::b\+Col}
+
+ID de la couleur pour chaque brique (taille n\+Brique) \Hypertarget{structBriqueList_a5f926f1415b5362b97df98c01b84e0f1}\label{structBriqueList_a5f926f1415b5362b97df98c01b84e0f1} 
+\index{BriqueList@{BriqueList}!bPrix@{bPrix}}
+\index{bPrix@{bPrix}!BriqueList@{BriqueList}}
+\doxysubsubsection{\texorpdfstring{bPrix}{bPrix}}
+{\footnotesize\ttfamily float\texorpdfstring{$\ast$}{*} Brique\+List\+::b\+Prix}
+
+Prix unitaire pour chaque brique (taille n\+Brique) \Hypertarget{structBriqueList_a05178e5d8048aaeb81e9a16a31d7650d}\label{structBriqueList_a05178e5d8048aaeb81e9a16a31d7650d} 
+\index{BriqueList@{BriqueList}!bShape@{bShape}}
+\index{bShape@{bShape}!BriqueList@{BriqueList}}
+\doxysubsubsection{\texorpdfstring{bShape}{bShape}}
+{\footnotesize\ttfamily int\texorpdfstring{$\ast$}{*} Brique\+List\+::b\+Shape}
+
+ID de la forme pour chaque brique (taille n\+Brique) \Hypertarget{structBriqueList_aa30c2af349d1de2a98bc6a9dc39c82e8}\label{structBriqueList_aa30c2af349d1de2a98bc6a9dc39c82e8} 
+\index{BriqueList@{BriqueList}!bStock@{bStock}}
+\index{bStock@{bStock}!BriqueList@{BriqueList}}
+\doxysubsubsection{\texorpdfstring{bStock}{bStock}}
+{\footnotesize\ttfamily int\texorpdfstring{$\ast$}{*} Brique\+List\+::b\+Stock}
+
+Stock disponible pour chaque brique (taille n\+Brique) \Hypertarget{structBriqueList_a857ec74b48644ede07c7b929f182e5cd}\label{structBriqueList_a857ec74b48644ede07c7b929f182e5cd} 
+\index{BriqueList@{BriqueList}!col@{col}}
+\index{col@{col}!BriqueList@{BriqueList}}
+\doxysubsubsection{\texorpdfstring{col}{col}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structRGB}{RGB}}\texorpdfstring{$\ast$}{*} Brique\+List\+::col}
+
+Palette des couleurs (taille n\+Col) \Hypertarget{structBriqueList_a4d140c29d1ec3668e1f0bfe32801c680}\label{structBriqueList_a4d140c29d1ec3668e1f0bfe32801c680} 
+\index{BriqueList@{BriqueList}!H@{H}}
+\index{H@{H}!BriqueList@{BriqueList}}
+\doxysubsubsection{\texorpdfstring{H}{H}}
+{\footnotesize\ttfamily int\texorpdfstring{$\ast$}{*} Brique\+List\+::H}
+
+Hauteur des formes (taille n\+Shape) \Hypertarget{structBriqueList_a04a63d6d8cbd57c740573bbd9ff74901}\label{structBriqueList_a04a63d6d8cbd57c740573bbd9ff74901} 
+\index{BriqueList@{BriqueList}!nBrique@{nBrique}}
+\index{nBrique@{nBrique}!BriqueList@{BriqueList}}
+\doxysubsubsection{\texorpdfstring{nBrique}{nBrique}}
+{\footnotesize\ttfamily int Brique\+List\+::n\+Brique}
+
+Nombre total de références (combinaisons forme/couleur) \Hypertarget{structBriqueList_ad1b1aee6fc27ea44ac855a5074d8a5c8}\label{structBriqueList_ad1b1aee6fc27ea44ac855a5074d8a5c8} 
+\index{BriqueList@{BriqueList}!nCol@{nCol}}
+\index{nCol@{nCol}!BriqueList@{BriqueList}}
+\doxysubsubsection{\texorpdfstring{nCol}{nCol}}
+{\footnotesize\ttfamily int Brique\+List\+::n\+Col}
+
+Nombre de couleurs uniques définies \Hypertarget{structBriqueList_adabeece1f4508f2c4776138cfa3f20cb}\label{structBriqueList_adabeece1f4508f2c4776138cfa3f20cb} 
+\index{BriqueList@{BriqueList}!nShape@{nShape}}
+\index{nShape@{nShape}!BriqueList@{BriqueList}}
+\doxysubsubsection{\texorpdfstring{nShape}{nShape}}
+{\footnotesize\ttfamily int Brique\+List\+::n\+Shape}
+
+Nombre de formes uniques définies \Hypertarget{structBriqueList_a20f230d5174e04f48053d64c19017d17}\label{structBriqueList_a20f230d5174e04f48053d64c19017d17} 
+\index{BriqueList@{BriqueList}!T@{T}}
+\index{T@{T}!BriqueList@{BriqueList}}
+\doxysubsubsection{\texorpdfstring{T}{T}}
+{\footnotesize\ttfamily int\texorpdfstring{$\ast$}{*} Brique\+List\+::T}
+
+Configuration des trous (ID) \Hypertarget{structBriqueList_ad9789192dc8ca17d7fa1a2f8d9761eb9}\label{structBriqueList_ad9789192dc8ca17d7fa1a2f8d9761eb9} 
+\index{BriqueList@{BriqueList}!W@{W}}
+\index{W@{W}!BriqueList@{BriqueList}}
+\doxysubsubsection{\texorpdfstring{W}{W}}
+{\footnotesize\ttfamily int\texorpdfstring{$\ast$}{*} Brique\+List\+::W}
+
+Largeur des formes (taille n\+Shape) 
+
+La documentation de cette structure a été générée à partir du fichier suivant \+:\begin{DoxyCompactItemize}
+\item 
+code/dependance/structure.\+h\end{DoxyCompactItemize}

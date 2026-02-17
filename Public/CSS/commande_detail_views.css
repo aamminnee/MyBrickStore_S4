@@ -1,0 +1,204 @@
+:root {
+    --lego-red: #D92328;
+    --lego-blue: #006CB7;
+    --lego-yellow: #FFD500;
+    --lego-green: #00852B;
+    --text-dark: #1e293b;
+    --text-grey: #64748b;
+    --bg-light: #f8f9fa;
+    --header-height: 90px;
+    --font-heading: 'Fredoka', sans-serif;
+    --font-body: 'Inter', sans-serif;
+}
+
+.detail-wrapper {
+    min-height: calc(100vh - var(--header-height));
+    background-color: var(--bg-light);
+    background-image: radial-gradient(#e2e8f0 2px, transparent 2.5px);
+    background-size: 30px 30px;
+    padding: 40px 20px;
+    font-family: var(--font-body);
+    color: var(--text-dark);
+}
+
+.detail-container {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.page-header { margin-bottom: 30px; }
+
+.btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: var(--text-grey);
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 10px 20px;
+    background-color: white;
+    border-radius: 50px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.btn-back:hover {
+    color: var(--lego-blue);
+    transform: translateX(-5px);
+    border-color: var(--lego-blue);
+    box-shadow: 0 6px 15px rgba(0, 108, 183, 0.1);
+}
+
+.page-header h1 {
+    font-family: var(--font-heading);
+    font-size: 2.5rem; margin: 0;
+    color: var(--text-dark);
+}
+.page-header h1 span { color: var(--lego-blue); }
+.subtitle { color: var(--text-grey); margin-top: 5px; font-size: 1.1rem; }
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 40px;
+    align-items: start;
+}
+
+.main-column { display: flex; flex-direction: column; gap: 30px; }
+
+.card {
+    background: white; border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.tracking-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 30px; border-bottom: 1px solid #f1f5f9; padding-bottom: 15px;
+}
+.tracking-header h3 { margin: 0; font-family: var(--font-heading); font-size: 1.4rem; }
+
+.status-text { font-weight: 800; text-transform: uppercase; font-size: 1rem; }
+.state-shipping { color: #d97706; }
+.state-transit { color: var(--lego-blue); }
+.state-delivered { color: var(--lego-green); }
+
+.progress-container {
+    background: #e2e8f0; height: 12px; border-radius: 10px;
+    margin-bottom: 30px; overflow: hidden; position: relative;
+}
+.progress-bar {
+    background: linear-gradient(90deg, var(--lego-yellow), var(--lego-green));
+    height: 100%; border-radius: 10px;
+    transition: width 1s ease;
+}
+
+.steps { display: flex; justify-content: space-between; text-align: center; }
+.step { flex: 1; opacity: 0.4; transition: all 0.3s; }
+.step.active { opacity: 1; transform: scale(1.05); }
+
+.step-icon {
+    font-size: 2rem; background: #f8fafc;
+    width: 60px; height: 60px; border-radius: 50%;
+    display: flex; justify-content: center; align-items: center;
+    margin: 0 auto 10px auto; border: 2px solid transparent;
+}
+.step.active .step-icon {
+    background: white; border-color: var(--lego-green);
+    box-shadow: 0 5px 15px rgba(0, 133, 43, 0.15);
+}
+.step-label { font-weight: 600; font-size: 0.9rem; line-height: 1.3; }
+
+.section-title { font-family: var(--font-heading); margin-bottom: 20px; font-size: 1.5rem; }
+
+.item-card {
+    display: flex; background: white; border-radius: 12px;
+    padding: 20px; border: 1px solid #e2e8f0; margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02); gap: 25px;
+}
+
+.item-visual {
+    width: 110px; height: 110px; flex-shrink: 0;
+    background: #f8fafc; border-radius: 8px;
+    display: flex; justify-content: center; align-items: center;
+    overflow: hidden; border: 1px solid #e2e8f0;
+}
+.item-visual img { width: 100%; height: 100%; object-fit: cover; }
+
+.item-content { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+
+.item-main h4 { margin: 0 0 10px 0; font-size: 1.1rem; }
+.badges { display: flex; gap: 8px; }
+
+.badge {
+    font-size: 0.75rem; padding: 4px 10px; border-radius: 6px;
+    background: #f1f5f9; color: var(--text-grey); font-weight: 700;
+}
+
+.item-downloads {
+    display: flex; align-items: center; gap: 15px; margin-top: 15px;
+    padding-top: 15px; border-top: 1px solid #f8fafc;
+}
+
+.item-downloads span { font-size: 0.85rem; color: var(--text-grey); font-weight: 600; }
+
+.dl-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
+.btn-dl {
+    text-decoration: none; padding: 6px 12px; border-radius: 6px;
+    font-size: 0.85rem; font-weight: 600; border: 1px solid #e2e8f0;
+    color: var(--text-dark); background: white; transition: all 0.2s;
+    display: flex; align-items: center; gap: 5px;
+}
+
+.btn-dl:hover { border-color: var(--lego-blue); background: #f0f9ff; color: var(--lego-blue); }
+
+.inventory-card h3 { font-family: var(--font-heading); margin-top: 0; margin-bottom: 20px; }
+.table-scroll { max-height: 300px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px; }
+.bricks-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+
+.bricks-table th {
+    text-align: left; padding: 10px 15px; background: #f8fafc;
+    color: var(--text-grey); position: sticky; top: 0; border-bottom: 1px solid #e2e8f0;
+}
+
+.bricks-table td { padding: 10px 15px; border-bottom: 1px solid #f1f5f9; }
+.brick-dot { display: inline-block; width: 20px; height: 20px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.1); }
+.text-right { text-align: right; }
+.inventory-total { text-align: right; margin-top: 10px; font-weight: 700; color: var(--text-grey); font-size: 0.9rem; }
+
+.sidebar-column { display: flex; flex-direction: column; gap: 20px; position: sticky; top: 20px; }
+
+.info-card h3, .summary-card h3 { font-family: var(--font-heading); margin-top: 0; margin-bottom: 20px; font-size: 1.2rem; }
+
+.info-group { margin-bottom: 15px; }
+.info-group .label { display: block; font-size: 0.8rem; color: var(--text-grey); font-weight: 600; margin-bottom: 4px; }
+.info-group .val { margin: 0; font-weight: 500; font-size: 0.95rem; }
+.address-val { padding-left: 10px; border-left: 3px solid var(--lego-yellow); }
+
+.summary-card .row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.95rem; color: var(--text-grey); }
+.summary-card .free { font-weight: 700; }
+.summary-card .divider { height: 1px; background: #e2e8f0; margin: 15px 0; }
+.summary-card .total { font-weight: 800; font-size: 1.2rem; color: var(--text-dark); margin-bottom: 20px; }
+
+.btn-invoice {
+    display: block; width: 100%; text-align: center; background: var(--lego-blue);
+    color: white; padding: 12px; border-radius: 50px; text-decoration: none;
+    font-weight: 600; transition: background 0.2s; box-shadow: 0 4px 0 #004c82;
+}
+
+.btn-invoice:hover { background: #005596; transform: translateY(-2px); box-shadow: 0 6px 0 #004c82; }
+.btn-invoice:active { transform: translateY(2px); box-shadow: none; }
+
+.help-box { text-align: center; font-size: 0.85rem; color: var(--text-grey); margin-top: 10px; }
+.help-box a { color: var(--text-dark); text-decoration: underline; }
+
+@media (max-width: 900px) {
+    .detail-grid { grid-template-columns: 1fr; }
+    .item-card { flex-direction: column; }
+    .item-visual { width: 100%; height: 150px; }
+    .item-downloads { flex-direction: column; align-items: flex-start; }
+    .sidebar-column { position: static; }
+}

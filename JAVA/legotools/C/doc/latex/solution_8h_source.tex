@@ -1,0 +1,26 @@
+\doxysection{solution.\+h}
+\hypertarget{solution_8h_source}{}\label{solution_8h_source}\index{code/dependance/solution.h@{code/dependance/solution.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#ifndef\ SOLUTION\_H}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#define\ SOLUTION\_H}}
+\DoxyCodeLine{00003\ }
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}structure.h"{}}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ "{}image.h"{}}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ "{}brique.h"{}}}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00013\ \textcolor{keywordtype}{void}\ init\_sol(\mbox{\hyperlink{structSolution}{Solution}}*\ sol,\ \mbox{\hyperlink{structImage}{Image}}*\ I);}
+\DoxyCodeLine{00014\ }
+\DoxyCodeLine{00025\ \textcolor{keywordtype}{void}\ push\_sol(\mbox{\hyperlink{structSolution}{Solution}}*\ sol,\ \textcolor{keywordtype}{int}\ iBrique,\ \textcolor{keywordtype}{int}\ x,\ \textcolor{keywordtype}{int}\ y,\ \textcolor{keywordtype}{int}\ rot,\ \mbox{\hyperlink{structImage}{Image}}*\ I,\ \mbox{\hyperlink{structBriqueList}{BriqueList}}*\ B);}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00031\ \textcolor{keywordtype}{void}\ push\_sol\_with\_error(\mbox{\hyperlink{structSolution}{Solution}}*\ sol,\ \textcolor{keywordtype}{int}\ iBrique,\ \textcolor{keywordtype}{int}\ x,\ \textcolor{keywordtype}{int}\ y,\ \textcolor{keywordtype}{int}\ rot,\ \mbox{\hyperlink{structImage}{Image}}*\ I,\ \mbox{\hyperlink{structBriqueList}{BriqueList}}*\ B);}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00041\ \textcolor{keywordtype}{void}\ print\_sol(\mbox{\hyperlink{structSolution}{Solution}}*\ sol,\ \textcolor{keywordtype}{char}*\ dir,\ \textcolor{keywordtype}{char}*\ name,\ \mbox{\hyperlink{structBriqueList}{BriqueList}}*\ B);}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00049\ \textcolor{keywordtype}{void}\ fill\_sol\_stock(\mbox{\hyperlink{structSolution}{Solution}}*\ sol,\ \mbox{\hyperlink{structBriqueList}{BriqueList}}*\ B);}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00055\ \textcolor{keywordtype}{void}\ freeSolution(\mbox{\hyperlink{structSolution}{Solution}}\ S);}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00057\ \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}
