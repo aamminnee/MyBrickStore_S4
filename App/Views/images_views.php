@@ -20,9 +20,9 @@ $baseUrl = $_ENV['BASE_URL'] ?? '';
     <div class="hero-section">
         
         <div class="hero-presentation">
-            <h1 class="main-title"><?= $t['home_hero_title'] ?? 'Transformez votre photo en mosaïque LEGO®' ?></h1>
+            <h1 class="main-title"><?= $t['home_hero_title'] ?? 'Transformez votre photo en mosaïque de briques' ?></h1>
             
-            <p class="hero-subtitle"><?= $t['home_hero_subtitle'] ?? 'Transformez vos photos préférées en superbes mosaïques LEGO®. Téléversez une image, choisissez votre taille et vos couleurs, et recevez un plan clair et précis à assembler chez vous.' ?></p>
+            <p class="hero-subtitle"><?= $t['home_hero_subtitle'] ?? 'Transformez vos photos préférées en superbes mosaïques de briques. Téléversez une image, choisissez votre taille et vos couleurs, et recevez un plan clair et précis à assembler chez vous.' ?></p>
             
             <div class="example-card">
                 <div class="img-container">
@@ -35,7 +35,7 @@ $baseUrl = $_ENV['BASE_URL'] ?? '';
                     </svg>
                 </div>
                 <div class="img-container">
-                    <span class="img-label"><?= $t['home_label_lego'] ?? 'Art Lego' ?></span>
+                    <span class="img-label"><?= $t['home_label_lego'] ?? 'Art' ?></span>
                     <img src="img/joconde_lego.png" alt="The Mona Lisa in LEGO version">
                 </div>
             </div>
@@ -81,7 +81,7 @@ $baseUrl = $_ENV['BASE_URL'] ?? '';
     <section class="how-it-works">
         <div class="section-header">
             <h3><?= $t['home_how_title'] ?? 'Comment ça marche ?' ?></h3>
-            <p class="intro"><?= $t['home_how_intro'] ?? 'C\'est simple : envoyez votre photo, personnalisez votre mosaïque et recevez un kit LEGO® prêt à assembler.' ?></p>
+            <p class="intro"><?= $t['home_how_intro'] ?? 'C\'est simple : envoyez votre photo, personnalisez votre mosaïque et recevez un kit de briques prêt à assembler.' ?></p>
         </div>
 
         <div class="steps-grid">
@@ -98,7 +98,7 @@ $baseUrl = $_ENV['BASE_URL'] ?? '';
                 <div class="step-img">
                     <img src="img/joconde_demi.PNG" alt="Create"> </div>
                 <h5><?= $t['home_step2_title'] ?? 'Créer' ?></h5> 
-                <p><?= $t['home_step2_desc'] ?? 'Personnalisez votre mosaïque LEGO®' ?></p> 
+                <p><?= $t['home_step2_desc'] ?? 'Personnalisez votre mosaïque de briques' ?></p> 
             </div>
 
             <div class="step-card">

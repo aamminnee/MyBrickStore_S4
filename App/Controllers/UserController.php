@@ -5,6 +5,7 @@ use App\Core\Controller;
 use App\Models\UsersModel;
 use App\Models\TokensModel;
 use App\Models\TranslationModel;
+use App\Models\ImagesModel;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 use Dotenv\Dotenv;
@@ -115,7 +116,11 @@ class UserController extends Controller {
                 if ($userRole === 'admin') {
                     header("Location: $baseUrl/user/admin");
                 } else {
-                    header("Location: $baseUrl/index.php"); 
+                    if (!empty($_SESSION['cart'])) {
+                        header("Location: $baseUrl/cart");
+                    } else {
+                        header("Location: $baseUrl/index.php");
+                    }
                 }
                 exit;
             } else {
@@ -365,11 +370,17 @@ class UserController extends Controller {
                         
                         unset($_SESSION['temp_2fa_user_id']);
                         unset($_SESSION['temp_2fa_email']);
+
+                        $this->mergeGuestData($idUser);
                         
                         if ($role === 'admin') {
                             header("Location: $baseUrl/user/admin");
                         } else {
-                            header("Location: $baseUrl/index.php");
+                            if (!empty($_SESSION['cart'])) {
+                                header("Location: $baseUrl/cart");
+                            } else {
+                                header("Location: $baseUrl/index.php");
+                            }
                         }
                         exit;
                     } else {
@@ -443,7 +454,7 @@ class UserController extends Controller {
         }
 
         $id_user = $_SESSION['user_id'];
-        $action = $_POST['mode'];
+        $action = $_POST['mode'] ?? null;
         
         if ($action === 'enable') {
             $this->user_model->setModeById($id_user, '2FA');
@@ -475,5 +486,22 @@ class UserController extends Controller {
         session_destroy();
         header("Location: $baseUrl/user/login");
         exit;
+    }
+
+    /**
+     * Merges guest session data (cart images) into the logged-in user account
+     *
+     * @param int $userId
+     */
+    private function mergeGuestData($userId) {
+        if (!empty($_SESSION['cart']) && is_array($_SESSION['cart'])) {
+            $imagesModel = new ImagesModel();
+            
+            foreach ($_SESSION['cart'] as $item) {
+                if (isset($item['image_id'])) {
+                    $imagesModel->assignImageToUser($item['image_id'], $userId);
+                }
+            }
+        }
     }
 }

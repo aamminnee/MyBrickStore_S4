@@ -1,4 +1,4 @@
-# fichier : SAE_S3_BUT2_INFO/Public/.htaccess
+# fichier : MyBrickStore_S4/Public/.htaccess
 
 # activation du moteur de réécriture
 RewriteEngine On

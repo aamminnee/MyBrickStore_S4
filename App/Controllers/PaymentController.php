@@ -347,20 +347,40 @@ class PaymentController extends Controller {
             $imgId = $item['image_id'];
             $style = $item['style'];
             $imgDb = $imagesModel->getImageById($imgId, $userId);
+
+            if (!$imgDb) {
+                $orphanCheck = $imagesModel->getImageById($imgId, null);
+                if ($orphanCheck && $orphanCheck->id_Customer === null) {
+                    $imagesModel->assignImageToUser($imgId, $userId);
+                    $imgDb = $orphanCheck;
+                }
+            }
             
             if ($imgDb) {
                 $ext = (strpos($imgDb->file_type, 'png') !== false) ? 'png' : 'jpg';
-                $genResults = $mosaicModel->generateTemporaryMosaics($imgId, $imgDb->file, $ext);
-                $pavageContent = $genResults[$style]['txt'] ?? null;
+                
+                try {
+                    $genResults = $mosaicModel->generateTemporaryMosaics($imgId, $imgDb->file, $ext);
+                    $pavageContent = $genResults[$style]['txt'] ?? null;
 
-                if ($pavageContent) {
-                    $newMosaicId = $mosaicModel->saveSelectedMosaic($imgId, $pavageContent, $style);
-                    if ($newMosaicId) $realMosaicIds[] = $newMosaicId;
+                    if ($pavageContent) {
+                        $newMosaicId = $mosaicModel->saveSelectedMosaic($imgId, $pavageContent, $style);
+                        if ($newMosaicId) $realMosaicIds[] = $newMosaicId;
+                    } else {
+                        error_log("Erreur Payment: Contenu pavage vide pour img $imgId style $style");
+                    }
+                } catch (\Exception $e) {
+                    error_log("Exception Payment Java: " . $e->getMessage());
                 }
+            } else {
+                error_log("Erreur Payment: Image $imgId introuvable pour User $userId");
             }
         }
 
-        if (empty($realMosaicIds)) { echo "Erreur génération."; exit; }
+        if (empty($realMosaicIds)) { 
+            echo "Erreur critique : Impossible de générer les mosaïques finales."; 
+            exit; 
+        }
 
         $financialModel = new FinancialModel();
         $result = $financialModel->processOrder($userId, $realMosaicIds[0], $cardInfo, $totalAmount, $billingInfo);
@@ -379,7 +399,11 @@ class PaymentController extends Controller {
         $orderDetails = $commandeModel->getOrderDetails($orderId);
         $orderDetails['total_amount'] = $totalAmount; 
         
-        $this->sendInvoiceEmail($billingInfo['email'], $orderDetails);
+        try {
+            $this->sendInvoiceEmail($billingInfo['email'], $orderDetails);
+        } catch (\Exception $e) {
+            error_log("Erreur envoi mail facture : " . $e->getMessage());
+        }
         
         unset($_SESSION['cart']);
         unset($_SESSION['billing_temp']);

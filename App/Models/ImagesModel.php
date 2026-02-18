@@ -72,18 +72,31 @@ class ImagesModel extends Model {
      */
     public function updateCustomerImageBlob($idImage, $idCustomer, $newData) {
         $db = Db::getInstance();
-        
-        $sql = "UPDATE CustomerImage c
+
+        if ($idCustomer === null) {
+            $sql = "UPDATE CustomerImage c
                 INNER JOIN Image i ON c.id_Image = i.id_Image
                 SET c.file = ?
-                WHERE c.id_Image = ? AND i.id_Customer = ?";
-                
-        $stmt = $db->prepare($sql);
-        $stmt->bindValue(1, $newData, PDO::PARAM_STR);
-        $stmt->bindValue(2, $idImage, PDO::PARAM_INT);
-        $stmt->bindValue(3, $idCustomer, PDO::PARAM_INT);
+                WHERE c.id_Image = ? AND i.id_Customer IS NULL";
         
-        return $stmt->execute();
+            $stmt = $db->prepare($sql);
+            $stmt->bindValue(1, $newData, PDO::PARAM_STR);
+            $stmt->bindValue(2, $idImage, PDO::PARAM_INT);
+            return $stmt->execute();
+        } else {
+        
+            $sql = "UPDATE CustomerImage c
+                    INNER JOIN Image i ON c.id_Image = i.id_Image
+                    SET c.file = ?
+                    WHERE c.id_Image = ? AND i.id_Customer = ?";
+                    
+            $stmt = $db->prepare($sql);
+            $stmt->bindValue(1, $newData, PDO::PARAM_STR);
+            $stmt->bindValue(2, $idImage, PDO::PARAM_INT);
+            $stmt->bindValue(3, $idCustomer, PDO::PARAM_INT);
+            
+            return $stmt->execute();
+        }
     }
 
     /**
@@ -125,4 +138,19 @@ class ImagesModel extends Model {
         
         return $this->requete($sql, [$userId])->fetch();
     }
+
+    /**
+     * Assigns an orphaned image (guest upload) to a registered user
+     *
+     * @param int $imageId
+     * @param int $userId
+     * @return bool
+     */
+    public function assignImageToUser($imageId, $userId) {
+        $db = Db::getInstance();
+        $sql = "UPDATE Image SET id_Customer = ? WHERE id_Image = ? AND id_Customer IS NULL";
+        $stmt = $db->prepare($sql);
+        return $stmt->execute([$userId, $imageId]);
+    }
 }
+

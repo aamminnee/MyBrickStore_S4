@@ -35,13 +35,18 @@ class ReviewImagesController extends Controller {
      * @return void
      */
     public function index() {
-        if (!isset($_SESSION['user_id']) || !isset($_GET['img'])) {
+        if (!isset($_GET['img'])) {
             header("Location: " . ($_ENV['BASE_URL'] ?? '') . "/images");
             exit;
         }
 
         $imageId = $_GET['img'];
-        $userId = $_SESSION['user_id'];
+        $userId = $_SESSION['user_id'] ?? null;
+
+        if ($userId === null && isset($_SESSION['current_image_id']) && $_SESSION['current_image_id'] != $imageId) {
+             header("Location: " . ($_ENV['BASE_URL'] ?? '') . "/images");
+             exit;
+        }
 
         $imagesModel = new ImagesModel();
         $image = $imagesModel->getImageById($imageId, $userId);

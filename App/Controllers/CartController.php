@@ -38,8 +38,6 @@ class CartController extends Controller {
      * @return void
      */
     public function index() {
-        if (!isset($_SESSION['user_id'])) { header("Location: " . ($_ENV['BASE_URL'] ?? '') . "/user/login"); exit; }
-
         $items = $_SESSION['cart'];
         $subTotal = 0;
         foreach ($items as $item) {
@@ -65,7 +63,7 @@ class CartController extends Controller {
      * @return void
      */
     public function add() {
-        if (!isset($_SESSION['user_id']) || $_SERVER['REQUEST_METHOD'] !== 'POST') {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header("Location: " . ($_ENV['BASE_URL'] ?? '') . "/images");
             exit;
         }
@@ -81,7 +79,8 @@ class CartController extends Controller {
         $pieces = $_SESSION[$sessionKeyCount][$style] ?? 0;
 
         $imagesModel = new ImagesModel();
-        $image = $imagesModel->getImageById($imageId, $_SESSION['user_id']);
+        $userId = $_SESSION['user_id'] ?? null;
+        $image = $imagesModel->getImageById($imageId, $userId);
         
         $newItem = [
             'id_unique' => uniqid(),
