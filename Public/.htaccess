@@ -5,7 +5,7 @@ RewriteEngine On
 
 # force la racine du projet pour la réécriture
 # cela aide apache à comprendre où il se trouve par rapport à localhost
-RewriteBase /SAE_S3_BUT2_INFO/Public/
+RewriteBase /MyBrickStore_S4/Public/
 
 # si le fichier ou dossier demandé n'existe pas physiquement
 RewriteCond %{REQUEST_FILENAME} !-d
