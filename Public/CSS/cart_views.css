@@ -110,12 +110,6 @@
     box-shadow: 0 10px 25px rgba(0,0,0,0.08);
 }
 
-.cart-card::before {
-    content: '';
-    position: absolute;
-    left: 0; top: 0; bottom: 0;
-    width: 6px;
-}
 .style-cheap::before { background-color: var(--lego-green); }
 .style-rupture::before { background-color: var(--lego-blue); }
 .style-default::before { background-color: var(--lego-red); }
@@ -183,16 +177,63 @@
     color: var(--text-dark);
 }
 
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-end;
+}
+
+/* // style pour le bouton "acheter cet article" */
+.btn-buy-one {
+    border: none;
+    background-color: var(--lego-blue);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    font-family: var(--font-heading);
+    box-shadow: 0 3px 0 #004c82;
+    transition: all 0.1s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn-buy-one:hover {
+    background-color: #007bd1;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 0 #004c82;
+}
+
+.btn-buy-one:active {
+    transform: translateY(2px);
+    box-shadow: none;
+}
+
+/* // style mis a jour pour le bouton poubelle */
 .btn-remove {
     background: transparent;
     border: none;
-    color: #cbd5e1;
+    color: #94a3b8;
     cursor: pointer;
-    transition: color 0.2s;
-    align-self: flex-end;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    border-radius: 50%;
 }
+
 .btn-remove:hover {
     color: var(--lego-red);
+    transform: scale(1.1);
+}
+
+.btn-remove svg {
+    width: 20px;
+    height: 20px;
 }
 
 .cart-summary {
@@ -258,6 +299,7 @@
     font-size: 1.1rem;
     box-shadow: 0 5px 0 #00601f;
     transition: all 0.1s;
+    font-family: var(--font-heading);
 }
 .btn-checkout:hover {
     transform: translateY(-2px);
@@ -314,5 +356,10 @@
         align-items: center;
         height: auto;
         padding: 0;
+    }
+    
+    .action-buttons {
+        flex-direction: row;
+        align-items: center;
     }
 }

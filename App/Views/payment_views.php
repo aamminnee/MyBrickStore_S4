@@ -9,12 +9,12 @@
  * - Total calculation.
  * - Action to trigger payment process (PayPal redirect).
  *
- * @var array $cart         List of items in the cart
+ * @var array $items        List of items to pay
  * @var float $total        Total amount to pay
  * @var array $t            Associative array of translations
  */
 
-$items = isset($cart) ? (array)$cart : [];
+$itemList = isset($items) ? (array)$items : [];
 ?>
 
 <div class="payment-wrapper">
@@ -53,7 +53,7 @@ $items = isset($cart) ? (array)$cart : [];
             <h3><?= $t['payment_summary_title'] ?? 'Récapitulatif' ?></h3>
             
             <div class="summary-items">
-                <?php foreach ($items as $item): 
+                <?php foreach ($itemList as $item): 
                     $item = (array)$item;
                     $imgSrc = "data:" . ($item['image_type'] ?? 'image/png') . ";base64," . $item['image_data'];
                 ?>

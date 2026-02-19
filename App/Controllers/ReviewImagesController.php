@@ -139,4 +139,68 @@ class ReviewImagesController extends Controller {
         }
         header("Location: " . ($_ENV['BASE_URL'] ?? '') . "/images");
     }
+
+    /**
+     * Handles the user choice (Add to Cart OR Buy Now).
+     * Replaces the old save/add logic to handle both flows.
+     *
+     * @return void
+     */
+    public function handleChoice() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header("Location: " . ($_ENV['BASE_URL'] ?? '') . "/images");
+            exit;
+        }
+
+        $action = $_POST['action'] ?? 'cart'; // 'cart' or 'buy_now'
+        $imageId = $_POST['image_id'];
+        $style = $_POST['choice']; 
+        $size = $_SESSION['boardSize'] ?? 64; 
+
+        // // retrieve price and pieces from session cache
+        $sessionKeyPrice = 'mosaic_prices_' . $imageId;
+        $sessionKeyCount = 'mosaic_counts_' . $imageId;
+        
+        $price = $_SESSION[$sessionKeyPrice][$style] ?? 0;
+        $pieces = $_SESSION[$sessionKeyCount][$style] ?? 0;
+
+        $imagesModel = new ImagesModel();
+        $userId = $_SESSION['user_id'] ?? null;
+        $image = $imagesModel->getImageById($imageId, $userId);
+        
+        // // build the standard item structure
+        $newItem = [
+            'id_unique' => uniqid(),
+            'image_id' => $imageId,
+            'style' => $style,
+            'size' => $size,
+            'price' => $price,
+            'pieces_count' => $pieces,
+            'image_data' => $image ? base64_encode($image->file) : '',
+            'image_type' => $image ? $image->file_type : 'image/png'
+        ];
+
+        if ($action === 'buy_now') {
+            // // direct purchase flow: bypass cart storage
+            $_SESSION['purchase_context'] = [
+                'source' => 'direct',
+                'items' => [$newItem]
+            ];
+            header("Location: " . ($_ENV['BASE_URL'] ?? '') . "/payment");
+            exit;
+
+        } else {
+            // // standard cart flow
+            if (!isset($_SESSION['cart'])) {
+                $_SESSION['cart'] = [];
+            }
+            $_SESSION['cart'][] = $newItem;
+            $_SESSION['success_message'] = "La mosaïque a été ajoutée au panier !";
+            
+            // // stay on review page or redirect to cart? usually redirect to cart or stay
+            // // here we redirect to cart to show the add
+            header("Location: " . ($_ENV['BASE_URL'] ?? '') . "/cart");
+            exit;
+        }
+    }
 }
