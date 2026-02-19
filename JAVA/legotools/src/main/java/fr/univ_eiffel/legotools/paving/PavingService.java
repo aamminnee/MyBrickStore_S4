@@ -186,7 +186,7 @@ public class PavingService {
     }
 
     /**
-     * Dessine le rendu final des briques.
+     * Dessine le rendu final des briques avec un effet 3D (tenons).
      * Applique un zoom automatique pour que les pavages de petite taille restent visibles.
      */
     private BufferedImage renderPreview(int width, int height, List<LegoBrick> bricks) {
@@ -199,22 +199,50 @@ public class PavingService {
         BufferedImage preview = new BufferedImage(width * scale, height * scale, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2d = preview.createGraphics();
 
+        g2d.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
+
         g2d.setColor(Color.BLACK);
         g2d.fillRect(0, 0, width * scale, height * scale);
 
         for (LegoBrick brick : bricks) {
+            Color baseColor;
             try {
-                g2d.setColor(Color.decode(brick.getColor()));
+                baseColor = Color.decode(brick.getColor());
             } catch (NumberFormatException e) {
-                g2d.setColor(Color.MAGENTA);
+                baseColor = Color.MAGENTA;
             }
+
+            g2d.setColor(baseColor);
             g2d.fillRect(brick.getX() * scale, brick.getY() * scale, 
                          brick.getWidth() * scale, brick.getHeight() * scale);
             
             if (scale > 2) {
-                g2d.setColor(Color.DARK_GRAY);
+                g2d.setColor(new Color(0, 0, 0, 80)); 
                 g2d.drawRect(brick.getX() * scale, brick.getY() * scale, 
                              brick.getWidth() * scale, brick.getHeight() * scale);
+            }
+
+            if (scale > 4) { 
+                Color lightColor = baseColor.brighter();
+                Color darkColor = baseColor.darker();   
+                
+                int studDiameter = (int) (scale * 0.65); 
+                int offset = (scale - studDiameter) / 2; 
+
+                for (int i = 0; i < brick.getWidth(); i++) {
+                    for (int j = 0; j < brick.getHeight(); j++) {
+                        
+                        int studX = (brick.getX() + i) * scale + offset;
+                        int studY = (brick.getY() + j) * scale + offset;
+                        
+                    
+                        g2d.setColor(darkColor);
+                        g2d.fillOval(studX + 1, studY + 1, studDiameter, studDiameter);
+                     
+                        g2d.setColor(lightColor);
+                        g2d.fillOval(studX, studY, studDiameter, studDiameter);
+                    }
+                }
             }
         }
         g2d.dispose();

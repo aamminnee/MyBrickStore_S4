@@ -131,7 +131,9 @@ class UserController extends Controller {
                 if ($userRole === 'admin') {
                     header("Location: $baseUrl/admin");
                 } else {
-                    if (!empty($_SESSION['cart'])) {
+                    if (isset($_SESSION['purchase_context'])) {
+                        header("Location: $baseUrl/payment");
+                    } elseif (!empty($_SESSION['cart'])) {
                         header("Location: $baseUrl/cart");
                     } else {
                         header("Location: $baseUrl/index.php");
@@ -371,10 +373,12 @@ class UserController extends Controller {
 
                         $this->mergeGuestData($idUser);
                         
-                        if ($role === 'admin') {
-                            header("Location: $baseUrl/user/admin");
+                        if ($userRole === 'admin') {
+                            header("Location: $baseUrl/admin");
                         } else {
-                            if (!empty($_SESSION['cart'])) {
+                            if (isset($_SESSION['purchase_context'])) {
+                                header("Location: $baseUrl/payment");
+                            } elseif (!empty($_SESSION['cart'])) {
                                 header("Location: $baseUrl/cart");
                             } else {
                                 header("Location: $baseUrl/index.php");
@@ -492,10 +496,18 @@ class UserController extends Controller {
      * @param int $userId
      */
     private function mergeGuestData($userId) {
+        $imagesModel = new ImagesModel();
+        
         if (!empty($_SESSION['cart']) && is_array($_SESSION['cart'])) {
-            $imagesModel = new ImagesModel();
-            
             foreach ($_SESSION['cart'] as $item) {
+                if (isset($item['image_id'])) {
+                    $imagesModel->assignImageToUser($item['image_id'], $userId);
+                }
+            }
+        }
+
+        if (!empty($_SESSION['purchase_context']['items']) && is_array($_SESSION['purchase_context']['items'])) {
+            foreach ($_SESSION['purchase_context']['items'] as $item) {
                 if (isset($item['image_id'])) {
                     $imagesModel->assignImageToUser($item['image_id'], $userId);
                 }
