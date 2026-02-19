@@ -274,4 +274,5 @@
     .header-left .subtitle { margin: 0 auto 30px auto; }
     .lego-scatter { justify-content: center; }
     .user-image-preview.post-it-style { margin-right: 0; }
+    .btn-group { flex-direction: column; }
 }

@@ -134,4 +134,59 @@ class CartController extends Controller {
         header("Location: " . ($_ENV['BASE_URL'] ?? '') . "/cart");
         exit;
     }
+
+    /**
+     * Prepares the session for a specific item checkout.
+     *
+     * @return void
+     */
+    public function buySingle() {
+        if (!isset($_POST['cart_id'])) {
+            header("Location: " . ($_ENV['BASE_URL'] ?? '') . "/cart");
+            exit;
+        }
+
+        $idToBuy = $_POST['cart_id'];
+        $selectedItem = null;
+
+        // // find the specific item in the cart
+        foreach ($_SESSION['cart'] as $item) {
+            if ($item['id_unique'] === $idToBuy) {
+                $selectedItem = $item;
+                break;
+            }
+        }
+
+        if ($selectedItem) {
+            $_SESSION['purchase_context'] = [
+                'source' => 'single_cart_item',
+                'items' => [$selectedItem],
+                'origin_id' => $idToBuy // used to remove it from cart later
+            ];
+            header("Location: " . ($_ENV['BASE_URL'] ?? '') . "/payment");
+            exit;
+        } else {
+            header("Location: " . ($_ENV['BASE_URL'] ?? '') . "/cart");
+            exit;
+        }
+    }
+
+    /**
+     * Prepares the session for a full cart checkout.
+     *
+     * @return void
+     */
+    public function checkout() {
+        if (empty($_SESSION['cart'])) {
+            header("Location: " . ($_ENV['BASE_URL'] ?? '') . "/cart");
+            exit;
+        }
+
+        $_SESSION['purchase_context'] = [
+            'source' => 'full_cart',
+            'items' => $_SESSION['cart']
+        ];
+        header("Location: " . ($_ENV['BASE_URL'] ?? '') . "/payment");
+        exit;
+    }
 }
