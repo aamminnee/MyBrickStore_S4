@@ -61,6 +61,27 @@ class UserController extends Controller {
     }
 
     /**
+     * Private method for verifying the hCaptcha
+     */
+    private function verifyHCaptcha() {
+        $hcaptchaSecret   = $_ENV['CAPTCHA_SECRET_KEY'] ?? '';
+        $hcaptchaResponse = $_POST['h-captcha-response'] ?? '';
+
+        if (empty($hcaptchaResponse)) {
+            return false;
+        }
+
+        $verify = file_get_contents(
+            'https://hcaptcha.com/siteverify?secret=' . urlencode($hcaptchaSecret) .
+            '&response=' . urlencode($hcaptchaResponse) .
+            '&remoteip=' . $_SERVER['REMOTE_ADDR']
+        );
+        
+        $captchaSuccess = json_decode($verify, true);
+        return (!empty($captchaSuccess['success']) && $captchaSuccess['success'] === true);
+    }
+
+    /**
      * Handles user login process with captcha and 2fa support
      *
      * @return void
@@ -69,11 +90,9 @@ class UserController extends Controller {
         $baseUrl = $_ENV['BASE_URL'] ?? '';
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['email']) && !empty($_POST['password'])) {
-            $userCaptcha = trim($_POST['captcha'] ?? '');
-            $token = trim($_POST['captcha_token'] ?? '');
-            
-            if (empty($token) || empty($userCaptcha) || strcasecmp($userCaptcha, $token) !== 0) {
-                $message = $this->t('captcha_invalid', "Incorrect captcha. Please try again.");
+
+            if (!$this->verifyHCaptcha()) {
+                $message = $this->t('captcha_invalid', "Veuillez valider le Captcha.");
                 $this->render('login_views', ['message' => $message, 'css' => 'login_views.css']);
                 return;
             }
@@ -154,6 +173,13 @@ class UserController extends Controller {
         $baseUrl = $_ENV['BASE_URL'];
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'], $_POST['password'])) {
+
+            if (!$this->verifyHCaptcha()) {
+                $msg = $this->t('captcha_invalid', "Veuillez valider le Captcha.");
+                $this->render('register_views', ['error' => $msg, 'css' => 'register_views.css']);
+                return;
+            }
+
             $email = trim($_POST['email']);
             $password = $_POST['password'];
             $confirm_password = $_POST['confirm_password'] ?? '';

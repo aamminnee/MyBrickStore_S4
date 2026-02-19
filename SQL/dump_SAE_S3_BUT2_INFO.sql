@@ -12572,7 +12572,9 @@ INSERT INTO `Translations` (`id`, `key_name`, `lang`, `texte`) VALUES
 (679, 'payment_label_firstname', 'en', 'First name'),
 (680, 'payment_label_lastname', 'fr', 'Nom'),
 (681, 'payment_label_lastname', 'en', 'Last name'),
-(682, 'payment_subtitle', 'fr', 'Veuillez renseigner vos coordonnées pour l\'expédition de votre commande.');
+(682, 'payment_subtitle', 'fr', 'Veuillez renseigner vos coordonnées pour l\'expédition de votre commande.'),
+(683, 'captcha_invalid', 'fr', 'Veuillez valider le Captcha pour prouver que vous êtes humain.'),
+(684, 'captcha_invalid', 'en', 'Please complete the Captcha to prove you are human.');
 
 
 -- Réactiver les contraintes de clés étrangères
