@@ -89,9 +89,7 @@
                                 <div class="action-buttons">
                                     <form action="<?= $_ENV['BASE_URL'] ?>/cart/buySingle" method="POST">
                                         <input type="hidden" name="cart_id" value="<?= $i_id ?>">
-                                        <button type="submit" class="btn-buy-one">
-                                            Acheter cet article
-                                        </button>
+                                        <button type="submit" class="btn-buy-one"><?= $t['card_btn_buy_one'] ?? "Acheter cet article" ?></button>
                                     </form>
 
                                     <form action="<?= $_ENV['BASE_URL'] ?>/cart/remove" method="POST">
