@@ -260,6 +260,27 @@
     animation: slideDown 0.5s ease;
 }
 
+.btn-group { flex-direction: column; }
+
+.btn-buy-now-link {
+    background: none; 
+    border: none; 
+    color: #555; 
+    font-size: 0.82rem; 
+    text-decoration: underline; 
+    cursor: pointer; 
+    padding: 4px 8px; 
+    opacity: 0.8; 
+    transition: opacity 0.2s, 
+    color 0.2s; 
+    font-family: inherit;
+}
+
+.btn-buy-now-link:hover {
+    color: var(--lego-red, #D92328) !important;
+    opacity: 1 !important;
+}
+
 @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 @media (max-width: 900px) {
 

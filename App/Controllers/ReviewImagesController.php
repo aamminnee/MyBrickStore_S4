@@ -152,12 +152,11 @@ class ReviewImagesController extends Controller {
             exit;
         }
 
-        $action = $_POST['action'] ?? 'cart'; // 'cart' or 'buy_now'
+        $action = $_POST['action'] ?? 'cart';
         $imageId = $_POST['image_id'];
         $style = $_POST['choice']; 
         $size = $_SESSION['boardSize'] ?? 64; 
 
-        // // retrieve price and pieces from session cache
         $sessionKeyPrice = 'mosaic_prices_' . $imageId;
         $sessionKeyCount = 'mosaic_counts_' . $imageId;
         
@@ -168,7 +167,6 @@ class ReviewImagesController extends Controller {
         $userId = $_SESSION['user_id'] ?? null;
         $image = $imagesModel->getImageById($imageId, $userId);
         
-        // // build the standard item structure
         $newItem = [
             'id_unique' => uniqid(),
             'image_id' => $imageId,
@@ -181,7 +179,7 @@ class ReviewImagesController extends Controller {
         ];
 
         if ($action === 'buy_now') {
-            // // direct purchase flow: bypass cart storage
+            
             $_SESSION['purchase_context'] = [
                 'source' => 'direct',
                 'items' => [$newItem]
@@ -190,16 +188,18 @@ class ReviewImagesController extends Controller {
             exit;
 
         } else {
-            // // standard cart flow
+           
             if (!isset($_SESSION['cart'])) {
                 $_SESSION['cart'] = [];
             }
             $_SESSION['cart'][] = $newItem;
+            
+            // On enregistre le message de succès en session
             $_SESSION['success_message'] = "La mosaïque a été ajoutée au panier !";
             
-            // // stay on review page or redirect to cart? usually redirect to cart or stay
-            // // here we redirect to cart to show the add
-            header("Location: " . ($_ENV['BASE_URL'] ?? '') . "/cart");
+            // REDIRECTION VERS LA PAGE REVIEW AU LIEU DU PANIER
+            // On récupère l'ID de l'image pour revenir sur la bonne prévisualisation
+            header("Location: " . ($_ENV['BASE_URL'] ?? '') . "/reviewImages?img=" . $imageId);
             exit;
         }
     }

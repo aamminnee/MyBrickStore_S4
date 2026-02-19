@@ -24,10 +24,10 @@
 
         <form action="<?= $_ENV['BASE_URL'] ?>/user/login" method="POST">
             <div class="form-group">
-                <label for="username"><?= $t['login_label_username'] ?? "Nom d'utilisateur" ?></label>
-                <input type="text" id="username" name="username" required 
-                       placeholder="<?= $t['login_placeholder_username'] ?? 'Votre pseudo' ?>" 
-                       autocomplete="username">
+                <label for="email"><?= $t['register_label_email'] ?? 'Adresse Email' ?></label>
+                <input type="email" id="email" name="email" required 
+                    placeholder="<?= $t['register_placeholder_email'] ?? 'exemple@email.com' ?>" 
+                    autocomplete="email">
             </div>
             
             <div class="form-group">

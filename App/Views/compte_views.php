@@ -7,10 +7,8 @@
  * @var object|array $user  User data
  * @var array $t            Associative array of translations
  */
-
-$username = is_object($user) ? $user->username : ($user['username'] ?? '');
 $email = is_object($user) ? $user->email : ($user['email'] ?? '');
-$etat = is_object($user) ? $user->etat : ($user['etat'] ?? 'invalide');
+$status = is_object($user) ? $user->status : ($user['status'] ?? 'invalide');
 ?>
 
 <div class="account-wrapper">
@@ -27,18 +25,13 @@ $etat = is_object($user) ? $user->etat : ($user['etat'] ?? 'invalide');
                 <h3><?= $t['account_personal_info'] ?? 'Mon Profil' ?></h3>
                 
                 <div class="info-row">
-                    <span class="info-label"><?= $t['account_label_username'] ?? 'Nom d\'utilisateur' ?></span>
-                    <span class="info-value"><?= htmlspecialchars($username) ?></span>
-                </div>
-
-                <div class="info-row">
                     <span class="info-label"><?= $t['account_label_email'] ?? 'Email' ?></span>
-                    <span class="info-value"><?= htmlspecialchars($email) ?></span>
+                    <span class="info-value"><?= htmlspecialchars($email ?? '') ?></span>
                 </div>
 
                 <div class="info-row">
                     <span class="info-label"><?= $t['account_label_status'] ?? 'Statut du compte' ?></span>
-                    <?php if ($etat === 'valide'): ?>
+                    <?php if ($status === 'valide' || $status === 'valid'): ?>
                         <span class="status-badge enabled"><?= $t['account_status_valid'] ?? 'Vérifié' ?></span>
                     <?php else: ?>
                         <span class="status-badge disabled"><?= $t['account_status_invalid'] ?? 'Non vérifié' ?></span>

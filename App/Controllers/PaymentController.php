@@ -96,8 +96,12 @@ class PaymentController extends Controller {
             }
 
             $_SESSION['billing_temp'] = [
-                'adress' => $_POST['adress'] ?? 'Non fournie',
-                'phone' => $_POST['phone'] ?? ''
+                'first_name'   => $_POST['first_name'] ?? '',
+                'last_name'    => $_POST['last_name'] ?? '',
+                'phone'        => $_POST['phone'] ?? '',
+                'address_line' => $_POST['address_line'] ?? ($_POST['adress'] ?? ''),
+                'zip_code'     => $_POST['zip_code'] ?? '',
+                'city'         => $_POST['city'] ?? ''
             ];
 
             $itemsToPay = $_SESSION['purchase_context']['items'];
@@ -110,7 +114,16 @@ class PaymentController extends Controller {
             $totalAmount = $subTotal + $delivery;
 
             $accessToken = $this->getPayPalAccessToken();
-            if (!$accessToken) die("Erreur connexion PayPal Sandbox");
+            if (!$accessToken) die("Erreur connexion PayPal Sandbox. Vérifie ton PAYPAL_ID et PAYPAL_KEY.");
+
+            $baseUrlEnv = $_ENV['BASE_URL'] ?? '';
+            if (strpos($baseUrlEnv, 'http') === 0) {
+                $absoluteBaseUrl = rtrim($baseUrlEnv, '/');
+            } else {
+                $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+                $domainName = $_SERVER['HTTP_HOST'];
+                $absoluteBaseUrl = $protocol . $domainName . $baseUrlEnv;
+            }
 
             $orderData = [
                 'intent' => 'CAPTURE',
@@ -121,8 +134,8 @@ class PaymentController extends Controller {
                     ]
                 ]],
                 'application_context' => [
-                    'return_url' => ($_ENV['BASE_URL']) . '/payment/success',
-                    'cancel_url' => ($_ENV['BASE_URL']) . '/payment/cancel'
+                    'return_url' => $absoluteBaseUrl . '/payment/success',
+                    'cancel_url' => $absoluteBaseUrl . '/payment/cancel'
                 ]
             ];
 
@@ -136,12 +149,16 @@ class PaymentController extends Controller {
                     }
                 }
             }
-            echo "Erreur création commande PayPal.";
         }
     }
 
     /**
      * Handles the callback from paypal after user approval.
+     *
+     * @return void
+     */
+    /**
+     * Handles the callback from paypal after user approval
      *
      * @return void
      */
@@ -158,8 +175,17 @@ class PaymentController extends Controller {
         if (isset($captureResponse->status) && $captureResponse->status === 'COMPLETED') {
             $this->finalizeOrder($captureResponse);
         } else {
-            // // handle error display
-            echo "Erreur paiement.";
+            echo '<div style="font-family:sans-serif; padding:20px; color:#D92328;">';
+            echo '<h1>Paiement non validé</h1>';
+            echo '<p>Le paiement n\'a pas pu être capturé par PayPal.</p>';
+            
+            echo '<h3>Détails techniques (Debug) :</h3>';
+            echo '<pre style="background:#f4f4f4; padding:10px; border-radius:5px;">';
+            print_r($captureResponse);
+            echo '</pre>';
+            
+            echo '<p><a href="' . ($_ENV['BASE_URL'] ?? '') . '/payment">Retourner à la page de paiement</a></p>';
+            echo '</div>';
         }
     }
 
@@ -174,9 +200,9 @@ class PaymentController extends Controller {
     }
 
     /**
-     * Persists the order to the database and cleans up cart session based on context.
+     * Persists the order to the database, generates final mosaic files, and updates stock
      *
-     * @param object $paypalData response data from paypal api.
+     * @param object $paypalData response data from paypal api
      * @return void
      */
     private function finalizeOrder($paypalData) {
@@ -184,21 +210,22 @@ class PaymentController extends Controller {
         $usersModel = new \App\Models\UsersModel(); 
         $billingTemp = $_SESSION['billing_temp'] ?? [];
         $userInfo = (array) $usersModel->getUserById($userId);
+        $fullAddress = trim(($billingTemp['address_line'] ?? '') . ' - ' . ($billingTemp['zip_code'] ?? '') . ' ' . ($billingTemp['city'] ?? ''));
+        if ($fullAddress === '-') $fullAddress = 'Adresse non fournie';
         
         $billingInfo = [
-            'adress'     => $billingTemp['adress'] ?? 'Non fournie',
-            'phone'      => $billingTemp['phone'] ?? '',
-            'first_name' => $userInfo['username'] ?? 'Client', 
-            'last_name'  => $userInfo['last_name'] ?? 'Inconnu',
-            'email'      => $userInfo['email'] ?? 'email@test.com'
+            'first_name'   => !empty($billingTemp['first_name']) ? $billingTemp['first_name'] : ($userInfo['first_name'] ?? 'Client'),
+            'last_name'    => !empty($billingTemp['last_name']) ? $billingTemp['last_name'] : ($userInfo['last_name'] ?? 'Inconnu'),
+            'phone'        => $billingTemp['phone'] ?? ($userInfo['phone'] ?? ''),
+            'address_line' => $billingTemp['address_line'] ?? '',
+            'zip_code'     => $billingTemp['zip_code'] ?? '',
+            'city'         => $billingTemp['city'] ?? '',
+            'full_address' => $fullAddress,
+            'email'        => $userInfo['email'] ?? 'email@test.com'
         ];
 
-        $itemsToPay = $_SESSION['purchase_context']['items'];
         $subTotal = 0;
-        foreach ($itemsToPay as $item) { 
-            $item = (array)$item; 
-            $subTotal += $item['price']; 
-        }
+        foreach ($_SESSION['cart'] as $item) { $item = (array)$item; $subTotal += $item['price']; }
         $totalAmount = $subTotal + \App\Models\MosaicModel::DELIVERY_FEE;
 
         $cardInfo = [
@@ -212,14 +239,12 @@ class PaymentController extends Controller {
         $imagesModel = new ImagesModel();
         $realMosaicIds = []; 
         
-        // // generate final mosaics in DB
-        foreach ($itemsToPay as $item) {
+        foreach ($_SESSION['cart'] as $item) {
             $item = (array)$item;
             $imgId = $item['image_id'];
             $style = $item['style'];
             $imgDb = $imagesModel->getImageById($imgId, $userId);
 
-            // // handle orphan image check if needed
             if (!$imgDb) {
                 $orphanCheck = $imagesModel->getImageById($imgId, null);
                 if ($orphanCheck && $orphanCheck->id_Customer === null) {
@@ -230,8 +255,7 @@ class PaymentController extends Controller {
             
             if ($imgDb) {
                 $ext = (strpos($imgDb->file_type, 'png') !== false) ? 'png' : 'jpg';
-                // // re-generate to ensure consistency or retrieve from temp logic
-                // // ideally we would trust the temp text but here we regen for safety
+                
                 try {
                     $genResults = $mosaicModel->generateTemporaryMosaics($imgId, $imgDb->file, $ext);
                     $pavageContent = $genResults[$style]['txt'] ?? null;
@@ -239,25 +263,29 @@ class PaymentController extends Controller {
                     if ($pavageContent) {
                         $newMosaicId = $mosaicModel->saveSelectedMosaic($imgId, $pavageContent, $style);
                         if ($newMosaicId) $realMosaicIds[] = $newMosaicId;
+                    } else {
+                        error_log("Erreur Payment: Contenu pavage vide pour img $imgId style $style");
                     }
                 } catch (\Exception $e) {
                     error_log("Exception Payment Java: " . $e->getMessage());
                 }
+            } else {
+                error_log("Erreur Payment: Image $imgId introuvable pour User $userId");
             }
         }
 
         if (empty($realMosaicIds)) { 
-            die("Erreur critique : Impossible de générer les mosaïques finales."); 
+            echo "Erreur critique : Impossible de générer les mosaïques finales."; 
+            exit; 
         }
 
         $financialModel = new FinancialModel();
         $result = $financialModel->processOrder($userId, $realMosaicIds[0], $cardInfo, $totalAmount, $billingInfo);
 
-        if (!is_numeric($result)) { die("Erreur BDD : " . $result); }
+        if (!is_numeric($result)) { echo "Erreur BDD : " . $result; return; }
         
         $orderId = (int)$result;
 
-        // // link mosaics to order and update stock
         foreach ($realMosaicIds as $idMosaic) {
             $mosaicModel->requete("UPDATE Mosaic SET id_Order = ? WHERE id_Mosaic = ?", [$orderId, $idMosaic]);
             if (!$mosaicModel->hasComposition($idMosaic)) $mosaicModel->saveMosaicComposition($idMosaic);
@@ -268,42 +296,18 @@ class PaymentController extends Controller {
         $orderDetails = $commandeModel->getOrderDetails($orderId);
         $orderDetails['total_amount'] = $totalAmount; 
         
-        // // send invoice email
         try {
             $this->sendInvoiceEmail($billingInfo['email'], $orderDetails);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             error_log("Erreur envoi mail facture : " . $e->getMessage());
         }
         
-        // // clean up session based on context
-        $source = $_SESSION['purchase_context']['source'] ?? 'full_cart';
-
-        if ($source === 'full_cart') {
-            unset($_SESSION['cart']);
-        } elseif ($source === 'single_cart_item') {
-            // // remove only the bought item
-            $idToRemove = $_SESSION['purchase_context']['origin_id'] ?? null;
-            if ($idToRemove && !empty($_SESSION['cart'])) {
-                foreach ($_SESSION['cart'] as $k => $cItem) {
-                    if ($cItem['id_unique'] === $idToRemove) {
-                        unset($_SESSION['cart'][$k]);
-                        break;
-                    }
-                }
-                $_SESSION['cart'] = array_values($_SESSION['cart']);
-            }
-        }
-        // // if 'direct', we do nothing to the cart
-
+        unset($_SESSION['cart']);
         unset($_SESSION['billing_temp']);
-        unset($_SESSION['purchase_context']);
 
         header("Location: " . ($_ENV['BASE_URL'] ?? '') . "/payment/confirmation?id=" . $orderId);
         exit;
     }
-
-    // ... (rest of the file remains same: getPayPalAccessToken, callPayPalApi, sendInvoiceEmail, confirmation) ...
-    // ... including these for completeness ...
 
     public function confirmation() {
         if (!isset($_GET['id'])) { header("Location: " . ($_ENV['BASE_URL']) . "/index.php"); exit; }
@@ -318,7 +322,8 @@ class PaymentController extends Controller {
         $itemsTotalTTC = 0;
         $handlingUnit = \App\Models\MosaicModel::HANDLING_FEE; 
         foreach ($items as $item) {
-            $pavage = is_object($item) ? $item->pavage : $item['pavage'];
+            $pavage = is_object($item) ? $item->paving : $item['paving'];
+            
             $price = $mosaicModel->calculatePriceFromContent($pavage);
             $pieces = $mosaicModel->countPiecesFromContent($pavage);
             if (is_object($item)) { $item->price = $price; $item->pieces = $pieces; } 
@@ -358,8 +363,17 @@ class PaymentController extends Controller {
         $handlingUnit = \App\Models\MosaicModel::HANDLING_FEE;
         $rowsHtml = '';
         foreach ($items as $item) {
-            $price = $mosaicModel->calculatePriceFromContent($item->pavage);
-            $rowsHtml .= '<tr><td style="padding: 8px; border-bottom: 1px solid #ddd;">Mosaïque Briques®<br><small style="color:#666; font-size: 11px;">Dont '.$handlingUnit.'€ préparation inclus</small></td><td style="padding: 8px; border-bottom: 1px solid #ddd; text-align: right;">1</td><td style="padding: 8px; border-bottom: 1px solid #ddd; text-align: right;">'.number_format($price, 2).' €</td></tr>';
+            $pavage = is_object($item) ? $item->paving : $item['paving'];
+            $price = $mosaicModel->calculatePriceFromContent($item->paving);
+
+            $rowsHtml .= '<tr>
+                <td style="padding: 8px; border-bottom: 1px solid #ddd;">
+                    Mosaïque Briques®<br>
+                    <small style="color:#666; font-size: 11px;">Dont '.$handlingUnit.'€ préparation inclus</small>
+                </td>
+                <td style="padding: 8px; border-bottom: 1px solid #ddd; text-align: right;">1</td>
+                <td style="padding: 8px; border-bottom: 1px solid #ddd; text-align: right;">'.number_format($price, 2).' €</td>
+            </tr>';
         }
         $delivery = \App\Models\MosaicModel::DELIVERY_FEE;
         $rowsHtml .= '<tr style="background-color: #fdfdfd;"><td colspan="2" style="padding: 8px; border-bottom: 1px solid #ddd; text-align: right; color: #555;">Livraison</td><td style="padding: 8px; border-bottom: 1px solid #ddd; text-align: right;">'.number_format($delivery, 2).' €</td></tr>';
@@ -383,6 +397,11 @@ class PaymentController extends Controller {
         } catch (Exception $e) { error_log("Mailer Error: " . $mail->ErrorInfo); }
     }
 
+    /**
+     * Retrieves a new oauth2 access token from paypal
+     *
+     * @return string|null access token
+     */
     private function getPayPalAccessToken() {
         $clientId = $_ENV['PAYPAL_ID'];
         $secret = $_ENV['PAYPAL_KEY'];

@@ -46,15 +46,13 @@ class CommandeModel extends Model {
                     co.order_date,
                     i.invoice_number, 
                     i.issue_date,
-                    i.adress, 
-                    sc.first_name, 
-                    sc.last_name, 
-                    sc.email,
-                    c.phone
+                    i.billing_full_address as adress, 
+                    i.billing_first_name as first_name, 
+                    i.billing_last_name as last_name, 
+                    i.billing_email as email,
+                    i.billing_phone as phone 
                 FROM CustomerOrder co
                 LEFT JOIN Invoice i ON co.id_Order = i.id_Order
-                LEFT JOIN SaveCustomer sc ON i.id_SaveCustomer = sc.id_SaveCustomer
-                LEFT JOIN Customer c ON co.id_Customer = c.id_Customer
                 WHERE co.id_Order = ?";
         $stmt = $db->prepare($sql);
         $stmt->execute([$orderId]);
@@ -94,7 +92,7 @@ class CommandeModel extends Model {
      */
     public function getCommandeById($id) {
         $db = Db::getInstance();
-        $sql = "SELECT co.*, co.id_Image as id_images, i.adress 
+        $sql = "SELECT co.*, co.id_Image as id_images, i.billing_full_address as adress 
                 FROM CustomerOrder co
                 LEFT JOIN Invoice i ON co.id_Order = i.id_Order
                 WHERE co.id_Order = ?";
