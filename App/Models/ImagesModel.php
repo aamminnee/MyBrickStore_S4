@@ -74,22 +74,21 @@ class ImagesModel extends Model {
         $db = Db::getInstance();
 
         if ($idCustomer === null) {
-            $sql = "UPDATE CustomerImage c
-                INNER JOIN Image i ON c.id_Image = i.id_Image
-                SET c.file = ?
-                WHERE c.id_Image = ? AND i.id_Customer IS NULL";
+            $sql = "UPDATE CustomerImage 
+                    INNER JOIN Image ON CustomerImage.id_Image = Image.id_Image
+                    SET CustomerImage.file = ?
+                    WHERE CustomerImage.id_Image = ? AND Image.id_Customer IS NULL";
         
             $stmt = $db->prepare($sql);
             $stmt->bindValue(1, $newData, PDO::PARAM_STR);
             $stmt->bindValue(2, $idImage, PDO::PARAM_INT);
             return $stmt->execute();
         } else {
-        
-            $sql = "UPDATE CustomerImage c
-                    INNER JOIN Image i ON c.id_Image = i.id_Image
-                    SET c.file = ?
-                    WHERE c.id_Image = ? AND i.id_Customer = ?";
-                    
+            $sql = "UPDATE CustomerImage 
+                    INNER JOIN Image ON CustomerImage.id_Image = Image.id_Image
+                    SET CustomerImage.file = ?
+                    WHERE CustomerImage.id_Image = ? AND Image.id_Customer = ?";
+                        
             $stmt = $db->prepare($sql);
             $stmt->bindValue(1, $newData, PDO::PARAM_STR);
             $stmt->bindValue(2, $idImage, PDO::PARAM_INT);
@@ -107,9 +106,9 @@ class ImagesModel extends Model {
      * @return mixed image object or false
      */
     public function getImageById($id, $userId = null) {
-        $sql = "SELECT i.id_Image, i.filename, i.id_Customer, c.file, c.file_type 
+        $sql = "SELECT i.id_Image, i.filename, i.id_Customer, CustomerImage.file, CustomerImage.file_type 
                 FROM Image i
-                JOIN CustomerImage c ON i.id_Image = c.id_Image
+                JOIN CustomerImage ON i.id_Image = CustomerImage.id_Image
                 WHERE i.id_Image = ?";
         
         $params = [$id];
@@ -129,9 +128,9 @@ class ImagesModel extends Model {
      * @return mixed image object or false
      */
     public function getLastImageByUserId($userId) {
-        $sql = "SELECT i.id_Image, i.filename, i.id_Customer, c.file, c.file_type 
+        $sql = "SELECT i.id_Image, i.filename, i.id_Customer, CustomerImage.file, CustomerImage.file_type 
                 FROM Image i
-                JOIN CustomerImage c ON i.id_Image = c.id_Image
+                JOIN CustomerImage ON i.id_Image = CustomerImage.id_Image
                 WHERE i.id_Customer = ? 
                 ORDER BY i.id_Image DESC 
                 LIMIT 1";

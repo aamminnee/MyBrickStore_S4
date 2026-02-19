@@ -73,9 +73,14 @@ class PaymentController extends Controller {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (empty($_SESSION['cart'])) { header("Location: " . ($_ENV['BASE_URL'] ?? '') . "/cart"); exit; }
 
+            // On stocke les infos saisies en session
             $_SESSION['billing_temp'] = [
-                'adress' => $_POST['adress'] ?? 'Non fournie',
-                'phone' => $_POST['phone'] ?? ''
+                'first_name'   => $_POST['first_name'] ?? '',
+                'last_name'    => $_POST['last_name'] ?? '',
+                'phone'        => $_POST['phone'] ?? '',
+                'address_line' => $_POST['address_line'] ?? ($_POST['adress'] ?? ''),
+                'zip_code'     => $_POST['zip_code'] ?? '',
+                'city'         => $_POST['city'] ?? ''
             ];
 
             $subTotal = 0;
@@ -84,7 +89,19 @@ class PaymentController extends Controller {
             $totalAmount = $subTotal + $delivery;
 
             $accessToken = $this->getPayPalAccessToken();
-            if (!$accessToken) die("Erreur connexion PayPal Sandbox");
+            if (!$accessToken) die("Erreur connexion PayPal Sandbox. Vérifie ton PAYPAL_ID et PAYPAL_KEY.");
+
+            // 🟢 NOUVEAU CODE (Correction URL en double)
+            $baseUrlEnv = $_ENV['BASE_URL'] ?? '';
+            if (strpos($baseUrlEnv, 'http') === 0) {
+                // Si ton .env contient déjà http:// ou https://, on l'utilise tel quel
+                $absoluteBaseUrl = rtrim($baseUrlEnv, '/');
+            } else {
+                // Sinon, on le fabrique
+                $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+                $domainName = $_SERVER['HTTP_HOST'];
+                $absoluteBaseUrl = $protocol . $domainName . $baseUrlEnv;
+            }
 
             $orderData = [
                 'intent' => 'CAPTURE',
@@ -95,8 +112,9 @@ class PaymentController extends Controller {
                     ]
                 ]],
                 'application_context' => [
-                    'return_url' => ($_ENV['BASE_URL']) . '/payment/success',
-                    'cancel_url' => ($_ENV['BASE_URL']) . '/payment/cancel'
+                    // PayPal reçoit maintenant http://localhost/tonprojet/payment/success
+                    'return_url' => $absoluteBaseUrl . '/payment/success',
+                    'cancel_url' => $absoluteBaseUrl . '/payment/cancel'
                 ]
             ];
 
@@ -110,7 +128,15 @@ class PaymentController extends Controller {
                     }
                 }
             }
-            echo "Erreur création commande PayPal.";
+            
+            // 🔴 MODE DEBUG : Si PayPal refuse, on affiche sa réponse exacte !
+            echo "<div style='padding: 20px; font-family: sans-serif;'>";
+            echo "<h2 style='color: #D92328;'>Erreur création commande PayPal</h2>";
+            echo "<p>L'API PayPal a refusé la requête. Voici pourquoi :</p>";
+            echo "<pre style='background: #f4f4f4; padding: 15px; border-left: 4px solid #D92328;'>";
+            print_r($response);
+            echo "</pre>";
+            echo "</div>";
         }
     }
 
@@ -137,7 +163,7 @@ class PaymentController extends Controller {
         $handlingUnit = \App\Models\MosaicModel::HANDLING_FEE; 
 
         foreach ($items as $item) {
-            $pavage = is_object($item) ? $item->pavage : $item['pavage'];
+            $pavage = is_object($item) ? $item->paving : $item['paving'];
             
             $price = $mosaicModel->calculatePriceFromContent($pavage);
             $pieces = $mosaicModel->countPiecesFromContent($pavage);
@@ -195,12 +221,13 @@ class PaymentController extends Controller {
         $mosaicModel = new MosaicModel();
         
         $items = $mosaicModel->getMosaicsByOrderId($order['id_Order']);
-        $pieces = $mosaicModel->countPiecesFromContent($item->pavage); // AJOUT
         $handlingUnit = \App\Models\MosaicModel::HANDLING_FEE;
 
         $rowsHtml = '';
         foreach ($items as $item) {
-            $price = $mosaicModel->calculatePriceFromContent($item->pavage);
+            $pavage = is_object($item) ? $item->paving : $item['paving'];
+            $price = $mosaicModel->calculatePriceFromContent($item->paving);
+
             $rowsHtml .= '<tr>
                 <td style="padding: 8px; border-bottom: 1px solid #ddd;">
                     Mosaïque Briques®<br>
@@ -318,13 +345,18 @@ class PaymentController extends Controller {
         $usersModel = new \App\Models\UsersModel(); 
         $billingTemp = $_SESSION['billing_temp'] ?? [];
         $userInfo = (array) $usersModel->getUserById($userId);
+        $fullAddress = trim(($billingTemp['address_line'] ?? '') . ' - ' . ($billingTemp['zip_code'] ?? '') . ' ' . ($billingTemp['city'] ?? ''));
+        if ($fullAddress === '-') $fullAddress = 'Adresse non fournie';
         
         $billingInfo = [
-            'adress'     => $billingTemp['adress'] ?? 'Non fournie',
-            'phone'      => $billingTemp['phone'] ?? '',
-            'first_name' => $userInfo['username'] ?? 'Client', 
-            'last_name'  => $userInfo['last_name'] ?? 'Inconnu',
-            'email'      => $userInfo['email'] ?? 'email@test.com'
+            'first_name'   => !empty($billingTemp['first_name']) ? $billingTemp['first_name'] : ($userInfo['first_name'] ?? 'Client'),
+            'last_name'    => !empty($billingTemp['last_name']) ? $billingTemp['last_name'] : ($userInfo['last_name'] ?? 'Inconnu'),
+            'phone'        => $billingTemp['phone'] ?? ($userInfo['phone'] ?? ''),
+            'address_line' => $billingTemp['address_line'] ?? '',
+            'zip_code'     => $billingTemp['zip_code'] ?? '',
+            'city'         => $billingTemp['city'] ?? '',
+            'full_address' => $fullAddress,
+            'email'        => $userInfo['email'] ?? 'email@test.com'
         ];
 
         $subTotal = 0;
@@ -401,7 +433,7 @@ class PaymentController extends Controller {
         
         try {
             $this->sendInvoiceEmail($billingInfo['email'], $orderDetails);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             error_log("Erreur envoi mail facture : " . $e->getMessage());
         }
         

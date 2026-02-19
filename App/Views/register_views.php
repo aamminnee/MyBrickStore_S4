@@ -30,18 +30,6 @@
         <form action="<?= $_ENV['BASE_URL'] ?>/user/register" method="POST">
             
             <div class="form-group">
-                <label for="username"><?= $t['register_label_username'] ?? "Nom d'utilisateur" ?></label>
-                <input type="text" id="username" name="username" required 
-                       placeholder="<?= $t['register_placeholder_username'] ?? 'Choisis ton pseudo' ?>">
-            </div>
-
-            <div class="form-group">
-                <label for="lastname"><?= $t['register_label_lastname'] ?? 'Nom de famille' ?></label>
-                <input type="text" name="lastname" id="lastname" required 
-                       placeholder="<?= $t['register_placeholder_lastname'] ?? 'Ton nom de famille' ?>">
-            </div>
-
-            <div class="form-group">
                 <label for="email"><?= $t['register_label_email'] ?? 'Adresse Email' ?></label>
                 <input type="email" id="email" name="email" required 
                        placeholder="<?= $t['register_placeholder_email'] ?? 'exemple@email.com' ?>">

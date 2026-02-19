@@ -35,16 +35,25 @@ class FinancialModel extends Model {
             $firstName = $billingInfo['first_name'];
             $lastName = $billingInfo['last_name'];
             $email = $billingInfo['email'];
-            
-            $sqlSave = "INSERT INTO SaveCustomer (first_name, last_name, email) VALUES (?, ?, ?)";
-            $stmtSave = $db->prepare($sqlSave);
-            $stmtSave->execute([$firstName, $lastName, $email]);
-            $idSaveCustomer = $db->lastInsertId();
+            $phone = $billingInfo['phone'];
+            $addressLine = $billingInfo['address_line'];
+            $zipCode = $billingInfo['zip_code'];
+            $city = $billingInfo['city'];
+            $fullAddress = $billingInfo['full_address'];
 
-            if (!empty($billingInfo['phone'])) {
-                $cleanPhone = substr(preg_replace('/[^0-9]/', '', $billingInfo['phone']), 0, 15);
-                $stmtPhone = $db->prepare("UPDATE Customer SET phone = ? WHERE id_Customer = ?");
-                $stmtPhone->execute([$cleanPhone, $userId]);
+            $stmtCheck = $db->prepare("SELECT id_SaveCustomer FROM SaveCustomer WHERE id_Customer = ?");
+            $stmtCheck->execute([$userId]);
+            $idSaveCustomer = $stmtCheck->fetchColumn();
+
+            if ($idSaveCustomer) {
+                $sqlUpdate = "UPDATE SaveCustomer SET first_name = ?, last_name = ?, phone = ?, address_line = ?, zip_code = ?, city = ? WHERE id_Customer = ?";
+                $stmtUpdate = $db->prepare($sqlUpdate);
+                $stmtUpdate->execute([$firstName, $lastName, $phone, $addressLine, $zipCode, $city, $userId]);
+            } else {
+                $sqlInsert = "INSERT INTO SaveCustomer (id_Customer, first_name, last_name, phone, address_line, zip_code, city) VALUES (?, ?, ?, ?, ?, ?, ?)";
+                $stmtInsert = $db->prepare($sqlInsert);
+                $stmtInsert->execute([$userId, $firstName, $lastName, $phone, $addressLine, $zipCode, $city]);
+                $idSaveCustomer = $db->lastInsertId();
             }
 
             $paymentRef = $cardInfo['number']; 
@@ -56,22 +65,31 @@ class FinancialModel extends Model {
             $stmtBank = $db->prepare($sqlBank);
             $stmtBank->execute([$userId, 'PayPal Sandbox', $lastFour, date('Y-m-d'), $paymentRef, $brand]);
             $idBankDetails = $db->lastInsertId();
+            
             $stmtImg = $db->prepare("SELECT id_Image FROM Mosaic WHERE id_Mosaic = ?");
             $stmtImg->execute([$refMosaicId]);
             $idImage = $stmtImg->fetchColumn();
-            $sqlOrder = "INSERT INTO CustomerOrder (order_date, status, total_amount, id_Customer, id_Image) 
-                        VALUES (NOW(), 'Payée', ?, ?, ?)";
+            
+
+            if (!$idImage) {
+                $idImage = null;
+            }
+
+            $sqlOrder = "INSERT INTO CustomerOrder (order_date, status, total_amount, id_Customer, id_Image, shipping_last_name, shipping_first_name, shipping_full_address) 
+                        VALUES (NOW(), 'Payée', ?, ?, ?, ?, ?, ?)";
             $stmtOrder = $db->prepare($sqlOrder);
-            $stmtOrder->execute([$amount, $userId, $idImage]);
+            $stmtOrder->execute([$amount, $userId, $idImage, $lastName, $firstName, $fullAddress]);
             $orderId = $db->lastInsertId();
-
+            
             $invoiceNumber = 'FAC-' . date('Ymd') . '-' . $orderId;
-            $adress = $billingInfo['adress'] ?? ''; 
 
-            $sqlInvoice = "INSERT INTO Invoice (invoice_number, issue_date, total_amount, id_Order, order_date, order_status, id_Bank_Details, id_SaveCustomer, adress) 
-                        VALUES (?, NOW(), ?, ?, NOW(), 'Payée', ?, ?, ?)";
+            $sqlInvoice = "INSERT INTO Invoice (invoice_number, issue_date, payment_date, total_amount, id_Order, order_date, order_status, id_Bank_Details, billing_last_name, billing_first_name, billing_email, billing_phone, billing_full_address) 
+                        VALUES (?, NOW(), NOW(), ?, ?, NOW(), 'Payée', ?, ?, ?, ?, ?, ?)";
             $stmtInvoice = $db->prepare($sqlInvoice);
-            $stmtInvoice->execute([$invoiceNumber, $amount, $orderId, $idBankDetails, $idSaveCustomer, $adress]);
+            $stmtInvoice->execute([
+                $invoiceNumber, $amount, $orderId, $idBankDetails, 
+                $lastName, $firstName, $email, $phone, $fullAddress
+            ]);
 
             $db->commit();
             return $orderId;
@@ -112,15 +130,13 @@ class FinancialModel extends Model {
      */
     public function getLastOrders($limit = 5) {
         $sql = "SELECT 
-                    o.id_Order as id, 
-                    o.order_date as date, 
-                    o.total_amount as amount, 
-                    o.status,
-                    CONCAT(c.first_name, ' ', c.last_name) as user
-                FROM CustomerOrder o
-                JOIN Customer cust ON o.id_Customer = cust.id_Customer
-                JOIN SaveCustomer c ON cust.id_Customer = c.id_SaveCustomer 
-                ORDER BY o.order_date DESC 
+                    id_Order as id, 
+                    order_date as date, 
+                    total_amount as amount, 
+                    status,
+                    CONCAT(shipping_first_name, ' ', shipping_last_name) as user
+                FROM CustomerOrder
+                ORDER BY order_date DESC 
                 LIMIT $limit";
         
         return \App\Core\Db::getInstance()->query($sql)->fetchAll(\PDO::FETCH_ASSOC);

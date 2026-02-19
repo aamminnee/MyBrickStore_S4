@@ -68,23 +68,20 @@ class UserController extends Controller {
     public function login() {
         $baseUrl = $_ENV['BASE_URL'] ?? '';
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['username']) && !empty($_POST['password'])) {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['email']) && !empty($_POST['password'])) {
             $userCaptcha = trim($_POST['captcha'] ?? '');
             $token = trim($_POST['captcha_token'] ?? '');
             
             if (empty($token) || empty($userCaptcha) || strcasecmp($userCaptcha, $token) !== 0) {
                 $message = $this->t('captcha_invalid', "Incorrect captcha. Please try again.");
-                $this->render('login_views', [
-                    'message' => $message,
-                    'css' => 'login_views.css'
-                ]);
+                $this->render('login_views', ['message' => $message, 'css' => 'login_views.css']);
                 return;
             }
 
-            $username = trim($_POST['username']);
+            $email = trim($_POST['email']);
             $password = $_POST['password'];
             
-            $user = $this->user_model->getUserByUsername($username);
+            $user = $this->user_model->getUserByEmail($email);
 
             $userMdp = is_object($user) ? $user->mdp : ($user['mdp'] ?? null);
             $userId = is_object($user) ? $user->id_user : ($user['id_user'] ?? null);
@@ -95,7 +92,7 @@ class UserController extends Controller {
 
             if ($user && password_verify($password, $userMdp)) {
                 
-                if ($userMode === '2FA') {
+                if ($userMode === '2FA' || $userMode === 'EMAIL') {
                     $_SESSION['temp_2fa_user_id'] = $userId;
                     $_SESSION['temp_2fa_email']   = $userEmail;
                     
@@ -106,7 +103,6 @@ class UserController extends Controller {
                     exit;
                 }
 
-                $_SESSION['username'] = $username;
                 $_SESSION['user_id']  = $userId;
                 $_SESSION['email']    = $userEmail;
                 $_SESSION['status']   = $userEtat;
@@ -114,7 +110,7 @@ class UserController extends Controller {
                 $_SESSION['role']     = $userRole;
                 
                 if ($userRole === 'admin') {
-                    header("Location: $baseUrl/user/admin");
+                    header("Location: $baseUrl/admin");
                 } else {
                     if (!empty($_SESSION['cart'])) {
                         header("Location: $baseUrl/cart");
@@ -124,16 +120,11 @@ class UserController extends Controller {
                 }
                 exit;
             } else {
-                $message = $this->t('login_error', "Incorrect username or password.");
-                $this->render('login_views', [
-                    'message' => $message,
-                    'css' => 'login_views.css'
-                ]);
+                $message = $this->t('login_error', "Email ou mot de passe incorrect.");
+                $this->render('login_views', ['message' => $message, 'css' => 'login_views.css']);
             }
         } else {
-            $this->render('login_views', [
-            'css' => 'login_views.css'
-        ]);
+            $this->render('login_views', ['css' => 'login_views.css']);
         }
     }
 
@@ -162,37 +153,27 @@ class UserController extends Controller {
     public function register() {
         $baseUrl = $_ENV['BASE_URL'];
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'], $_POST['username'], $_POST['password'])) {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'], $_POST['password'])) {
             $email = trim($_POST['email']);
-            $username = trim($_POST['username']);
             $password = $_POST['password'];
             $confirm_password = $_POST['confirm_password'] ?? '';
-            $lastname = $_POST['lastname'] ?? '';
             
             if ($password !== $confirm_password) {
-                $this->render('register_views', [
-                    'error' => "Les mots de passe ne correspondent pas.",
-                    'css' => 'register_views.css'
-                ]);
+                $this->render('register_views', ['error' => "Les mots de passe ne correspondent pas.", 'css' => 'register_views.css']);
                 return;
             }
 
             $passwordPattern = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/';
             if (!preg_match($passwordPattern, $password)) {
-                $msg = $this->t('password_invalid', 
-                    "Le mot de passe doit contenir 8 caractères min, avec majuscule, minuscule, chiffre et spécial."
-                );
-                $this->render('register_views', [
-                    'error' => $msg,
-                    'css' => 'register_views.css'
-                ]);
+                $msg = $this->t('password_invalid', "Le mot de passe doit contenir 8 caractères min, avec majuscule, minuscule, chiffre et spécial.");
+                $this->render('register_views', ['error' => $msg, 'css' => 'register_views.css']);
                 return;
             }
 
-            $result = $this->user_model->addUser($email, $username, $password, $lastname);
+            $result = $this->user_model->addUser($email, $password);
             
             if ($result === true) {
-                $user = $this->user_model->getUserByUsername($username);
+                $user = $this->user_model->getUserByEmail($email);
                 $userId = is_object($user) ? $user->id_user : ($user['id_user'] ?? null);
                 
                 if ($userId) {
@@ -202,28 +183,19 @@ class UserController extends Controller {
                     exit;
                 }
             } elseif ($result === "duplicate") {
-                $msg = $this->t('username_exists', "Ce nom d'utilisateur ou cet email est déjà pris.");
-                $this->render('register_views', [
-                    'error' => $msg,
-                    'css' => 'register_views.css'
-                ]);
+                $msg = $this->t('username_exists', "Cet email est déjà utilisé.");
+                $this->render('register_views', ['error' => $msg, 'css' => 'register_views.css']);
                 exit;
             } else {
                  $msg = $this->t('register_error', "L'inscription a échoué, veuillez réessayer.");
-                 $this->render('register_views', [
-                    'error' => $msg,
-                    'css' => 'register_views.css'
-                ]);
+                 $this->render('register_views', ['error' => $msg, 'css' => 'register_views.css']);
                 exit;
             }
         } else {
             $error = $_SESSION['register_message'] ?? null;
             unset($_SESSION['register_message']);
 
-            $this->render('register_views', [
-                'error' => $error,
-                'css' => 'register_views.css'
-            ]);
+            $this->render('register_views', ['error' => $error, 'css' => 'register_views.css']);
         }
     }
 

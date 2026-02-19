@@ -9,14 +9,14 @@ use PDOException;
  * Class UsersModel
  * 
  ** Manages user accounts data layer
- ** Handles operations across 'customer' (credentials) and 'savecustomer' (profile) tables
+ ** Handles operations across 'user' (credentials) and 'savecustomer' (profile) tables
  * 
  * @package App\Models
  */
 class UsersModel extends Model {
 
     /** @var string The database table associated with the model. */
-    protected $table = 'Customer';
+    protected $table = 'User';
 
     /**
      * Retrieves full user profile by internal id
@@ -26,41 +26,43 @@ class UsersModel extends Model {
      */
     public function getUserById($id_user) {
         $sql = "SELECT 
-                    c.id_Customer as id_user, 
-                    c.password as mdp, 
-                    c.etat, 
-                    c.mode,
-                    c.role,
-                    s.first_name as username, 
-                    s.last_name, 
-                    s.email 
-                FROM Customer c 
-                JOIN SaveCustomer s ON c.id_SaveCustomer = s.id_SaveCustomer 
-                WHERE c.id_Customer = ?";
+                    u.id_Customer as id_user, 
+                    u.password as mdp, 
+                    u.status as status, 
+                    u.two_factor_method as mode,
+                    u.role,
+                    u.email,
+                    s.first_name, 
+                    s.last_name,
+                    s.phone,
+                    s.address_line,
+                    s.zip_code,
+                    s.city
+                FROM User u 
+                LEFT JOIN SaveCustomer s ON u.id_Customer = s.id_Customer 
+                WHERE u.id_Customer = ?";
         
         return $this->requete($sql, [$id_user])->fetch();
     }
 
     /**
-     * Retrieves user data by username for authentication
+     * Retrieves user data by email for authentication
      *
-     * @param string $username the login username
+     * @param string $email the login email
      * @return object|false user data
      */
-    public function getUserByUsername($username){
+    public function getUserByEmail($email){
         $sql = "SELECT 
-                    c.id_Customer as id_user, 
-                    c.password as mdp, 
-                    c.etat,
-                    c.mode, 
-                    c.role,
-                    s.first_name as username, 
-                    s.email 
-                FROM Customer c 
-                JOIN SaveCustomer s ON c.id_SaveCustomer = s.id_SaveCustomer 
-                WHERE s.first_name = ?";
+                    id_Customer as id_user, 
+                    password as mdp, 
+                    status as etat,
+                    two_factor_method as mode, 
+                    role,
+                    email 
+                FROM User 
+                WHERE email = ?";
         
-        return $this->requete($sql, [$username])->fetch();
+        return $this->requete($sql, [$email])->fetch();
     }
 
     /**
@@ -70,11 +72,7 @@ class UsersModel extends Model {
      * @return object|false
      */
     public function getEmailById($id_user) {
-        $sql = "SELECT s.email 
-                FROM Customer c 
-                JOIN SaveCustomer s ON c.id_SaveCustomer = s.id_SaveCustomer 
-                WHERE c.id_Customer = ?";
-        
+        $sql = "SELECT email FROM User WHERE id_Customer = ?";
         return $this->requete($sql, [$id_user])->fetch();
     }
 
@@ -85,7 +83,7 @@ class UsersModel extends Model {
      * @return object|false
      */
     public function getStatusById($id_user) {
-        return $this->requete("SELECT etat FROM Customer WHERE id_Customer = ?", [$id_user])->fetch();
+        return $this->requete("SELECT status as etat FROM User WHERE id_Customer = ?", [$id_user])->fetch();
     }
     
     /**
@@ -95,7 +93,7 @@ class UsersModel extends Model {
      * @return string|null '2FA' or null
      */
     public function getModeById($id_user) {
-        $result = $this->requete("SELECT mode FROM Customer WHERE id_Customer = ?", [$id_user])->fetch();
+        $result = $this->requete("SELECT two_factor_method as mode FROM User WHERE id_Customer = ?", [$id_user])->fetch();
         return is_object($result) ? $result->mode : ($result['mode'] ?? null);
     }
 
@@ -107,7 +105,7 @@ class UsersModel extends Model {
      * @return mixed
      */
     public function setModeById($id_user, $mode) {
-        return $this->requete("UPDATE Customer SET mode = ? WHERE id_Customer = ?", [$mode, $id_user]);
+        return $this->requete("UPDATE User SET two_factor_method = ? WHERE id_Customer = ?", [$mode, $id_user]);
     }
 
     /**
@@ -119,31 +117,22 @@ class UsersModel extends Model {
      * @param string $lastname
      * @return bool|string true on success, "duplicate" if email exists, false on error
      */
-    public function addUser($email, $username, $password, $lastname) {
+    public function addUser($email, $password) {
         $hashed = password_hash($password, PASSWORD_DEFAULT);
         $db = Db::getInstance();
         
         try {
-            $db->beginTransaction();
+            $sql = "INSERT INTO User (email, password, status, two_factor_method, role) VALUES (?, ?, 'invalide', NULL, 'user')";
+            $stmt = $db->prepare($sql);
+            $stmt->execute([$email, $hashed]);
             
-            $sql1 = "INSERT INTO SaveCustomer (first_name, last_name, email) 
-                     VALUES (?, ?, ?)";
-            $stmt1 = $db->prepare($sql1);
-            $stmt1->execute([$username, $lastname, $email]);
-            
-            $id_save = $db->lastInsertId();
-            
-            $sql2 = "INSERT INTO Customer (password, id_SaveCustomer, etat, mode, role) VALUES (?, ?, 'invalide', NULL, 'user')";
-            $stmt2 = $db->prepare($sql2);
-            $stmt2->execute([$hashed, $id_save]);
-            
-            $db->commit();
             return true;
+
         } catch (PDOException $e) {
-            $db->rollBack();
-            if ($e->getCode() == '23000') {
+            if ($e->getCode() == '23000') { 
                 return "duplicate";
             }
+            error_log("Erreur SQL lors de l'inscription : " . $e->getMessage());
             return false;
         }
     }
@@ -155,7 +144,7 @@ class UsersModel extends Model {
      * @return mixed
      */
     public function activateUser($id_user) {
-        return $this->requete("UPDATE Customer SET etat = 'valide' WHERE id_Customer = ?", [$id_user]);
+        return $this->requete("UPDATE User SET status = 'valide' WHERE id_Customer = ?", [$id_user]);
     }
 
     /**
@@ -170,14 +159,13 @@ class UsersModel extends Model {
             return "Le mot de passe doit contenir 12 caractères min, majuscule, minuscule, chiffre, caractère spécial.";
         }
 
-        $sql = "SELECT password FROM Customer WHERE id_Customer = ?";
+        $sql = "SELECT password FROM User WHERE id_Customer = ?";
         $stmt = $this->requete($sql, [$userId]);
         $currentHash = $stmt->fetchColumn();
 
         if ($currentHash && password_verify($plainPassword, $currentHash)) {
             return "Le nouveau mot de passe doit être différent de l'ancien.";
         }
-
         return true;
     }
 
@@ -190,23 +178,8 @@ class UsersModel extends Model {
      */
     public function updatePassword($userId, $plainPassword) {
         $newHash = password_hash($plainPassword, PASSWORD_DEFAULT);
-        $sql = "UPDATE Customer SET password = ? WHERE id_Customer = ?";
+        $sql = "UPDATE User SET password = ? WHERE id_Customer = ?";
         $this->requete($sql, [$newHash, $userId]);
-    }
-
-    /**
-     * Finds a user by email, used primarily for password reset requests
-     *
-     * @param string $email
-     * @return object|false
-     */
-    public function getUserByEmail($email) {
-        $sql = "SELECT c.id_Customer as id_user, s.email 
-                FROM Customer c 
-                JOIN SaveCustomer s ON c.id_SaveCustomer = s.id_SaveCustomer 
-                WHERE s.email = ?";
-        
-        return $this->requete($sql, [$email])->fetch();
     }
 
     /**
@@ -215,9 +188,8 @@ class UsersModel extends Model {
      * @return int
      */
     public function countUsers() {
-        $sql = "SELECT COUNT(*) as total FROM Customer WHERE role = 'user'";
-        
-        $res = \App\Core\Db::getInstance()->query($sql)->fetch();
+        $sql = "SELECT COUNT(*) as total FROM User WHERE role = 'user'";
+        $res = Db::getInstance()->query($sql)->fetch();
         return $res->total ?? 0;
     }
 }

@@ -142,7 +142,7 @@ class MosaicModel extends Model {
      */
     public function saveSelectedMosaic($idImage, $content, $type) {
         $db = Db::getInstance();
-        $sql = "INSERT INTO Mosaic (pavage, id_Image, generation_date) VALUES (?, ?, NOW())";
+        $sql = "INSERT INTO Mosaic (paving, id_Image, generation_date) VALUES (?, ?, NOW())";
         $stmt = $db->prepare($sql);
         $stmt->bindParam(1, $content, PDO::PARAM_LOB);
         $stmt->bindParam(2, $idImage, PDO::PARAM_INT);
@@ -161,15 +161,15 @@ class MosaicModel extends Model {
      */
     public function getMosaicVisual($idMosaic) {
         $db = Db::getInstance();
-        $stmt = $db->prepare("SELECT pavage FROM Mosaic WHERE id_Mosaic = ?");
+        $stmt = $db->prepare("SELECT paving FROM Mosaic WHERE id_Mosaic = ?");
         $stmt->execute([$idMosaic]);
         $res = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if (!$res || empty($res['pavage'])) {
+        if (!$res || empty($res['paving'])) {
             return null;
         }
 
-        $pavageContent = $res['pavage'];
+        $pavageContent = $res['paving'];
         $projectRoot = dirname(__DIR__, 2);
         $workDir = $projectRoot . '/JAVA/legotools';
         $inputDir = $workDir . '/C/input';
@@ -226,15 +226,15 @@ class MosaicModel extends Model {
      */
     public function getBricksList($idMosaic) {
         $db = Db::getInstance();
-        $stmt = $db->prepare("SELECT pavage FROM Mosaic WHERE id_Mosaic = ?");
+        $stmt = $db->prepare("SELECT paving FROM Mosaic WHERE id_Mosaic = ?");
         $stmt->execute([$idMosaic]);
         $res = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if (!$res || empty($res['pavage'])) {
+        if (!$res || empty($res['paving'])) {
             return [];
         }
 
-        $lines = explode("\n", $res['pavage']);
+        $lines = explode("\n", $res['paving']);
         $inventory = [];
 
         foreach ($lines as $line) {
@@ -348,15 +348,15 @@ class MosaicModel extends Model {
      */
     public function getMosaicPrice($idMosaic) {
         $db = Db::getInstance();
-        $stmt = $db->prepare("SELECT pavage FROM Mosaic WHERE id_Mosaic = ?");
+        $stmt = $db->prepare("SELECT paving FROM Mosaic WHERE id_Mosaic = ?");
         $stmt->execute([$idMosaic]);
         $res = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if (!$res || empty($res['pavage'])) {
+        if (!$res || empty($res['paving'])) {
             return 0.00;
         }
 
-        $lines = explode("\n", $res['pavage']);
+        $lines = explode("\n", $res['paving']);
         $firstLine = trim($lines[0]);
         $parts = preg_split('/\s+/', $firstLine);
 
@@ -427,7 +427,7 @@ class MosaicModel extends Model {
      * @return array
      */
     public function getMosaicsByOrderId($orderId) {
-        $sql = "SELECT m.id_Mosaic, m.pavage, i.file, i.file_type 
+        $sql = "SELECT m.id_Mosaic, m.paving, i.file, i.file_type 
                 FROM Mosaic m
                 LEFT JOIN CustomerImage i ON m.id_Image = i.id_Image
                 WHERE m.id_Order = ?";
@@ -455,13 +455,13 @@ class MosaicModel extends Model {
      */
     public function getMosaicGridHtml($idMosaic) {
         $db = \App\Core\Db::getInstance();
-        $stmt = $db->prepare("SELECT pavage FROM Mosaic WHERE id_Mosaic = ?");
+        $stmt = $db->prepare("SELECT paving FROM Mosaic WHERE id_Mosaic = ?");
         $stmt->execute([$idMosaic]);
         $res = $stmt->fetch(\PDO::FETCH_ASSOC);
 
-        if (!$res || empty($res['pavage'])) return "Contenu introuvable";
+        if (!$res || empty($res['paving'])) return "Contenu introuvable";
 
-        $lines = explode("\n", trim($res['pavage']));
+        $lines = explode("\n", trim($res['paving']));
         $bricksData = [];
         $maxX = 0; $maxY = 0;
         $colorToSymbol = [];
@@ -535,13 +535,13 @@ class MosaicModel extends Model {
      */
     public function getMosaicPlanData($idMosaic) {
         $db = Db::getInstance();
-        $stmt = $db->prepare("SELECT pavage FROM Mosaic WHERE id_Mosaic = ?");
+        $stmt = $db->prepare("SELECT paving FROM Mosaic WHERE id_Mosaic = ?");
         $stmt->execute([$idMosaic]);
         $res = $stmt->fetch(\PDO::FETCH_ASSOC);
 
-        if (!$res || empty($res['pavage'])) return null;
+        if (!$res || empty($res['paving'])) return null;
 
-        $lines = explode("\n", trim($res['pavage']));
+        $lines = explode("\n", trim($res['paving']));
         
         $bricks = [];
         $maxX = 0; 
