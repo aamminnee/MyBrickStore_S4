@@ -14,6 +14,8 @@
  */
 ?>
 
+<script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+
 <div class="main-content">
     <div class="login-container">
         <h2><?= $t['login_title'] ?? 'Connexion' ?></h2>
@@ -40,15 +42,8 @@
                 </div>
             </div>
 
-            <div class="captcha-group">
-                <div class="captcha-visual">
-                    <canvas id="captcha-canvas" width="200" height="50"></canvas>
-                    <button id="captcha-refresh" type="button" title="<?= $t['login_tooltip_refresh'] ?? 'Changer le code' ?>">↻</button>
-                </div>
-                <input type="hidden" id="captcha_token" name="captcha_token" value="">
-                <input type="text" name="captcha" class="captcha-input" 
-                       placeholder="<?= $t['login_placeholder_captcha'] ?? 'Recopier le code' ?>" 
-                       required autocomplete="off">
+            <div class="form-group" style="display: flex; justify-content: center; margin: 15px 0;">
+                <div class="h-captcha" data-sitekey="<?= htmlspecialchars($_ENV['CAPTCHA_SITE_KEY'] ?? '') ?>"></div>
             </div>
             
             <button type="submit" class="btn-submit"><?= $t['login_btn_submit'] ?? 'Se connecter' ?></button>
