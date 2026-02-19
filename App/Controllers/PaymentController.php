@@ -224,8 +224,10 @@ class PaymentController extends Controller {
             'email'        => $userInfo['email'] ?? 'email@test.com'
         ];
 
+        $itemsToProcess = $_SESSION['purchase_context']['items'] ?? [];
+
         $subTotal = 0;
-        foreach ($_SESSION['cart'] as $item) { $item = (array)$item; $subTotal += $item['price']; }
+        foreach ($itemsToProcess as $item) { $item = (array)$item; $subTotal += $item['price']; }
         $totalAmount = $subTotal + \App\Models\MosaicModel::DELIVERY_FEE;
 
         $cardInfo = [
@@ -239,7 +241,7 @@ class PaymentController extends Controller {
         $imagesModel = new ImagesModel();
         $realMosaicIds = []; 
         
-        foreach ($_SESSION['cart'] as $item) {
+        foreach ($itemsToProcess as $item) {
             $item = (array)$item;
             $imgId = $item['image_id'];
             $style = $item['style'];
@@ -302,7 +304,24 @@ class PaymentController extends Controller {
             error_log("Erreur envoi mail facture : " . $e->getMessage());
         }
         
-        unset($_SESSION['cart']);
+        if (isset($_SESSION['purchase_context']['source'])) {
+            if ($_SESSION['purchase_context']['source'] === 'full_cart') {
+                unset($_SESSION['cart']);
+            } elseif ($_SESSION['purchase_context']['source'] === 'single_cart_item') {
+                $originId = $_SESSION['purchase_context']['origin_id'] ?? null;
+                if ($originId && isset($_SESSION['cart'])) {
+                    foreach ($_SESSION['cart'] as $key => $cartItem) {
+                        if ($cartItem['id_unique'] === $originId) {
+                            unset($_SESSION['cart'][$key]);
+                            break;
+                        }
+                    }
+                    $_SESSION['cart'] = array_values($_SESSION['cart']);
+                }
+            }
+        }
+        
+        unset($_SESSION['purchase_context']);
         unset($_SESSION['billing_temp']);
 
         header("Location: " . ($_ENV['BASE_URL'] ?? '') . "/payment/confirmation?id=" . $orderId);
