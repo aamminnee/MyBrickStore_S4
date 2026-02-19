@@ -10,7 +10,7 @@
  * - Total calculation.
  * - Action to trigger payment process (PayPal redirect).
  *
- * @var array $cart         List of items in the cart
+ * @var array $items        List of items to pay
  * @var float $total        Total amount to pay
  * @var array $client       Client profile data (if exists)
  * @var array $t            Associative array of translations
@@ -105,7 +105,7 @@ $c = isset($client) ? (array)$client : [];
                         <div class="mosaic-preview">
                             <img src="<?= $imgSrc ?>" alt="<?= $t['payment_alt_paving'] ?? 'Votre Pavage' ?>">
                             <div class="preview-info">
-                                <p class="preview-title"><?= $t['payment_product_title'] ?? 'Mosaïque Briques®' ?></p>
+                                <p class="preview-title"><?= $t['payment_product_title'] ?? 'Mosaïque de Briques' ?></p>
                                 <p class="preview-details"><?= $item['size'] ?>x<?= $item['size'] ?> - <?= $t['payment_format'] ?? 'Format' ?> <?= ucfirst($item['style']) ?></p>
                                 <p class="preview-price"><?= number_format($item['price'], 2, ',', ' ') ?> €</p>
                             </div>

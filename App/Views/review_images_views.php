@@ -113,11 +113,19 @@
 
                         <p class="desc"><?= $t['style_' . $key . '_desc'] ?? $info['desc'] ?></p>
                         
-                        <form action="<?= ($_ENV['BASE_URL'] ?? '') ?>/cart/add" method="POST" class="card-action-form">
+                        <form action="<?= ($_ENV['BASE_URL'] ?? '') ?>/reviewImages/handleChoice" method="POST" class="card-action-form">
                             <input type="hidden" name="image_id" value="<?= $image['id_Image'] ?>">
-                            <button type="submit" name="choice" value="<?= $key ?>" class="btn-select">
-                                <?= $t['review_btn_add'] ?? 'Ajouter au panier' ?>
-                            </button>
+                            <input type="hidden" name="choice" value="<?= $key ?>">
+                            
+                            <div class="btn-group" style="display:flex; gap:10px;">
+                                <button type="submit" name="action" value="cart" class="btn-select" style="flex:1;">
+                                    <?= $t['review_btn_add'] ?? 'Ajouter au panier' ?>
+                                </button>
+                                
+                                <button type="submit" name="action" value= "buy_now" class="btn-buy-now-link" style="flex:1">
+                                    <?= $t['review_btn_buy'] ?? 'Achat Immédiat' ?>
+                                </button>
+                            </div>
                         </form>
                     </div>
                 <?php endforeach; ?>
