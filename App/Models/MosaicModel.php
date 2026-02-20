@@ -435,11 +435,16 @@ class MosaicModel extends Model {
         $results = $this->requete($sql, [$orderId])->fetchAll();
         
         foreach ($results as $row) {
-            if (!empty($row->file)) {
+            $mosaicVisual = $this->getMosaicVisual($row->id_Mosaic);
+            
+            if ($mosaicVisual) {
+                $row->visuel = $mosaicVisual;
+            } elseif (!empty($row->file)) {
                 $row->visuel = "data:" . $row->file_type . ";base64," . base64_encode($row->file);
             } else {
                 $row->visuel = null;
             }
+            
             $row->size = 64; 
             $row->style = 'Standard';
         }

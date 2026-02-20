@@ -167,6 +167,21 @@ class ReviewImagesController extends Controller {
         $userId = $_SESSION['user_id'] ?? null;
         $image = $imagesModel->getImageById($imageId, $userId);
         
+        $sessionKeyMosaics = 'mosaics_' . $imageId;
+        $previewDataUrl = $_SESSION[$sessionKeyMosaics][$style]['img'] ?? '';
+        
+        $imgData = '';
+        $imgType = 'image/png';
+        
+        if ($previewDataUrl && preg_match('/^data:(image\/[a-z]+);base64,(.+)$/', $previewDataUrl, $matches)) {
+            $imgType = $matches[1];
+            $imgData = $matches[2];
+        } else {
+            // Sécurité : On garde l'image d'origine en plan B si la mosaïque n'est plus en session
+            $imgData = $image ? base64_encode($image->file) : '';
+            $imgType = $image ? $image->file_type : 'image/png';
+        }
+        
         $newItem = [
             'id_unique' => uniqid(),
             'image_id' => $imageId,
@@ -174,8 +189,8 @@ class ReviewImagesController extends Controller {
             'size' => $size,
             'price' => $price,
             'pieces_count' => $pieces,
-            'image_data' => $image ? base64_encode($image->file) : '',
-            'image_type' => $image ? $image->file_type : 'image/png'
+            'image_data' => $imgData,
+            'image_type' => $imgType
         ];
 
         if ($action === 'buy_now') {
@@ -194,11 +209,8 @@ class ReviewImagesController extends Controller {
             }
             $_SESSION['cart'][] = $newItem;
             
-            // On enregistre le message de succès en session
             $_SESSION['success_message'] = "La mosaïque a été ajoutée au panier !";
-            
-            // REDIRECTION VERS LA PAGE REVIEW AU LIEU DU PANIER
-            // On récupère l'ID de l'image pour revenir sur la bonne prévisualisation
+
             header("Location: " . ($_ENV['BASE_URL'] ?? '') . "/reviewImages?img=" . $imageId);
             exit;
         }

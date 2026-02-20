@@ -86,7 +86,7 @@
                                 $imgSrc = "data:" . $image['file_type'] . ";base64," . base64_encode($image['file']);
                             }
                             ?>
-                            <img src="<?= $imgSrc ?>" alt="<?= $info['label'] ?>">
+                            <img src="<?= $imgSrc ?>" alt="<?= $info['label'] ?>" onclick="openZoomModal(this.src)" style="cursor: zoom-in;" class="zoomable-preview">
                         </div>
 
                         <div class="card-stats">
@@ -141,4 +141,23 @@
             </div>
         <?php endif; ?>
     </div>
+
+    <div id="image-zoom-modal" class="zoom-modal" onclick="closeZoomModal()">
+        <span class="close-modal">&times;</span>
+        <img class="zoom-modal-content" id="zoomed-image">
+    </div>
+
+    <script>
+        function openZoomModal(imgSrc) {
+            const modal = document.getElementById("image-zoom-modal");
+            const modalImg = document.getElementById("zoomed-image");
+            modal.style.display = "flex";
+            modalImg.src = imgSrc;
+        }
+
+        function closeZoomModal() {
+            document.getElementById("image-zoom-modal").style.display = "none";
+        }
+    </script>
 </div>
+
