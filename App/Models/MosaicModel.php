@@ -686,4 +686,73 @@ class MosaicModel extends Model {
             $stockModel->updateStock($item->id_Item, $qtyToRemove);
         }
     }
+
+    /**
+     * Récupère un pavage au hasard et le formate pour le jeu React
+     * @return array|null
+     */
+    public function getRandomGameMosaic() {
+        $sql = "SELECT paving FROM Mosaic WHERE paving IS NOT NULL ORDER BY RAND() LIMIT 1";
+        $res = $this->requete($sql)->fetch();
+        
+        if (!$res || empty($res->paving)) return null;
+
+        $lines = explode("\n", trim($res->paving));
+        $bricksData = [];
+        $fullMaxX = 0;
+        $fullMaxY = 0;
+
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if (empty($line) || strpos($line, '/') === false) continue;
+            $parts = preg_split('/\s+/', $line);
+            $info = explode('/', $parts[0]);
+            $size = explode('x', $info[0]);
+            $w = (int)$size[0]; $h = (int)$size[1];
+            $x = (int)$parts[1]; $y = (int)$parts[2];
+            $rot = (int)($parts[3] ?? 0);
+            $finalW = ($rot == 1) ? $h : $w;
+            $finalH = ($rot == 1) ? $w : $h;
+
+            $bricksData[] = ['x' => $x, 'y' => $y, 'w' => $finalW, 'h' => $finalH, 'color' => "#" . $info[1]];
+            if ($x + $finalW > $fullMaxX) $fullMaxX = $x + $finalW;
+            if ($y + $finalH > $fullMaxY) $fullMaxY = $y + $finalH;
+        }
+
+        $gameSize = 10;
+        
+        $startX = ($fullMaxX > $gameSize) ? rand(0, $fullMaxX - $gameSize) : 0;
+        $startY = ($fullMaxY > $gameSize) ? rand(0, $fullMaxY - $gameSize) : 0;
+
+        $bricksQueue = [];
+        $targetGrid = array_fill(0, $gameSize, array_fill(0, $gameSize, null));
+
+        foreach ($bricksData as $b) {
+            for ($i = 0; $i < $b['w']; $i++) {
+                for ($j = 0; $j < $b['h']; $j++) {
+                    $pixelX = $b['x'] + $i;
+                    $pixelY = $b['y'] + $j;
+
+                    if ($pixelX >= $startX && $pixelX < $startX + $gameSize &&
+                        $pixelY >= $startY && $pixelY < $startY + $gameSize) {
+                        
+                        $relativeX = $pixelX - $startX;
+                        $relativeY = $pixelY - $startY;
+                        
+                        $targetGrid[$relativeY][$relativeX] = $b['color'];
+                        $bricksQueue[] = $b['color'];
+                    }
+                }
+            }
+        }
+
+        shuffle($bricksQueue);
+
+        return [
+            'rows' => $gameSize,
+            'cols' => $gameSize,
+            'targetGrid' => $targetGrid,
+            'bricksQueue' => $bricksQueue
+        ];
+    }
 }
