@@ -8,13 +8,18 @@
  * - Language switcher (FR/EN).
  * - Security settings (Enable/Disable 2FA).
  * - Password reset initiation.
+ * - TOTP setup interface.
  *
- * @var string|null $message    Feedback message (success/error)
+ * @var string|null $message    Feedback message (info)
+ * @var string|null $success    Feedback message (success)
+ * @var string|null $error      Feedback message (error)
+ * @var string|null $totpSecret The user's secret key for authenticator app
  * @var array $t                Associative array of translations
  */
 
 $currentLang = $_SESSION['lang'] ?? 'fr';
-$is2FA = ($_SESSION['mode'] ?? '') === '2FA';
+$activeMode = $_SESSION['mode'] ?? '';
+$isSettingUpTotp = isset($_SESSION['setup_totp']) && $_SESSION['setup_totp'] === true;
 ?>
 
 <div class="settings-wrapper">
@@ -28,6 +33,12 @@ $is2FA = ($_SESSION['mode'] ?? '') === '2FA';
         <?php if (isset($message) && !empty($message)): ?>
             <div class="alert-box info">
                 <?= htmlspecialchars($message) ?>
+            </div>
+        <?php endif; ?>
+
+        <?php if (isset($success) && !empty($success)): ?>
+            <div class="alert-box success">
+                <?= htmlspecialchars($success) ?>
             </div>
         <?php endif; ?>
 
@@ -66,30 +77,94 @@ $is2FA = ($_SESSION['mode'] ?? '') === '2FA';
 
             <?php if (isset($_SESSION['user_id'])): ?>
                 
+                <!-- 2fa configuration section -->
                 <div class="setting-card">
-                    <div class="card-icon">🛡️</div>
+                    <div class="card-icon">🔐</div>
                     <div class="card-content">
-                        <h3><?= $t['settings_security_title'] ?? 'Sécurité' ?></h3>
-                        <p class="card-desc">
-                            <?= $t['settings_2fa_label'] ?? 'Double authentification (2FA) :' ?> 
-                            <span class="status-badge <?= $is2FA ? 'enabled' : 'disabled' ?>">
-                                <?= $is2FA ? ($t['settings_status_enabled'] ?? 'Activé') : ($t['settings_status_disabled'] ?? 'Désactivé') ?>
-                            </span>
-                        </p>
+                        <h3><?= $t['2fa_settings_title'] ?? 'Paramètres de double authentification (2FA)' ?></h3>
+                        <p class="card-desc"><?= $t['2fa_settings_desc'] ?? 'Choisissez votre méthode de double authentification pour sécuriser votre compte.' ?></p>
                         
-                        <form action="<?= $_ENV['BASE_URL'] ?>/user/toggle2FA" method="POST">
-                            <?php if ($is2FA): ?>
-                                <input type="hidden" name="mode" value="disable">
-                                <button type="submit" class="btn-action btn-danger">
-                                    <?= $t['settings_btn_disable_2fa'] ?? 'Désactiver 2FA' ?>
-                                </button>
-                            <?php else: ?>
-                                <input type="hidden" name="mode" value="enable">
-                                <button type="submit" class="btn-action btn-primary">
-                                    <?= $t['settings_btn_enable_2fa'] ?? 'Activer 2FA' ?>
-                                </button>
+                        <?php if (isset($error) && !empty($error)): ?>
+                            <div class="alert-box error" style="margin-top: 10px;">
+                                <?= htmlspecialchars($error) ?>
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if ($isSettingUpTotp): ?>
+                            
+                            <!-- totp configuration step display -->
+                            <div class="totp-setup-box">
+                                <h4 class="totp-title"><?= $t['2fa_setup_title'] ?? 'Configuration Initiale' ?></h4>
+                                
+                                <div class="totp-step">
+                                    <span class="step-badge">1</span>
+                                    <p><?= $t['2fa_setup_step1'] ?? 'Scannez ce QR Code avec votre application (Google Authenticator, Authy...).' ?></p>
+                                </div>
+
+                                <div class="qr-container">
+                                    <?php 
+                                        $userEmail = $_SESSION['email'] ?? 'Utilisateur';
+                                        $issuer = urlencode('MyBrickStore');
+                                        $accountName = urlencode($userEmail);
+                                        $otpauth = "otpauth://totp/{$issuer}:{$accountName}?secret={$totpSecret}&issuer={$issuer}";
+                                        $qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?data=" . urlencode($otpauth) . "&size=200x200";
+                                    ?>
+                                    <img src="<?= $qrCodeUrl ?>" alt="QR Code TOTP" class="qr-image">
+                                    
+                                    <div class="manual-key-box">
+                                        <span><?= $t['2fa_setup_manual'] ?? 'Ou saisissez cette clé manuellement :' ?></span>
+                                        <strong class="totp-secret"><?= $totpSecret ?></strong>
+                                    </div>
+                                </div>
+
+                                <div class="totp-step">
+                                    <span class="step-badge">2</span>
+                                    <p><?= $t['2fa_setup_step2'] ?? 'Entrez le code à 6 chiffres généré par l\'application pour valider :' ?></p>
+                                </div>
+
+                                <form action="<?= $_ENV['BASE_URL'] ?? '' ?>/setting/confirm2faApp" method="POST" class="totp-confirm-form">
+                                    <input type="text" name="totp_code" class="totp-input" required maxlength="6" placeholder="<?= $t['2fa_setup_placeholder'] ?? '000000' ?>" autocomplete="off">
+                                    <button type="submit" class="btn-action btn-primary"><?= $t['2fa_setup_confirm'] ?? 'Confirmer' ?></button>
+                                </form>
+
+                                <form action="<?= $_ENV['BASE_URL'] ?? '' ?>/setting/cancel2faApp" method="POST" class="totp-cancel-form">
+                                    <button type="submit" class="btn-cancel-link"><?= $t['2fa_setup_cancel'] ?? 'Annuler la configuration' ?></button>
+                                </form>
+                            </div>
+
+                        <?php else: ?>
+
+                            <!-- standard 2fa selection options -->
+                            <div class="two-fa-options">
+                                
+                                <form action="<?= $_ENV['BASE_URL'] ?? '' ?>/setting/update2fa" method="POST">
+                                    <button type="submit" name="2fa_type" value="email" class="btn-action btn-outline btn-full <?= ($activeMode === 'email' || $activeMode === '2FA') ? 'active-primary' : '' ?>">
+                                        <?= $t['2fa_email_btn'] ?? 'Activer 2FA par token de mail' ?>
+                                    </button>
+                                </form>
+                                
+                                <form action="<?= $_ENV['BASE_URL'] ?? '' ?>/setting/setup2faApp" method="POST">
+                                    <button type="submit" class="btn-action btn-outline btn-full <?= ($activeMode === 'app') ? 'active-primary' : '' ?>">
+                                        <?= $t['2fa_app_btn'] ?? 'Activer / Reconfigurer 2FA via application' ?>
+                                    </button>
+                                </form>
+                                
+                                <form action="<?= $_ENV['BASE_URL'] ?? '' ?>/setting/update2fa" method="POST">
+                                    <button type="submit" name="2fa_type" value="none" class="btn-action btn-outline btn-full btn-danger-outline <?= empty($activeMode) ? 'active-danger' : '' ?>">
+                                        <?= $t['2fa_disable_btn'] ?? 'Ne pas utiliser le 2FA' ?>
+                                    </button>
+                                </form>
+
+                            </div>
+
+                            <?php if ($activeMode === 'app'): ?>
+                                <p class="active-2fa-msg">
+                                    <span class="icon-check">✅</span> <?= $t['2fa_setup_active_msg'] ?? 'L\'authentification par application est active et configurée.' ?>
+                                </p>
                             <?php endif; ?>
-                        </form>
+
+                        <?php endif; ?>
+
                     </div>
                 </div>
 
