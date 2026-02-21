@@ -79,11 +79,11 @@ $shippingCost = $total - $subTotal;
                     <div class="form-row">
                         <div class="form-group">
                             <label for="first_name"><?= $t['payment_label_firstname'] ?? 'Prénom' ?> *</label>
-                            <input type="text" id="first_name" name="first_name" class="form-control" required placeholder="Ex: Jean" value="<?= htmlspecialchars($userFirstName) ?>">
+                            <input type="text" id="first_name" name="first_name" class="form-control" required placeholder="Ex: Jean">
                         </div>
                         <div class="form-group">
                             <label for="last_name"><?= $t['payment_label_lastname'] ?? 'Nom' ?> *</label>
-                            <input type="text" id="last_name" name="last_name" class="form-control" required placeholder="Ex: Dupont" value="<?= htmlspecialchars($userLastName) ?>">
+                            <input type="text" id="last_name" name="last_name" class="form-control" required placeholder="Ex: Dupont">
                         </div>
                     </div>
 
@@ -94,35 +94,35 @@ $shippingCost = $total - $subTotal;
                         </div>
                         <div class="form-group">
                             <label for="phone"><?= $t['payment_label_phone'] ?? 'Téléphone' ?></label>
-                            <input type="tel" id="phone" name="phone" class="form-control" placeholder="Ex: 06 12 34 56 78" value="<?= htmlspecialchars($userPhone) ?>">
+                            <input type="tel" id="phone" name="phone" class="form-control" placeholder="Ex: 06 12 34 56 78">
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label for="address_line"><?= $t['payment_label_address'] ?? 'Adresse postale' ?> *</label>
-                        <input type="text" id="address_line" name="address_line" class="form-control" placeholder="Ex: 123 Rue de la République" required value="<?= htmlspecialchars($userAddress) ?>">
-                    </div>
+                        <input type="text" id="address_line" name="address_line" class="form-control" placeholder="Ex: 123 Rue de la République" required>
+                    </div><br>
 
                     <div class="form-row">
                         <div class="form-group" style="flex: 1;">
                             <label for="zip_code"><?= $t['payment_label_zip'] ?? 'Code Postal' ?> *</label>
-                            <input type="text" id="zip_code" name="zip_code" class="form-control" required placeholder="75000" value="<?= htmlspecialchars($userZip) ?>">
+                            <input type="text" id="zip_code" name="zip_code" class="form-control" required placeholder="Ex: 75000">
                         </div>
                         <div class="form-group" style="flex: 2;">
                             <label for="city"><?= $t['payment_label_city'] ?? 'Ville' ?> *</label>
-                            <input type="text" id="city" name="city" class="form-control" required placeholder="Paris" value="<?= htmlspecialchars($userCity) ?>">
+                            <input type="text" id="city" name="city" class="form-control" required placeholder="Ex: Paris">
                         </div>
                     </div>
 
                     <button type="submit" class="btn-pay-now">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2" ry="2"></rect><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                        <?= 'Payer avec' ?> 
+                        Payer avec
                         <span class="paypal-logo-text">Pay<span>Pal</span></span>
                     </button>
                     
                     <div class="security-notice">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                        Paiement 100% sécurisé et crypté
+                        <span><?= $t['payment_secure_info'] ?? 'Paiement 100% sécurisé et cryptées.' ?></span>
                     </div>
                 </form>
             </div>
@@ -170,7 +170,7 @@ $shippingCost = $total - $subTotal;
                     
                     <div class="summary-total-line">
                         <span><?= $t['cart_label_total'] ?? 'Total TTC' ?></span>
-                        <span style="color: #D92328;"><?= number_format($total, 2, ',', ' ') ?> €</span>
+                        <span style="color: #006CB7;"><?= number_format($total, 2, ',', ' ') ?> €</span>
                     </div>
                 </div>
 
@@ -188,10 +188,24 @@ $shippingCost = $total - $subTotal;
             
             <div class="sandbox-alert">
                 <div class="sandbox-alert-header">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                        <line x1="12" y1="9" x2="12" y2="13"></line>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
                     <h4><?= $t['payment_sandbox_title'] ?? 'Environnement de Test (Sandbox)' ?></h4>
                 </div>
-                <p><?= $t['payment_sandbox_desc'] ?? 'Ce paiement est une simulation. Aucun montant réel ne sera débité.' ?></p>
+                
+                <p><?= $t['payment_sandbox_desc'] ?? 'Ce paiement est une simulation. Aucun montant réel ne sera débité. Pour valider le test PayPal, utilisez ces identifiants fictifs' ?></p>
+
+                <div class="sandbox-credentials">
+                    <p><strong><?= $t['payment_sandbox_email'] ?? 'Email :' ?></strong> sb-o00un48707050@personal.example.com</p>
+                    <p><strong><?= $t['payment_sandbox_password'] ?? 'Mot de passe :' ?></strong> 0oH&XU{K</p>
+                </div>
+                
+                <p class="sandbox-warning">
+                    <?= $t['payment_sandbox_warning'] ?? '⚠️ Pensez bien à les copier dans un bloc-notes avant de cliquer sur "Payer" pour ne pas avoir à revenir en arrière !' ?>
+                </p>
             </div>
         </div>
     </div>
