@@ -4,8 +4,10 @@
  *
  * Displays a form to enter the 6-digit security code.
  * Differentiates between Email Code and Authenticator App (TOTP) instructions.
+ * Includes functionality to request a new code.
  *
- * @var string|null $error      Error message passed from controller
+ * @var string|null $message    Error message passed from controller
+ * @var string|null $success    Success message passed from controller
  * @var array $t                Associative array of translations
  */
 
@@ -25,8 +27,16 @@ $mode = $_SESSION['temp_2fa_mode'] ?? 'email';
             <p class="verify-desc"><?= $t['verify_desc'] ?? 'Un code de sécurité a été envoyé à votre adresse email.' ?></p>
         <?php endif; ?>
 
+        <?php if (isset($success)): ?>
+            <p class="success-msg" style="color: #047857; font-weight: bold; margin-bottom: 15px; padding: 10px; background-color: #d1fae5; border-radius: 6px; border-left: 4px solid #047857;">
+                <?= $success ?>
+            </p>
+        <?php endif; ?>
+
         <?php if (isset($message)): ?>
-            <p class="error-msg" style="color: #D92328; font-weight: bold; margin-bottom: 15px;"><?= $message ?></p>
+            <p class="error-msg" style="color: #D92328; font-weight: bold; margin-bottom: 15px; padding: 10px; background-color: #fee2e2; border-radius: 6px; border-left: 4px solid #D92328;">
+                <?= $message ?>
+            </p>
         <?php endif; ?>
 
         <form action="<?= $_ENV['BASE_URL'] ?>/user/verify" method="POST">
@@ -40,7 +50,18 @@ $mode = $_SESSION['temp_2fa_mode'] ?? 'email';
             <button type="submit" class="btn-submit"><?= $t['verify_btn_validate'] ?? 'Valider le code' ?></button>
         </form>
         
-        <div class="verify-footer">
+        <?php if ($mode !== 'app'): ?>
+            <div class="resend-container" style="margin-top: 20px; text-align: center;">
+                <p style="font-size: 0.9em; color: #666; margin-bottom: 5px;"><?= $t['verify_didnt_receive'] ?? "Vous n'avez pas reçu le code ?" ?></p>
+                <form action="<?= $_ENV['BASE_URL'] ?>/user/resendCode" method="POST" style="display: inline;">
+                    <button type="submit" class="btn-resend" style="background: none; border: none; color: #006CB7; font-weight: bold; text-decoration: underline; cursor: pointer; padding: 0;">
+                        <?= $t['verify_btn_resend'] ?? "Renvoyer un nouveau code" ?>
+                    </button>
+                </form>
+            </div>
+        <?php endif; ?>
+
+        <div class="verify-footer" style="margin-top: 15px;">
             <a href="<?= $_ENV['BASE_URL'] ?>/user/login" class="back-link">
                 <?= $t['verify_link_back'] ?? '&larr; Retour à la connexion' ?>
             </a>

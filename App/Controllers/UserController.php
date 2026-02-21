@@ -281,6 +281,9 @@ class UserController extends Controller {
                 $userId = is_object($user) ? ($user->id_user ?? null) : ($user['id_user'] ?? null);
                 
                 if ($userId) {
+                    // save email for resend logic
+                    $_SESSION['email'] = $email;
+                    
                     // generate token and send welcome email
                     $token = $this->token_model->generateToken($userId, "validation");
                     $this->sendVerificationEmail($email, $token);
@@ -417,6 +420,11 @@ class UserController extends Controller {
      */
     public function verify() {
         $baseUrl = $_ENV['BASE_URL'] ?? '';
+        
+        // pull any flash messages
+        $message = $_SESSION['verify_error'] ?? null;
+        $success = $_SESSION['verify_success'] ?? null;
+        unset($_SESSION['verify_error'], $_SESSION['verify_success']);
 
         // process form submission
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['token'])) {
@@ -439,16 +447,10 @@ class UserController extends Controller {
                     exit;
                 } else {
                     $message = $this->t('token_invalid', "Code Google Authenticator invalide ou expiré.");
-                    $this->render('verify_views', [
-                        'message' => $message,
-                        'css' => 'verify_views.css'
-                    ]); 
-                    return;
                 }
             }
-
             // 2. handle standard database tokens
-            if ($token_data) {
+            elseif ($token_data) {
                 // mark token as used and cleanup
                 $this->token_model->consumeToken($token);
                 $this->token_model->deleteToken();
@@ -506,23 +508,77 @@ class UserController extends Controller {
                     }
                 }
             } else {
-                // token is invalid or expired
-                $message = $this->t('token_invalid', "Code invalide ou expiré.");
-                $this->render('verify_views', [
-                    'message' => $message,
-                    'css' => 'verify_views.css'
-                ]); 
+                // check explicitly if the token exists but is expired
+                if (method_exists($this->token_model, 'isTokenExpired') && $this->token_model->isTokenExpired($token)) {
+                    $message = $this->t('token_expired', "Votre code de sécurité a expiré. Veuillez en demander un nouveau.");
+                } else {
+                    $message = $this->t('token_invalid', "Code invalide ou introuvable.");
+                }
             }
-        } else {
-            // render standard verify view
-            $this->render('verify_views', [
-                'css' => 'verify_views.css'
-            ]);
+        } 
+        
+        // render view
+        $this->render('verify_views', [
+            'message' => $message,
+            'success' => $success,
+            'css' => 'verify_views.css'
+        ]);
+    }
+
+    /**
+     * resends the verification code based on the current session context
+     *
+     * @return void
+     */
+    public function resendCode() {
+        $baseUrl = $_ENV['BASE_URL'] ?? '';
+        $userId = null;
+        $email = null;
+        $type = null;
+
+        // determine which context needs a new code based on session data
+        if (isset($_SESSION['temp_2fa_user_id'], $_SESSION['temp_2fa_email'])) {
+            $userId = $_SESSION['temp_2fa_user_id'];
+            $email = $_SESSION['temp_2fa_email'];
+            $type = '2FA';
+        } elseif (isset($_SESSION['user_id'], $_SESSION['pending_profile_update'])) {
+            $userId = $_SESSION['user_id'];
+            $email = $_SESSION['email'];
+            $type = 'profile_update';
+        } elseif (isset($_SESSION['email'])) {
+            // covers both password reset and generic account activation
+            $email = $_SESSION['email'];
+            $user = $this->user_model->getUserByEmail($email);
+            if ($user) {
+                $userId = is_object($user) ? ($user->id_user ?? null) : ($user['id_user'] ?? null);
+                $status = is_object($user) ? ($user->status ?? $user->etat ?? null) : ($user['status'] ?? $user['etat'] ?? null);
+                $type = ($status === 'valide') ? 'reinitialisation' : 'validation';
+            }
         }
+
+        if ($userId && $email && $type) {
+            // generateToken automatically deletes old ones for this user and context
+            $newToken = $this->token_model->generateToken($userId, $type);
+
+            // send the appropriate professional email template
+            if ($type === 'profile_update') {
+                $this->sendProfileUpdateEmail($email, $newToken);
+            } else {
+                $this->sendVerificationEmail($email, $newToken);
+            }
+
+            $_SESSION['verify_success'] = "Un nouveau code a été envoyé à votre adresse e-mail.";
+        } else {
+            $_SESSION['verify_error'] = "Impossible de renvoyer le code. Veuillez recommencer l'opération initiale.";
+        }
+
+        header("Location: $baseUrl/user/verify");
+        exit;
     }
 
     /**
      * Sends an email using smtp with mailjet configuration.
+     * Contains a beautifully designed HTML template for better user experience.
      *
      * @param string $email recipient address
      * @param string $token verification code to embed
@@ -545,19 +601,92 @@ class UserController extends Controller {
             
             // prepare email content
             $this->mail->isHTML(true);
-            $this->mail->Subject = $this->t('verification_code_subject', "Verification code");
+            $this->mail->CharSet = 'UTF-8';
+            $this->mail->Subject = $this->t('verification_code_subject', "Code de vérification de votre compte");
             
-            $bodyTemplate = $this->t('verification_code_body', "Your verification code is: %TOKEN%");
-            if (empty($bodyTemplate)) {
-                $bodyTemplate = "Your verification code is: %TOKEN%";
-            }
-            $body = str_replace('%TOKEN%', $token, $bodyTemplate);
+            // create a beautiful and professional html email template
+            $body = "
+            <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9; border-radius: 8px; border: 1px solid #e0e0e0;'>
+                <h2 style='color: #006CB7; text-align: center; font-size: 24px;'>Vérification de sécurité requise</h2>
+                <p style='color: #333; font-size: 16px; line-height: 1.6;'>Bonjour,</p>
+                <p style='color: #333; font-size: 16px; line-height: 1.6;'>Nous avons bien reçu votre demande concernant votre compte MyBrickStore. La sécurité de vos données personnelles est notre priorité absolue.</p>
+                <p style='color: #333; font-size: 16px; line-height: 1.6;'>Afin de confirmer que vous êtes bien à l'origine de cette opération, veuillez utiliser le code de vérification ci-dessous :</p>
+                
+                <div style='text-align: center; margin: 30px 0; padding: 20px; background-color: #ffffff; border-radius: 6px; border: 2px dashed #006CB7;'>
+                    <span style='font-size: 38px; font-weight: bold; letter-spacing: 8px; color: #D92328;'>" . htmlspecialchars($token) . "</span>
+                </div>
+                
+                <p style='color: #333; font-size: 16px; line-height: 1.6;'><strong>Information importante :</strong> Ce code est strictement personnel et confidentiel. Pour garantir un niveau de sécurité maximal, il <strong>expirera automatiquement dans 1 minute</strong>. S'il venait à expirer, vous devrez recommencer la procédure de vérification depuis notre site.</p>
+                
+                <p style='color: #333; font-size: 16px; line-height: 1.6;'>Si vous n'avez fait aucune demande ou si vous pensez qu'il s'agit d'une erreur, vous pouvez ignorer cet e-mail en toute sécurité. Votre compte reste parfaitement protégé.</p>
+                
+                <hr style='border: none; border-top: 1px solid #e0e0e0; margin: 30px 0;'>
+                <p style='color: #888; font-size: 14px; text-align: center; line-height: 1.5;'>
+                    Merci de votre confiance,<br>
+                    <strong>L'équipe MyBrickStore</strong>
+                </p>
+            </div>
+            ";
             
             $this->mail->Body = $body;
             $this->mail->send();
         } catch (Exception $e) {
             // log silently if mail fails
             error_log("Mail error: " . $this->mail->ErrorInfo);
+        }
+    }
+
+    /**
+     * dispatches the profile update verification email via smtp
+     * included here so resendCode can access it directly
+     *
+     * @param string $email recipient address
+     * @param string $token verification code
+     * @return void
+     */
+    private function sendProfileUpdateEmail($email, $token) {
+        try {
+            $this->mail->isSMTP();
+            $this->mail->Host       = $_ENV['MAILJET_HOST'];
+            $this->mail->SMTPAuth   = true;
+            $this->mail->Username   = $_ENV['MAILJET_USERNAME'];
+            $this->mail->Password   = $_ENV['MAILJET_PASSWORD'];
+            $this->mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            $this->mail->Port       = $_ENV['MAILJET_PORT'];
+            $this->mail->setFrom($_ENV['MAIL_FROM_ADDRESS'], $_ENV['MAIL_FROM_NAME']);
+            $this->mail->addAddress($email);
+            
+            $this->mail->isHTML(true);
+            $this->mail->CharSet = 'UTF-8';
+            $this->mail->Subject = "Validation de modification de votre profil";
+            
+            $body = "
+            <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9; border-radius: 8px; border: 1px solid #e0e0e0;'>
+                <h2 style='color: #006CB7; text-align: center; font-size: 24px;'>Mise à jour de votre profil</h2>
+                <p style='color: #333; font-size: 16px; line-height: 1.6;'>Bonjour,</p>
+                <p style='color: #333; font-size: 16px; line-height: 1.6;'>Vous avez récemment demandé la modification de vos informations personnelles sur votre compte MyBrickStore.</p>
+                <p style='color: #333; font-size: 16px; line-height: 1.6;'>Afin de protéger vos données et de valider définitivement ces changements, un code de confirmation est requis. Veuillez le saisir sur la page de vérification :</p>
+                
+                <div style='text-align: center; margin: 30px 0; padding: 20px; background-color: #ffffff; border-radius: 6px; border: 2px dashed #006CB7;'>
+                    <span style='font-size: 38px; font-weight: bold; letter-spacing: 8px; color: #D92328;'>" . htmlspecialchars($token) . "</span>
+                </div>
+                
+                <p style='color: #333; font-size: 16px; line-height: 1.6;'><strong>Information importante :</strong> Ce code de sécurité <strong>expirera dans 1 minute</strong>. Passé ce court délai, vos modifications seront automatiquement annulées et vous devrez recommencer l'opération.</p>
+                
+                <p style='color: #333; font-size: 16px; line-height: 1.6;'>Si vous n'avez effectué aucune modification, veuillez ignorer ce message. Vous pouvez également contacter notre support si vous suspectez une activité anormale sur votre compte.</p>
+                
+                <hr style='border: none; border-top: 1px solid #e0e0e0; margin: 30px 0;'>
+                <p style='color: #888; font-size: 14px; text-align: center; line-height: 1.5;'>
+                    Cordialement,<br>
+                    <strong>L'équipe MyBrickStore</strong>
+                </p>
+            </div>
+            ";
+            
+            $this->mail->Body = $body;
+            $this->mail->send();
+        } catch (Exception $e) {
+            error_log("mail error: " . $this->mail->ErrorInfo);
         }
     }
 

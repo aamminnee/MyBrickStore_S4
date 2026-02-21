@@ -134,6 +134,7 @@ class CompteController extends Controller {
 
     /**
      * dispatches the profile update verification email via smtp
+     * Features a beautiful HTML layout with explicit expiration notice.
      *
      * @param string $email recipient address
      * @param string $token verification code
@@ -150,11 +151,36 @@ class CompteController extends Controller {
             $this->mail->Port       = $_ENV['MAILJET_PORT'];
             $this->mail->setFrom($_ENV['MAIL_FROM_ADDRESS'], $_ENV['MAIL_FROM_NAME']);
             $this->mail->addAddress($email);
+            
             $this->mail->isHTML(true);
+            $this->mail->CharSet = 'UTF-8';
+            $this->mail->Subject = "Validation de modification de votre profil";
             
-            $this->mail->Subject = "Validation de modification de profil";
-            $this->mail->Body = "Pour valider les modifications de vos informations personnelles, veuillez entrer ce code de sécurité : <b>" . $token . "</b>";
+            // create a beautiful and professional html email template
+            $body = "
+            <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9; border-radius: 8px; border: 1px solid #e0e0e0;'>
+                <h2 style='color: #006CB7; text-align: center; font-size: 24px;'>Mise à jour de votre profil</h2>
+                <p style='color: #333; font-size: 16px; line-height: 1.6;'>Bonjour,</p>
+                <p style='color: #333; font-size: 16px; line-height: 1.6;'>Vous avez récemment demandé la modification de vos informations personnelles sur votre compte MyBrickStore.</p>
+                <p style='color: #333; font-size: 16px; line-height: 1.6;'>Afin de protéger vos données et de valider définitivement ces changements, un code de confirmation est requis. Veuillez le saisir sur la page de vérification :</p>
+                
+                <div style='text-align: center; margin: 30px 0; padding: 20px; background-color: #ffffff; border-radius: 6px; border: 2px dashed #006CB7;'>
+                    <span style='font-size: 38px; font-weight: bold; letter-spacing: 8px; color: #D92328;'>" . htmlspecialchars($token) . "</span>
+                </div>
+                
+                <p style='color: #333; font-size: 16px; line-height: 1.6;'><strong>Information importante :</strong> Ce code de sécurité <strong>expirera dans 1 minute</strong>. Passé ce court délai, vos modifications seront automatiquement annulées et vous devrez recommencer l'opération.</p>
+                
+                <p style='color: #333; font-size: 16px; line-height: 1.6;'>Si vous n'avez effectué aucune modification, veuillez ignorer ce message. Vous pouvez également contacter notre support si vous suspectez une activité anormale sur votre compte.</p>
+                
+                <hr style='border: none; border-top: 1px solid #e0e0e0; margin: 30px 0;'>
+                <p style='color: #888; font-size: 14px; text-align: center; line-height: 1.5;'>
+                    Cordialement,<br>
+                    <strong>L'équipe MyBrickStore</strong>
+                </p>
+            </div>
+            ";
             
+            $this->mail->Body = $body;
             $this->mail->send();
         } catch (Exception $e) {
             // log the error if email fails to send
@@ -190,6 +216,7 @@ class CompteController extends Controller {
 
     /**
      * Dispatches the activation email via smtp
+     * Features a beautifully designed template.
      *
      * @param string $email recipient address
      * @param string $token activation code
@@ -206,9 +233,34 @@ class CompteController extends Controller {
             $this->mail->Port       = $_ENV['MAILJET_PORT'];
             $this->mail->setFrom($_ENV['MAIL_FROM_ADDRESS'], $_ENV['MAIL_FROM_NAME']);
             $this->mail->addAddress($email);
+            
             $this->mail->isHTML(true);
-            $this->mail->Subject = "Code d'activation";
-            $this->mail->Body = "Votre code d'activation est : " . $token;
+            $this->mail->CharSet = 'UTF-8';
+            $this->mail->Subject = "Code d'activation de votre compte";
+            
+            // create a beautiful and professional html email template
+            $body = "
+            <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9; border-radius: 8px; border: 1px solid #e0e0e0;'>
+                <h2 style='color: #006CB7; text-align: center; font-size: 24px;'>Activez votre compte</h2>
+                <p style='color: #333; font-size: 16px; line-height: 1.6;'>Bonjour,</p>
+                <p style='color: #333; font-size: 16px; line-height: 1.6;'>Bienvenue chez MyBrickStore ! Nous sommes ravis de vous compter parmi nous. Pour finaliser la création de votre compte, sécuriser votre profil et accéder à l'ensemble de nos fonctionnalités, vous devez valider cette adresse e-mail.</p>
+                <p style='color: #333; font-size: 16px; line-height: 1.6;'>Veuillez utiliser le code d'activation ci-dessous :</p>
+                
+                <div style='text-align: center; margin: 30px 0; padding: 20px; background-color: #ffffff; border-radius: 6px; border: 2px dashed #006CB7;'>
+                    <span style='font-size: 38px; font-weight: bold; letter-spacing: 8px; color: #D92328;'>" . htmlspecialchars($token) . "</span>
+                </div>
+                
+                <p style='color: #333; font-size: 16px; line-height: 1.6;'><strong>Veuillez noter :</strong> Ce code est <strong>valable uniquement pendant 1 minute</strong> pour garantir votre sécurité. S'il venait à expirer avant que vous n'ayez eu le temps de l'utiliser, pas de panique, vous pourrez demander l'envoi d'un nouveau code depuis votre espace client.</p>
+                
+                <hr style='border: none; border-top: 1px solid #e0e0e0; margin: 30px 0;'>
+                <p style='color: #888; font-size: 14px; text-align: center; line-height: 1.5;'>
+                    À très bientôt sur notre plateforme,<br>
+                    <strong>L'équipe MyBrickStore</strong>
+                </p>
+            </div>
+            ";
+            
+            $this->mail->Body = $body;
             $this->mail->send();
         } catch (Exception $e) {
             error_log("Mail error: " . $this->mail->ErrorInfo);
