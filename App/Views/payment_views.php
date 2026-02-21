@@ -16,7 +16,8 @@
  * @var array $t            Associative array of translations
  */
 
-$items = isset($cart) ? (array)$cart : [];
+// CORRECTION ICI : on vérifie $items (envoyé par le controller) au lieu de $cart
+$itemsList = isset($items) ? (array)$items : (isset($cart) ? (array)$cart : []);
 $c = isset($client) ? (array)$client : [];
 ?>
 
@@ -98,7 +99,7 @@ $c = isset($client) ? (array)$client : [];
                 <h3><?= $t['payment_summary_title'] ?? 'Récapitulatif' ?></h3>
                 
                 <div class="summary-items">
-                    <?php foreach ($items as $item): 
+                    <?php foreach ($itemsList as $item): 
                         $item = (array)$item;
                         $imgSrc = "data:" . ($item['image_type'] ?? 'image/png') . ";base64," . $item['image_data'];
                     ?>
@@ -141,7 +142,9 @@ $c = isset($client) ? (array)$client : [];
                     </div>
                 </div>
                 
-            </div> <div class="sandbox-alert">
+            </div> 
+            
+            <div class="sandbox-alert">
                 <div class="sandbox-alert-header">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
                     <h4><?= $t['payment_sandbox_title'] ?? 'Environnement de Test (Sandbox)' ?></h4>
@@ -156,7 +159,8 @@ $c = isset($client) ? (array)$client : [];
                 <p class="sandbox-warning"><?= $t['payment_sandbox_warning'] ?? '⚠️ Pensez bien à les copier dans un bloc-notes avant de cliquer sur "Payer" pour ne pas avoir à revenir en arrière !' ?></p>
             </div>
 
-        </div> </div>
+        </div> 
+    </div>
 </div>
 
 <script>
@@ -166,11 +170,9 @@ $c = isset($client) ? (array)$client : [];
         
         if (group.classList.contains('show')) {
             group.classList.remove('show');
-
             icon.innerHTML = '<path d="M12 5v14m-7-7h14"></path>';
         } else {
             group.classList.add('show');
-
             icon.innerHTML = '<path d="M5 12h14"></path>';
             document.getElementById('promo_code').focus();
         }
