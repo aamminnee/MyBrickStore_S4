@@ -7,11 +7,9 @@ use PDOException;
 
 /**
  * Class UsersModel
- * 
- ** Manages user accounts data layer
+ * ** Manages user accounts data layer
  ** Handles operations across 'user' (credentials) and 'savecustomer' (profile) tables
- * 
- * @package App\Models
+ * * @package App\Models
  */
 class UsersModel extends Model {
 
@@ -112,9 +110,7 @@ class UsersModel extends Model {
      * Registers a new user by creating records in both required tables
      *
      * @param string $email
-     * @param string $username
      * @param string $password plain text password
-     * @param string $lastname
      * @return bool|string true on success, "duplicate" if email exists, false on error
      */
     public function addUser($email, $password) {
@@ -191,5 +187,73 @@ class UsersModel extends Model {
         $sql = "SELECT COUNT(*) as total FROM User WHERE role = 'user'";
         $res = Db::getInstance()->query($sql)->fetch();
         return $res->total ?? 0;
+    }
+
+    /**
+     * Updates user profile information in both User and SaveCustomer tables
+     *
+     * @param int $id_user
+     * @param array $data
+     * @return bool|string true on success, error message on failure
+     */
+    public function updateUserProfile($id_user, $data) {
+        $db = Db::getInstance();
+        
+        try {
+            $db->beginTransaction();
+
+            // update email in user table if provided
+            if (!empty($data['email'])) {
+                // check for email uniqueness
+                $stmtCheckEmail = $db->prepare("SELECT id_Customer FROM User WHERE email = ? AND id_Customer != ?");
+                $stmtCheckEmail->execute([$data['email'], $id_user]);
+                if ($stmtCheckEmail->fetchColumn()) {
+                    throw new \Exception("Cet email est déjà utilisé par un autre compte.");
+                }
+
+                $stmtEmail = $db->prepare("UPDATE User SET email = ? WHERE id_Customer = ?");
+                $stmtEmail->execute([$data['email'], $id_user]);
+            }
+
+            // check if savecustomer record already exists for this user
+            $stmtCheckProfile = $db->prepare("SELECT id_SaveCustomer FROM SaveCustomer WHERE id_Customer = ?");
+            $stmtCheckProfile->execute([$id_user]);
+            $profileExists = $stmtCheckProfile->fetchColumn();
+
+            if ($profileExists) {
+                // update existing profile
+                $sqlUpdate = "UPDATE SaveCustomer SET first_name = ?, last_name = ?, phone = ?, address_line = ?, zip_code = ?, city = ? WHERE id_Customer = ?";
+                $stmtUpdate = $db->prepare($sqlUpdate);
+                $stmtUpdate->execute([
+                    $data['first_name'] ?? null,
+                    $data['last_name'] ?? null,
+                    $data['phone'] ?? null,
+                    $data['address_line'] ?? null,
+                    $data['zip_code'] ?? null,
+                    $data['city'] ?? null,
+                    $id_user
+                ]);
+            } else {
+                // insert new profile record
+                $sqlInsert = "INSERT INTO SaveCustomer (id_Customer, first_name, last_name, phone, address_line, zip_code, city) VALUES (?, ?, ?, ?, ?, ?, ?)";
+                $stmtInsert = $db->prepare($sqlInsert);
+                $stmtInsert->execute([
+                    $id_user,
+                    $data['first_name'] ?? null,
+                    $data['last_name'] ?? null,
+                    $data['phone'] ?? null,
+                    $data['address_line'] ?? null,
+                    $data['zip_code'] ?? null,
+                    $data['city'] ?? null
+                ]);
+            }
+
+            $db->commit();
+            return true;
+
+        } catch (\Exception $e) {
+            $db->rollBack();
+            return $e->getMessage();
+        }
     }
 }

@@ -316,7 +316,7 @@ class UserController extends Controller {
     }
 
     /**
-     * Verifies tokens for account activation, password reset, or 2fa
+     * verifies tokens for account activation, password reset, 2fa or profile updates
      *
      * @return void
      */
@@ -326,9 +326,11 @@ class UserController extends Controller {
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['token'])) {
             $token = $_POST['token'];
             
+            // verify token existence and validity
             $token_data = $this->token_model->verifyToken($token);
 
             if ($token_data) {
+                // delete token after successful verification
                 $this->token_model->consumeToken($token);
                 $this->token_model->deleteToken();
                 
@@ -355,14 +357,17 @@ class UserController extends Controller {
                     
                     if ($userFull) {
                         $idUser = is_object($userFull) ? $userFull->id_user : $userFull['id_user'];
-                        $username = is_object($userFull) ? $userFull->username : $userFull['username'];
                         $email = is_object($userFull) ? $userFull->email : $userFull['email'];
                         $etat = is_object($userFull) ? $userFull->etat : $userFull['etat'];
                         $mode = is_object($userFull) ? $userFull->mode : $userFull['mode'];
                         $role = is_object($userFull) ? ($userFull->role ?? 'user') : ($userFull['role'] ?? 'user');
                         
+                        // optional username check
+                        if (isset($userFull->username) || isset($userFull['username'])) {
+                            $_SESSION['username'] = is_object($userFull) ? $userFull->username : $userFull['username'];
+                        }
+
                         $_SESSION['user_id']  = $idUser;
-                        $_SESSION['username'] = $username;
                         $_SESSION['email']    = $email;
                         $_SESSION['status']   = $etat;
                         $_SESSION['mode']     = $mode;
@@ -373,7 +378,7 @@ class UserController extends Controller {
 
                         $this->mergeGuestData($idUser);
                         
-                        if ($userRole === 'admin') {
+                        if ($role === 'admin') {
                             header("Location: $baseUrl/admin");
                         } else {
                             if (isset($_SESSION['purchase_context'])) {
@@ -391,6 +396,27 @@ class UserController extends Controller {
                             'message' => $message,
                             'css' => 'login_views.css'
                         ]);
+                        exit;
+                    }
+                } elseif ($types === 'profile_update') {
+                    // apply the pending profile update from session
+                    if (isset($_SESSION['pending_profile_update'])) {
+                        $data = $_SESSION['pending_profile_update'];
+                        $result = $this->user_model->updateUserProfile($userId, $data);
+
+                        if ($result === true) {
+                            $_SESSION['email'] = $data['email'];
+                            if (!empty($data['first_name'])) {
+                                $_SESSION['user_name'] = $data['first_name'];
+                            }
+                            $_SESSION['profile_success'] = "Vos informations ont été mises à jour avec succès.";
+                        } else {
+                            $_SESSION['profile_error'] = $result;
+                        }
+                        
+                        // clear pending update data
+                        unset($_SESSION['pending_profile_update']);
+                        header("Location: $baseUrl/compte");
                         exit;
                     }
                 }
