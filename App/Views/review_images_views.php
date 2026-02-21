@@ -122,7 +122,7 @@
                                     <?= $t['review_btn_add'] ?? 'Ajouter au panier' ?>
                                 </button>
                                 
-                                <button type="submit" name="action" value= "buy_now" class="btn-buy-now-link" style="flex:1">
+                                <button type="submit" name="action" value= "buy_now" class="btn-select" style="flex:1">
                                     <?= $t['review_btn_buy'] ?? 'Achat Immédiat' ?>
                                 </button>
                             </div>

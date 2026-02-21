@@ -13,16 +13,18 @@ use PHPMailer\PHPMailer\Exception;
 
 /**
  * Class PaymentController
- * ** Handles the checkout process, payment simulation, and order finalization.
- ** Supports full cart checkout, single item checkout, and direct buy.
+ * * Handles the checkout process, payment simulation, and order finalization.
+ * Supports full cart checkout, single item checkout, and direct buy.
  * * @package App\Controllers
  */
 class PaymentController extends Controller {
 
-    /** @var array Key/Value pair of translations. */
+    /** * @var array Key/Value pair of translations. 
+     */
     private $translations;
 
-    /** @var string Base URL for PayPal API (Sandbox). */
+    /** * @var string Base URL for PayPal API (Sandbox). 
+     */
     private $paypalBaseUrl = 'https://api-m.sandbox.paypal.com';
 
     /**
@@ -47,7 +49,7 @@ class PaymentController extends Controller {
             exit; 
         }
 
-        // // if no purchase context exists, try to fallback to full cart or redirect
+        // fallback to full cart or redirect if no purchase context exists
         if (!isset($_SESSION['purchase_context'])) {
             if (!empty($_SESSION['cart'])) {
                 $_SESSION['purchase_context'] = [
@@ -78,7 +80,7 @@ class PaymentController extends Controller {
             't' => $this->translations,
             'total' => $totalPrice,
             'items' => $itemsToPay,
-            'client' => $clientInfo,
+            'user' => $clientInfo, // fixed the variable name from 'client' to 'user'
             'css' => 'payment_views.css'
         ]);
     }
@@ -157,11 +159,6 @@ class PaymentController extends Controller {
      *
      * @return void
      */
-    /**
-     * Handles the callback from paypal after user approval
-     *
-     * @return void
-     */
     public function success() {
         if (!isset($_GET['token'])) { 
             header("Location: " . ($_ENV['BASE_URL']) . "/cart"); 
@@ -200,7 +197,7 @@ class PaymentController extends Controller {
     }
 
     /**
-     * Persists the order to the database, generates final mosaic files, and updates stock
+     * Persists the order to the database, generates final mosaic files, and updates stock.
      *
      * @param object $paypalData response data from paypal api
      * @return void
@@ -227,7 +224,10 @@ class PaymentController extends Controller {
         $itemsToProcess = $_SESSION['purchase_context']['items'] ?? [];
 
         $subTotal = 0;
-        foreach ($itemsToProcess as $item) { $item = (array)$item; $subTotal += $item['price']; }
+        foreach ($itemsToProcess as $item) { 
+            $item = (array)$item; 
+            $subTotal += $item['price']; 
+        }
         $totalAmount = $subTotal + \App\Models\MosaicModel::DELIVERY_FEE;
 
         $cardInfo = [
@@ -284,13 +284,18 @@ class PaymentController extends Controller {
         $financialModel = new FinancialModel();
         $result = $financialModel->processOrder($userId, $realMosaicIds[0], $cardInfo, $totalAmount, $billingInfo);
 
-        if (!is_numeric($result)) { echo "Erreur BDD : " . $result; return; }
+        if (!is_numeric($result)) { 
+            echo "Erreur BDD : " . $result; 
+            return; 
+        }
         
         $orderId = (int)$result;
 
         foreach ($realMosaicIds as $idMosaic) {
             $mosaicModel->requete("UPDATE Mosaic SET id_Order = ? WHERE id_Mosaic = ?", [$orderId, $idMosaic]);
-            if (!$mosaicModel->hasComposition($idMosaic)) $mosaicModel->saveMosaicComposition($idMosaic);
+            if (!$mosaicModel->hasComposition($idMosaic)) {
+                $mosaicModel->saveMosaicComposition($idMosaic);
+            }
             $mosaicModel->deductStockFromMosaic($idMosaic);
         }
 
@@ -328,28 +333,49 @@ class PaymentController extends Controller {
         exit;
     }
 
+    /**
+     * Renders the order confirmation and invoice breakdown view.
+     *
+     * @return void
+     */
     public function confirmation() {
-        if (!isset($_GET['id'])) { header("Location: " . ($_ENV['BASE_URL']) . "/index.php"); exit; }
+        if (!isset($_GET['id'])) { 
+            header("Location: " . ($_ENV['BASE_URL']) . "/index.php"); 
+            exit; 
+        }
+
         $orderId = (int)$_GET['id'];
         $commandeModel = new CommandeModel();
         $mosaicModel = new MosaicModel();
         $orderDetails = $commandeModel->getOrderDetails($orderId);
-        if (!$orderDetails) { header("Location: " . ($_ENV['BASE_URL']) . "/index.php"); exit; }
+
+        if (!$orderDetails) { 
+            header("Location: " . ($_ENV['BASE_URL']) . "/index.php"); 
+            exit; 
+        }
+
         $orderDetails = (array) $orderDetails; 
         $items = $mosaicModel->getMosaicsByOrderId($orderId);
         $totalHandling = 0;
         $itemsTotalTTC = 0;
         $handlingUnit = \App\Models\MosaicModel::HANDLING_FEE; 
+
         foreach ($items as $item) {
             $pavage = is_object($item) ? $item->paving : $item['paving'];
             
             $price = $mosaicModel->calculatePriceFromContent($pavage);
             $pieces = $mosaicModel->countPiecesFromContent($pavage);
-            if (is_object($item)) { $item->price = $price; $item->pieces = $pieces; } 
-            else { $item['price'] = $price; $item['pieces'] = $pieces; }
+            if (is_object($item)) { 
+                $item->price = $price; 
+                $item->pieces = $pieces; 
+            } else { 
+                $item['price'] = $price; 
+                $item['pieces'] = $pieces; 
+            }
             $totalHandling += $handlingUnit;
             $itemsTotalTTC += $price; 
         }
+
         $deliveryTTC = \App\Models\MosaicModel::DELIVERY_FEE;
         $totalTTC = $itemsTotalTTC + $deliveryTTC;
         $tvaRate = 0.20;
@@ -358,6 +384,7 @@ class PaymentController extends Controller {
         $deliveryHT = $deliveryTTC / $coeff;      
         $totalHT = $totalTTC / $coeff;        
         $totalTVA = $totalTTC - $totalHT;
+
         $this->render('invoice_views', [
             't' => $this->translations, 
             'order' => $orderDetails,   
@@ -375,6 +402,13 @@ class PaymentController extends Controller {
         ]);
     }
 
+    /**
+     * Sends the order invoice via email to the client.
+     *
+     * @param string $email
+     * @param array $order
+     * @return void
+     */
     private function sendInvoiceEmail($email, $order) {
         $mail = new PHPMailer(true);
         $mosaicModel = new MosaicModel();
@@ -413,11 +447,13 @@ class PaymentController extends Controller {
             $total = number_format($order['total_amount'] ?? 0, 2);
             $mail->Body = "<div style='font-family: Arial, sans-serif; max-width: 600px; margin: auto; color: #333;'><h1 style='color: #006CB7;'>Merci pour votre commande !</h1><p>Voici le récapitulatif de votre commande <strong>#$invoiceNum</strong>.</p><table style='width: 100%; border-collapse: collapse; margin-top: 20px;'><thead><tr style='background-color: #f8f9fa;'><th style='padding: 10px; text-align: left;'>Article</th><th style='padding: 10px; text-align: right;'>Qté</th><th style='padding: 10px; text-align: right;'>Prix</th></tr></thead><tbody>$rowsHtml</tbody><tfoot><tr><td colspan='2' style='padding: 10px; text-align: right; font-weight: bold;'>TOTAL</td><td style='padding: 10px; text-align: right; font-weight: bold; color: #D92328;'>$total €</td></tr></tfoot></table></div>";
             $mail->send();
-        } catch (Exception $e) { error_log("Mailer Error: " . $mail->ErrorInfo); }
+        } catch (Exception $e) { 
+            error_log("Mailer Error: " . $mail->ErrorInfo); 
+        }
     }
 
     /**
-     * Retrieves a new oauth2 access token from paypal
+     * Retrieves a new oauth2 access token from paypal.
      *
      * @return string|null access token
      */
@@ -437,6 +473,14 @@ class PaymentController extends Controller {
         return $json->access_token ?? null;
     }
 
+    /**
+     * Helper to make API calls to PayPal.
+     *
+     * @param string $endpoint
+     * @param mixed $postData
+     * @param string $token
+     * @return mixed
+     */
     private function callPayPalApi($endpoint, $postData, $token) {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $this->paypalBaseUrl . $endpoint);

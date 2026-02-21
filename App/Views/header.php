@@ -23,6 +23,7 @@ if (isset($_SESSION['cart']) && is_array($_SESSION['cart'])) {
 ?>
 
 <header>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     <div class="header-container">
         <a href="<?= $baseUrl ?>/index.php" class="logo">
             <img src="<?= $baseUrl ?>/img/logo.png" alt="MyBrixStore Logo">
