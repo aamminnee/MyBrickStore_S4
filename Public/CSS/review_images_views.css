@@ -150,6 +150,7 @@
     max-height: 180px;
     object-fit: contain;
     display: block;
+    image-rendering: pixelated; 
 }
 
 .mosaic-options {
