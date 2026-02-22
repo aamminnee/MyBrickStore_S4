@@ -11,8 +11,11 @@
         <div class="footer-col">
             <h4>navigation</h4>
             <ul>
-                <li><a href="<?= $baseUrl ?>/index.php">accueil</a></li>
-                <li><a href="<?= $baseUrl ?>/cart">votre panier</a></li>
+                <li><a href="<?= $baseUrl ?>/index.php">Accueil</a></li>
+                <li><a href="<?= $baseUrl ?>/cart">Panier</a></li>
+                <li><a href="<?= $baseUrl ?>/commande">Mes commandes</a></li>
+                <li><a href="<?= $baseUrl ?>/compte">Profil</a></li>
+                <li><a href="<?= $baseUrl ?>/setting">Paramètres</a></li>
             </ul>
         </div>
 

@@ -56,8 +56,9 @@ if (isset($_SESSION['cart']) && is_array($_SESSION['cart'])) {
                     <li class="profile-menu">
                         <div class="profile-trigger">
                             <span><?= htmlspecialchars($_SESSION['user_name'] ?? ($t['nav_account'] ?? 'Mon Compte')) ?></span>
-                            <img src="<?= $baseUrl ?>/img/avatar.png" alt="Avatar" class="avatar-mini" 
-                                 onerror="this.src='https://ui-avatars.com/api/?name=<?= urlencode($_SESSION['user_name'] ?? 'User') ?>&background=random'">
+                            <img src="<?= !empty($_SESSION['user_avatar']) ? $_SESSION['user_avatar'] : $baseUrl . '/img/avatar.png' ?>" 
+                            alt="Avatar" class="avatar-mini" 
+                            onerror="this.src='https://ui-avatars.com/api/?name=<?= urlencode($_SESSION['user_name'] ?? 'User') ?>&background=random'">
                         </div>
                         
                         <ul class="dropdown">
@@ -66,6 +67,27 @@ if (isset($_SESSION['cart']) && is_array($_SESSION['cart'])) {
                             <li class="separator"></li>
                             <li><a href="<?= $baseUrl ?>/user/logout" class="logout-btn"><?= $t['nav_logout'] ?? 'Déconnexion' ?></a></li>
                         </ul>
+                    </li>
+                    <!-- language switcher with flags -->
+                    <li class="lang-switch-container">
+                        <?php 
+                        // default language is french
+                        $currentLang = $_SESSION['lang'] ?? 'fr'; 
+                        ?>
+                        
+                        <!-- french flag button -->
+                        <a href="<?= $baseUrl ?>/setting/setLanguage?lang=fr" 
+                           class="lang-link <?= $currentLang === 'fr' ? 'active' : '' ?>"
+                           title="Français">
+                           <img src="https://flagcdn.com/w40/fr.png" srcset="https://flagcdn.com/w80/fr.png 2x" alt="FR" class="flag-icon">
+                        </a>
+                        
+                        <!-- us flag button for english -->
+                        <a href="<?= $baseUrl ?>/setting/setLanguage?lang=en" 
+                           class="lang-link <?= $currentLang === 'en' ? 'active' : '' ?>"
+                           title="English">
+                           <img src="https://flagcdn.com/w40/us.png" srcset="https://flagcdn.com/w80/us.png 2x" alt="US" class="flag-icon">
+                        </a>
                     </li>
 
                 <?php else: ?>

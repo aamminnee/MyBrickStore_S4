@@ -116,6 +116,7 @@ header::after {
     align-items: center;
     gap: 8px;
     letter-spacing: 0.5px;
+    position: relative;
 }
 
 .btn-header:hover {
