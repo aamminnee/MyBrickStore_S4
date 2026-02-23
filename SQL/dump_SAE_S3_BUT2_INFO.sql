@@ -12904,6 +12904,16 @@ INSERT INTO `Translations` (`id`, `key_name`, `lang`, `texte`) VALUES
 (637, 'settings_btn_profile', 'en', 'Access my dashboard'),
 (638, 'settings_lang_desc', 'en', 'Choose the interface language.');
 
+-- Bouton "Achat Immédiat" (Page de review)
+INSERT INTO Translations (key_name, lang, texte) VALUES 
+('review_btn_buy', 'fr', 'Achat Immédiat'),
+('review_btn_buy', 'en', 'Buy Now');
+
+-- Bouton "Acheter cet article" (Page Panier - unitaire)
+INSERT INTO Translations (key_name, lang, texte) VALUES 
+('card_btn_buy_one', 'fr', 'Acheter cet article'),
+('card_btn_buy_one', 'en', 'Buy this item');
+
 -- Réactiver les contraintes de clés étrangères
 SET FOREIGN_KEY_CHECKS = 1;
 COMMIT;
