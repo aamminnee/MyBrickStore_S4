@@ -71,40 +71,41 @@ class CropImagesController extends Controller {
         $user_id = $_SESSION['user_id'] ?? null;
 
         if (!isset($_FILES['cropped_image']) || !isset($_POST['size'])) {
-            echo json_encode(["status" => "error", "message" => "données manquantes"]);
+            echo json_encode(["status" => "error", "message" => $this->translations['js_crop_missing_data'] ?? "données manquantes"]);
             exit;
         }
 
         $uploadedFile = $_FILES['cropped_image'];
 
         if ($uploadedFile['error'] !== UPLOAD_ERR_OK) {
-            $msg = "erreur inconnue";
+            $msg = $this->translations['js_crop_error_unknown'] ?? "erreur inconnue";
             switch ($uploadedFile['error']) {
-                case UPLOAD_ERR_INI_SIZE:
-                    $msg = "l'image est trop lourde (limite serveur)";
-                    break;
-                case UPLOAD_ERR_FORM_SIZE:
-                    $msg = "l'image est trop lourde (limite formulaire)";
-                    break;
-                case UPLOAD_ERR_PARTIAL:
-                    $msg = "téléchargement partiel uniquement";
-                    break;
-                case UPLOAD_ERR_NO_FILE:
-                    $msg = "aucun fichier reçu";
-                    break;
-                case UPLOAD_ERR_NO_TMP_DIR:
-                    $msg = "dossier temporaire manquant sur le serveur";
-                    break;
-                case UPLOAD_ERR_CANT_WRITE:
-                    $msg = "échec de l'écriture sur le disque";
-                    break;
+                case UPLOAD_ERR_INI_SIZE:   $msg = $this->translations['js_crop_error_ini_size'] ?? "l'image est trop lourde"; break;
+                case UPLOAD_ERR_PARTIAL:    $msg = $this->translations['js_crop_error_partial'] ?? "téléchargement partiel"; break;
+                case UPLOAD_ERR_NO_FILE:    $msg = $this->translations['js_crop_error_no_file'] ?? "aucun fichier reçu"; break;
             }
             echo json_encode(["status" => "error", "message" => $msg]);
             exit;
         }
 
         $boardSize = intval($_POST['size']); 
-        $_SESSION['boardSize'] = $boardSize;
+        
+        $imageInfo = getimagesize($uploadedFile['tmp_name']);
+        if (!$imageInfo) {
+            echo json_encode(["status" => "error", "message" => $this->translations['js_crop_error_invalid_img'] ?? "Fichier image invalide"]);
+            exit;
+        }
+
+        $realWidth  = $imageInfo[0];
+        $realHeight = $imageInfo[1];
+
+        $targetWidth  = $boardSize;
+        $targetHeight = (int)round(($realHeight / $realWidth) * $boardSize);
+
+        $dimension = $targetWidth . "x" . $targetHeight;
+        
+        $_SESSION['boardSize'] = $boardSize; 
+        $_SESSION['targetDimension'] = $dimension;
 
         $projectRoot = dirname(__DIR__, 2);
         $tempDir = $projectRoot . '/JAVA/temp';
@@ -119,22 +120,24 @@ class CropImagesController extends Controller {
 
         $inputPath = $tempDir . '/lego_in_' . uniqid() . '.png';
         $outputPath = $tempDir . '/lego_out_' . uniqid() . '.png';
-
         $jarPath = realpath(__DIR__ . '/../../bin/legotools-1.0-SNAPSHOT.jar');
 
         try {
             if (!move_uploaded_file($uploadedFile['tmp_name'], $inputPath)) {
-                throw new \Exception("impossible de sauvegarder l'image temporaire (vérifiez les droits ou la taille).");
+                throw new \Exception($this->translations['js_crop_error_save_temp'] ?? "impossible de sauvegarder l'image temporaire.");
             }
 
-            $dimension = $boardSize . "x" . $boardSize;
             $strategy = "stepwise"; 
             
             if (!$jarPath || !file_exists($jarPath)) {
                 throw new \Exception("fichier jar introuvable : " . $jarPath);
             }
 
-            $command = "java -jar " . escapeshellarg($jarPath) . " resize " . escapeshellarg($inputPath) . " " . escapeshellarg($outputPath) . " " . escapeshellarg($dimension) . " " . escapeshellarg($strategy) . " 2>&1";
+            $command = "java -jar " . escapeshellarg($jarPath) . " resize " . 
+                    escapeshellarg($inputPath) . " " . 
+                    escapeshellarg($outputPath) . " " . 
+                    escapeshellarg($dimension) . " " . 
+                    escapeshellarg($strategy) . " 2>&1";
 
             $output = [];
             $returnCode = 0;
@@ -151,12 +154,9 @@ class CropImagesController extends Controller {
             }
 
             $model = new ImagesModel();
-            
             $idToUpdate = $_POST['image_id'] ?? $_SESSION['current_image_id'] ?? null;
 
-            if (isset($_POST['image_id'])) {
-                $idToUpdate = $_POST['image_id'];
-            } else {
+            if (!$idToUpdate) {
                 $lastResult = $model->getLastImageByUserId($user_id);
                 if ($lastResult) {
                     $lastResult = (array)$lastResult; 

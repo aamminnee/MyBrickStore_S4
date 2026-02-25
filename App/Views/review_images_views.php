@@ -11,6 +11,7 @@
  * @var array $counts       Associative array of piece counts (key = style)
  * @var array $t            Associative array of translations
  */
+$baseUrl = $_ENV['BASE_URL'] ?? ''; 
 ?>
 
 <div class="review-wrapper">
@@ -116,13 +117,13 @@
                         <form action="<?= ($_ENV['BASE_URL'] ?? '') ?>/reviewImages/handleChoice" method="POST" class="card-action-form">
                             <input type="hidden" name="image_id" value="<?= $image['id_Image'] ?>">
                             <input type="hidden" name="choice" value="<?= $key ?>">
-                            
+
                             <div class="btn-group" style="display:flex; gap:10px;">
                                 <button type="submit" name="action" value="cart" class="btn-select" style="flex:1;">
                                     <?= $t['review_btn_add'] ?? 'Ajouter au panier' ?>
                                 </button>
-                                
-                                <button type="submit" name="action" value= "buy_now" class="btn-select" style="flex:1">
+
+                                <button type="submit" name="action" value= "buy_now" class="btn-buy-now-link" style="flex:1">
                                     <?= $t['review_btn_buy'] ?? 'Achat Immédiat' ?>
                                 </button>
                             </div>
@@ -148,16 +149,12 @@
     </div>
 
     <script>
-        function openZoomModal(imgSrc) {
-            const modal = document.getElementById("image-zoom-modal");
-            const modalImg = document.getElementById("zoomed-image");
-            modal.style.display = "flex";
-            modalImg.src = imgSrc;
-        }
-
-        function closeZoomModal() {
-            document.getElementById("image-zoom-modal").style.display = "none";
-        }
+        const translations = {
+            cart_adding: "<?= $t['js_cart_adding'] ?? 'Ajout...' ?>",
+            cart_added: "<?= $t['js_cart_added'] ?? '✔ Ajouté !' ?>",
+            cart_error: "<?= $t['js_cart_error'] ?? 'Erreur ❌' ?>"
+        };
     </script>
+    <script src="<?= ($_ENV['BASE_URL'] ?? '') ?>/JS/cart_animation.js"></script>
 </div>
 

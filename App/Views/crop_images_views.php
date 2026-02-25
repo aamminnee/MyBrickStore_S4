@@ -66,16 +66,26 @@ $baseUrl = $_ENV['BASE_URL'] ?? '';
                         </label>
                         <div class="select-wrapper">
                             <select id="aspect">
-                                <option value="1" selected><?= $t['crop_aspect_square'] ?? 'Carré (1:1)' ?></option>
-                                <option value="1.33333"><?= $t['crop_aspect_landscape'] ?? 'Paysage (4:3)' ?></option>
-                                <option value="1.77777"><?= $t['crop_aspect_cinema'] ?? 'Cinéma (16:9)' ?></option>
-                                <option value="0.75"><?= $t['crop_aspect_portrait'] ?? 'Portrait (3:4)' ?></option>
+                                <option value="NaN"><?= $t['home_label_original'] ?? 'Original' ?></option>
+                                <option value="1" selected><?= $t['crop_aspect_square'] ?? 'Carré' ?></option>
+                                <option value="1.33333"><?= $t['crop_aspect_landscape'] ?? 'Paysage' ?></option>
+                                <option value="1.77777"><?= $t['crop_aspect_cinema'] ?? 'Cinéma' ?></option>
+                                <option value="0.75"><?= $t['crop_aspect_portrait'] ?? 'Portrait' ?></option>
                             </select>
                             <div class="select-arrow">▼</div>
                         </div>
                     </div>
 
                     <div class="action-footer">
+                        
+                        <div id="progress-container" style="display: none;">
+                            <div id="warnings" class="warnings-text"></div>
+                            <div id="progress-text" class="progress-text"><?= $t['crop_status_processing'] ?? 'Traitement en cours...' ?></div>
+                            <div class="progress-bar-bg">
+                                <div id="progress-bar-fill" class="progress-bar-fill"></div>
+                            </div>
+                        </div>
+
                         <button id="btn-crop" class="btn-validate">
                             <?= $t['crop_btn_generate'] ?? 'Générer la Mosaïque' ?>
                         </button>
@@ -84,9 +94,6 @@ $baseUrl = $_ENV['BASE_URL'] ?? '';
             </aside>
 
         </div>
-
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-        <script src="<?= $baseUrl ?>/JS/crop_images.js"></script>
 
     <?php else: ?>
         <div class="empty-state">
@@ -98,3 +105,18 @@ $baseUrl = $_ENV['BASE_URL'] ?? '';
     <?php endif; ?>
 
 </div>
+
+<script>
+    const translations = {
+        crop_warning_large: "<?= $t['js_crop_warning_large'] ?? 'Image très grande...' ?>",
+        crop_error_small: "<?= $t['js_crop_error_small'] ?? 'Zone trop petite.' ?>",
+        crop_processing: "<?= $t['js_crop_processing'] ?? 'Génération en cours...' ?>",
+        crop_prep_error: "<?= $t['js_crop_prep_error'] ?? 'Erreur préparation image.' ?>",
+        crop_server_error: "<?= $t['js_crop_server_error'] ?? 'Erreur serveur' ?>",
+        crop_success: "<?= $t['js_crop_success'] ?? 'Succès ! Redirection...' ?>",
+        crop_unknown_error: "<?= $t['js_crop_unknown_error'] ?? 'Erreur inconnue' ?>",
+        crop_check_model: "<?= $t['js_crop_check_model'] ?? 'Vérifiez le modèle.' ?>"
+    };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+<script src="<?= $baseUrl ?>/JS/crop_images.js"></script>

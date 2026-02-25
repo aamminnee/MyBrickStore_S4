@@ -49,7 +49,6 @@ if (!isset($t) || empty($t)) {
         .notice-header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 4px solid var(--lego-blue); padding-bottom: 15px; margin-bottom: 30px; }
         .notice-header h1 { margin: 0; font-size: 1.8rem; text-transform: uppercase; color: var(--lego-blue); }
 
-        /* --- STYLES ÉCRAN (AVEC SCROLL) --- */
         .grid-wrapper { 
             border: 5px solid #222; 
             background: #222; 

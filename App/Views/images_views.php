@@ -121,6 +121,19 @@ $baseUrl = $_ENV['BASE_URL'] ?? '';
 
 </div>
 
+<script>
+    const translations = {
+        image_sent: "<?= $t['js_image_sent'] ?? 'Image envoyée !' ?>",
+        error_critical: "<?= $t['js_error_critical'] ?? 'erreur critique' ?>",
+        invalid_image: "<?= $t['js_invalid_image'] ?? 'image non valide' ?>",
+        select_image: "<?= $t['js_select_image'] ?? 'veuillez sélectionner une image' ?>",
+        sending: "<?= $t['js_sending'] ?? 'envoi...' ?>",
+        error_title: "<?= $t['js_error_title'] ?? 'Oups...' ?>",
+        confirm_btn: "<?= $t['js_confirm_btn'] ?? 'Compris' ?>",
+        tech_error_title: "<?= $t['js_tech_error_title'] ?? 'Erreur technique' ?>",
+        tech_error_text: "<?= $t['js_tech_error_text'] ?? 'Impossible de contacter le serveur.' ?>"
+    };
+</script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script src="<?= $baseUrl ?>/JS/drag_drop.js?v=<?= time() ?>"></script>

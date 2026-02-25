@@ -37,18 +37,14 @@ class UserController extends Controller {
     public function __construct() {
         parent::__construct();
         
-        // initialize database models
         $this->user_model = new UsersModel();
         $this->token_model = new TokensModel();
         
-        // initialize mailer instance
         $this->mail = new PHPMailer(true);
         
-        // load environment variables
         $dotenv = Dotenv::createImmutable(ROOT);
         $dotenv->load();
 
-        // assign translations from parent
         $this->translations = $this->trans;
     }
 
@@ -60,7 +56,6 @@ class UserController extends Controller {
      * @return string translated text
      */
     private function t($key, $default = '') {
-        // return translated text or fallback default
         return $this->translations[$key] ?? $default;
     }
 
@@ -69,23 +64,19 @@ class UserController extends Controller {
      * * @return bool true if verified, false otherwise
      */
     private function verifyHCaptcha() {
-        // fetch secret key and user response
         $hcaptchaSecret   = $_ENV['CAPTCHA_SECRET_KEY'] ?? '';
         $hcaptchaResponse = $_POST['h-captcha-response'] ?? '';
 
-        // fail early if no response
         if (empty($hcaptchaResponse)) {
             return false;
         }
 
-        // contact hcaptcha api to verify response
         $verify = file_get_contents(
             'https://hcaptcha.com/siteverify?secret=' . urlencode($hcaptchaSecret) .
             '&response=' . urlencode($hcaptchaResponse) .
             '&remoteip=' . $_SERVER['REMOTE_ADDR']
         );
         
-        // decode json response and check success status
         $captchaSuccess = json_decode($verify, true);
         return (!empty($captchaSuccess['success']) && $captchaSuccess['success'] === true);
     }
@@ -98,65 +89,51 @@ class UserController extends Controller {
     public function login() {
         $baseUrl = $_ENV['BASE_URL'] ?? '';
 
-        // process form if request is post
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['email']) && !empty($_POST['password'])) {
 
-            // verify captcha first
             if (!$this->verifyHCaptcha()) {
                 $message = $this->t('captcha_invalid', "Veuillez valider le Captcha.");
                 $this->render('login_views', ['message' => $message, 'css' => 'login_views.css']);
                 return;
             }
 
-            // trim inputs
             $email = trim($_POST['email']);
             $password = $_POST['password'];
             
-            // fetch user from database
             $user = $this->user_model->getUserByEmail($email);
 
-            // safely extract user data handling both array and object returns
             $userMdp   = is_object($user) ? ($user->mdp ?? null) : ($user['mdp'] ?? null);
             $userId    = is_object($user) ? ($user->id_user ?? null) : ($user['id_user'] ?? null);
             $userMode  = is_object($user) ? ($user->mode ?? null) : ($user['mode'] ?? null);
             $userEmail = is_object($user) ? ($user->email ?? null) : ($user['email'] ?? null);
 
-            // verify user exists and password is correct
             if ($user && password_verify($password, $userMdp)) {
                 
-                // normalize mode value
                 $modeClean = strtolower($userMode ?? '');
                 if ($modeClean === '2fa') $modeClean = 'email'; 
 
-                // check if any 2fa is enabled 
                 if (in_array($modeClean, ['email', 'app'])) {
-                    
-                    // set temporary session variables for 2fa flow
+
                     $_SESSION['temp_2fa_user_id'] = $userId;
                     $_SESSION['temp_2fa_email']   = $userEmail;
                     $_SESSION['temp_2fa_mode']    = $modeClean;
                     
-                    // send verification email if mode is not app (totp)
                     if ($modeClean !== 'app') {
                         $token = $this->token_model->generateToken($userId, "2FA");
                         $this->sendVerificationEmail($userEmail, $token);
                     }
                     
-                    // redirect to verification view
                     header("Location: $baseUrl/user/verify");
                     exit;
                 }
 
-                // finalize login directly if no 2fa is active
                 $this->finalizeLogin($user);
                 exit;
             } else {
-                // handle wrong credentials
                 $message = $this->t('login_error', "Email ou mot de passe incorrect.");
                 $this->render('login_views', ['message' => $message, 'css' => 'login_views.css']);
             }
         } else {
-            // render login form
             $this->render('login_views', ['css' => 'login_views.css']);
         }
     }
@@ -171,33 +148,34 @@ class UserController extends Controller {
         $baseUrl = $_ENV['BASE_URL'] ?? '';
         
         if ($userFull) {
-            // populate final session variables securely
             $idUser = is_object($userFull) ? ($userFull->id_user ?? null) : ($userFull['id_user'] ?? null);
             $email  = is_object($userFull) ? ($userFull->email ?? null) : ($userFull['email'] ?? null);
             $etat   = is_object($userFull) ? ($userFull->status ?? ($userFull->etat ?? null)) : ($userFull['status'] ?? ($userFull['etat'] ?? null));
             $mode   = is_object($userFull) ? ($userFull->mode ?? null) : ($userFull['mode'] ?? null);
             $role   = is_object($userFull) ? ($userFull->role ?? 'user') : ($userFull['role'] ?? 'user');
+
+            $avatar = is_object($userFull) ? ($userFull->avatar ?? null) : ($userFull['avatar'] ?? null);
+            if ($avatar) {
+                $_SESSION['user_avatar'] = 'data:image/jpeg;base64,' . base64_encode($avatar);
+            } else {
+                $_SESSION['user_avatar'] = null;
+            }
             
-            // optional username setup avoiding object as array fetch errors
             $username = is_object($userFull) ? ($userFull->username ?? null) : ($userFull['username'] ?? null);
             if ($username !== null) {
                 $_SESSION['username'] = $username;
             }
 
-            // confirm connection
             $_SESSION['user_id']  = $idUser;
             $_SESSION['email']    = $email;
             $_SESSION['status']   = $etat;
             $_SESSION['mode']     = $mode;
             $_SESSION['role']     = $role;
             
-            // clear temporary session data
             unset($_SESSION['temp_2fa_user_id'], $_SESSION['temp_2fa_email'], $_SESSION['temp_2fa_mode']);
 
-            // attach guest data to logged account
             $this->mergeGuestData($idUser);
             
-            // route user correctly
             if ($role === 'admin') {
                 header("Location: $baseUrl/admin");
             } else {
@@ -210,8 +188,7 @@ class UserController extends Controller {
                 }
             }
         } else {
-            // fallback error
-            $message = "Erreur critique : utilisateur introuvable.";
+            $message = $this->t('user_not_found', "Erreur critique : utilisateur introuvable.");
             $this->render('login_views', ['message' => $message, 'css' => 'login_views.css']);
         }
     }
@@ -224,13 +201,11 @@ class UserController extends Controller {
     public function admin() {
         $baseUrl = $_ENV['BASE_URL'] ?? '';
         
-        // redirect to home if not admin
         if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
             header("Location: $baseUrl/index.php");
             exit;
         }
 
-        // redirect to admin panel
         header("Location: $baseUrl/admin");
         exit;
     }
@@ -243,28 +218,26 @@ class UserController extends Controller {
     public function register() {
         $baseUrl = $_ENV['BASE_URL'];
 
-        // process form if request is post
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'], $_POST['password'])) {
 
-            // verify captcha first
             if (!$this->verifyHCaptcha()) {
                 $msg = $this->t('captcha_invalid', "Veuillez valider le Captcha.");
                 $this->render('register_views', ['error' => $msg, 'css' => 'register_views.css']);
                 return;
             }
 
-            // get user input
             $email = trim($_POST['email']);
             $password = $_POST['password'];
             $confirm_password = $_POST['confirm_password'] ?? '';
             
-            // check password confirmation
             if ($password !== $confirm_password) {
-                $this->render('register_views', ['error' => "Les mots de passe ne correspondent pas.", 'css' => 'register_views.css']);
+                $this->render('register_views', [
+                    'error' => $this->t('passwords_not_matching', "Les mots de passe ne correspondent pas."),
+                    'css' => 'register_views.css'
+                ]);
                 return;
             }
 
-            // validate password complexity
             $passwordPattern = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/';
             if (!preg_match($passwordPattern, $password)) {
                 $msg = $this->t('password_invalid', "Le mot de passe doit contenir 8 caractères min, avec majuscule, minuscule, chiffre et spécial.");
@@ -272,41 +245,33 @@ class UserController extends Controller {
                 return;
             }
 
-            // try adding user to database
             $result = $this->user_model->addUser($email, $password);
             
-            // handle result scenarios
             if ($result === true) {
                 $user = $this->user_model->getUserByEmail($email);
                 $userId = is_object($user) ? ($user->id_user ?? null) : ($user['id_user'] ?? null);
                 
                 if ($userId) {
-                    // save email for resend logic
                     $_SESSION['email'] = $email;
                     
-                    // generate token and send welcome email
                     $token = $this->token_model->generateToken($userId, "validation");
                     $this->sendVerificationEmail($email, $token);
                     header("Location: $baseUrl/user/verify");
                     exit;
                 }
             } elseif ($result === "duplicate") {
-                // handle email already exists
                 $msg = $this->t('username_exists', "Cet email est déjà utilisé.");
                 $this->render('register_views', ['error' => $msg, 'css' => 'register_views.css']);
                 exit;
             } else {
-                // handle generic failure
                  $msg = $this->t('register_error', "L'inscription a échoué, veuillez réessayer.");
                  $this->render('register_views', ['error' => $msg, 'css' => 'register_views.css']);
                 exit;
             }
         } else {
-            // retrieve any pending errors from session
             $error = $_SESSION['register_message'] ?? null;
             unset($_SESSION['register_message']);
 
-            // render register form
             $this->render('register_views', ['error' => $error, 'css' => 'register_views.css']);
         }
     }
@@ -317,12 +282,10 @@ class UserController extends Controller {
      * @return void
      */
     public function resetPasswordForm() {
-        // process form submission
         if (isset($_POST['reset_password'])) {
             $password = $_POST['password'];
             $password_confirm = $_POST['password_confirm'];
 
-            // verify passwords match
             if ($password !== $password_confirm) {
                 $error = "Les mots de passe ne correspondent pas.";
                 $this->render('reset_password_views', [
@@ -332,7 +295,6 @@ class UserController extends Controller {
                 return;
             }
 
-            // validate new password constraints
             $validation = $this->user_model->validateNewPassword($_SESSION['user_id'], $password);
 
             if ($validation !== true) {
@@ -343,18 +305,14 @@ class UserController extends Controller {
                 return;
             }
 
-            // update password in database
             $this->user_model->updatePassword($_SESSION['user_id'], $password);
             
-            // set success flash message
-            $_SESSION['success_message'] = "Mot de passe modifié avec succès.";
+            $_SESSION['success_message'] = $this->t('password_changed_success', "Mot de passe modifié avec succès.");
             
-            // redirect to settings
             header('Location: ' . $_ENV['BASE_URL'] . '/setting');
             exit;
 
         } else {
-            // render form
             $this->render('reset_password_views', [
                 'css' => 'reset_password_views.css'
             ]);
@@ -369,28 +327,23 @@ class UserController extends Controller {
     public function resetPassword() {
         $baseUrl = $_ENV['BASE_URL'] ?? '';
 
-        // handle external request via email input
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['email'])) {
             $email = trim($_POST['email']);
             
-            // fetch user account
             $user = $this->user_model->getUserByEmail($email);
 
             if ($user) {
                 $userId    = is_object($user) ? ($user->id_user ?? null) : ($user['id_user'] ?? null);
                 $userEmail = is_object($user) ? ($user->email ?? null) : ($user['email'] ?? null);
 
-                // save email to session for flow context
                 $_SESSION['email'] = $userEmail; 
 
-                // generate recovery token and mail it
                 $token = $this->token_model->generateToken($userId, "reinitialisation");
                 $this->sendVerificationEmail($userEmail, $token);
 
                 header("Location: $baseUrl/user/verify");
                 exit;
             } else {
-                // show error if account not found
                 $message = "Aucun compte associé à cet email.";
                 $this->render('forgot_password_views', [
                     'message' => $message,
@@ -398,7 +351,6 @@ class UserController extends Controller {
                 ]);
             }
         }
-        // handle internal request from logged in user
         elseif (isset($_SESSION['user_id'])) {
             $token = $this->token_model->generateToken($_SESSION['user_id'], "reinitialisation");
             $this->sendVerificationEmail($_SESSION['email'], $token);
@@ -406,7 +358,6 @@ class UserController extends Controller {
             exit;
         }
         else {
-            // render forgot password form
             $this->render('forgot_password_views', [
                 'css' => 'login_views.css'
             ]);
@@ -421,27 +372,22 @@ class UserController extends Controller {
     public function verify() {
         $baseUrl = $_ENV['BASE_URL'] ?? '';
         
-        // pull any flash messages
         $message = $_SESSION['verify_error'] ?? null;
         $success = $_SESSION['verify_success'] ?? null;
         unset($_SESSION['verify_error'], $_SESSION['verify_success']);
 
-        // process form submission
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['token'])) {
             $token = $_POST['token'];
             
             $isAppLogin = (isset($_SESSION['temp_2fa_mode']) && $_SESSION['temp_2fa_mode'] === 'app');
             
-            // check if token is valid in database (for email tokens)
             $token_data = $this->token_model->verifyToken($token);
 
-            // 1. handle totp (app) verification specifically without database token
             if ($isAppLogin && !$token_data) {
                 $userId = $_SESSION['temp_2fa_user_id'] ?? null;
                 $userFull = $this->user_model->getUserById($userId);
                 $secret = is_object($userFull) ? ($userFull->totp_secret ?? null) : ($userFull['totp_secret'] ?? null);
                 
-                // verify pure time based logic using model
                 if ($this->user_model->verifyTOTP($secret, $token)) {
                     $this->finalizeLogin($userFull);
                     exit;
@@ -449,44 +395,37 @@ class UserController extends Controller {
                     $message = $this->t('token_invalid', "Code Google Authenticator invalide ou expiré.");
                 }
             }
-            // 2. handle standard database tokens
             elseif ($token_data) {
-                // mark token as used and cleanup
                 $this->token_model->consumeToken($token);
                 $this->token_model->deleteToken();
                 
-                // extract data from token safely
                 $userId = is_object($token_data) ? ($token_data->id_Customer ?? null) : ($token_data['id_Customer'] ?? null);
                 $types  = is_object($token_data) ? ($token_data->types ?? null) : ($token_data['types'] ?? null);
 
-                // handle validation type
                 if ($types === 'validation') {
                     $this->user_model->activateUser($userId);
-                    if(isset($_SESSION['user_id'])) {
-                        $_SESSION['status'] = 'valide';
-                        header("Location: $baseUrl/index.php");
+
+                    $userFull = $this->user_model->getUserById($userId);
+                    if ($userFull) {
+                        $this->finalizeLogin($userFull);
+                        exit;
+                    } else {
+                        header("Location: $baseUrl/user/login");
                         exit;
                     }
-                    header("Location: $baseUrl/user/login");
-                    exit;
 
-                // handle reset type
                 } elseif ($types === 'reinitialisation') {
                     $_SESSION['user_id'] = $userId; 
                     header("Location: $baseUrl/user/resetPasswordForm"); 
                     exit;
 
-                // handle email 2fa type
                 } elseif ($types === '2FA') {
                     $userFull = $this->user_model->getUserById($userId); 
                     if ($userFull) {
                         $this->finalizeLogin($userFull);
                         exit;
                     }
-                    
-                // handle profile update type
                 } elseif ($types === 'profile_update') {
-                    // execute the pending database update
                     if (isset($_SESSION['pending_profile_update'])) {
                         $data = $_SESSION['pending_profile_update'];
                         $result = $this->user_model->updateUserProfile($userId, $data);
@@ -496,19 +435,17 @@ class UserController extends Controller {
                             if (!empty($data['first_name'])) {
                                 $_SESSION['user_name'] = $data['first_name'];
                             }
-                            $_SESSION['profile_success'] = "Vos informations ont été mises à jour avec succès.";
+                            $_SESSION['profile_success'] = $this->t('profile_update_success', "Vos informations ont été mises à jour avec succès.");
                         } else {
                             $_SESSION['profile_error'] = $result;
                         }
                         
-                        // cleanup
                         unset($_SESSION['pending_profile_update']);
                         header("Location: $baseUrl/compte");
                         exit;
                     }
                 }
             } else {
-                // check explicitly if the token exists but is expired
                 if (method_exists($this->token_model, 'isTokenExpired') && $this->token_model->isTokenExpired($token)) {
                     $message = $this->t('token_expired', "Votre code de sécurité a expiré. Veuillez en demander un nouveau.");
                 } else {
@@ -517,7 +454,6 @@ class UserController extends Controller {
             }
         } 
         
-        // render view
         $this->render('verify_views', [
             'message' => $message,
             'success' => $success,
@@ -536,7 +472,6 @@ class UserController extends Controller {
         $email = null;
         $type = null;
 
-        // determine which context needs a new code based on session data
         if (isset($_SESSION['temp_2fa_user_id'], $_SESSION['temp_2fa_email'])) {
             $userId = $_SESSION['temp_2fa_user_id'];
             $email = $_SESSION['temp_2fa_email'];
@@ -546,7 +481,6 @@ class UserController extends Controller {
             $email = $_SESSION['email'];
             $type = 'profile_update';
         } elseif (isset($_SESSION['email'])) {
-            // covers both password reset and generic account activation
             $email = $_SESSION['email'];
             $user = $this->user_model->getUserByEmail($email);
             if ($user) {
@@ -557,19 +491,17 @@ class UserController extends Controller {
         }
 
         if ($userId && $email && $type) {
-            // generateToken automatically deletes old ones for this user and context
             $newToken = $this->token_model->generateToken($userId, $type);
 
-            // send the appropriate professional email template
             if ($type === 'profile_update') {
                 $this->sendProfileUpdateEmail($email, $newToken);
             } else {
                 $this->sendVerificationEmail($email, $newToken);
             }
 
-            $_SESSION['verify_success'] = "Un nouveau code a été envoyé à votre adresse e-mail.";
+            $_SESSION['verify_success'] = $this->t('Un nouveau code a été envoyé à votre adresse e-mail.');
         } else {
-            $_SESSION['verify_error'] = "Impossible de renvoyer le code. Veuillez recommencer l'opération initiale.";
+            $_SESSION['verify_error'] = $this->t("Impossible de renvoyer le code.");
         }
 
         header("Location: $baseUrl/user/verify");
@@ -586,7 +518,6 @@ class UserController extends Controller {
      */
     private function sendVerificationEmail($email, $token) {
         try {
-            // configure phpmailer for mailjet
             $this->mail->isSMTP();
             $this->mail->Host       = $_ENV['MAILJET_HOST'];
             $this->mail->SMTPAuth   = true;
@@ -595,16 +526,13 @@ class UserController extends Controller {
             $this->mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             $this->mail->Port       = $_ENV['MAILJET_PORT'];
             
-            // set sender and recipient
             $this->mail->setFrom($_ENV['MAIL_FROM_ADDRESS'], $_ENV['MAIL_FROM_NAME']);
             $this->mail->addAddress($email);
             
-            // prepare email content
             $this->mail->isHTML(true);
             $this->mail->CharSet = 'UTF-8';
             $this->mail->Subject = $this->t('verification_code_subject', "Code de vérification de votre compte");
             
-            // create a beautiful and professional html email template
             $body = "
             <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9; border-radius: 8px; border: 1px solid #e0e0e0;'>
                 <h2 style='color: #006CB7; text-align: center; font-size: 24px;'>Vérification de sécurité requise</h2>
@@ -631,7 +559,6 @@ class UserController extends Controller {
             $this->mail->Body = $body;
             $this->mail->send();
         } catch (Exception $e) {
-            // log silently if mail fails
             error_log("Mail error: " . $this->mail->ErrorInfo);
         }
     }
@@ -698,7 +625,6 @@ class UserController extends Controller {
     public function toggle2FA() {
         $baseUrl = $_ENV['BASE_URL'];
 
-        // require active session
         if (!isset($_SESSION['user_id'])) {
             header("Location: $baseUrl/user/login");
             exit;
@@ -707,7 +633,6 @@ class UserController extends Controller {
         $id_user = $_SESSION['user_id'];
         $action = $_POST['mode'] ?? null;
         
-        // update database mode and session based on requested action
         if ($action === 'enable') {
             $this->user_model->setModeById($id_user, '2FA');
             $_SESSION['mode'] = '2FA';
@@ -720,7 +645,6 @@ class UserController extends Controller {
             $message = $this->t('invalid_request', "Invalid request.");
         }
         
-        // render settings with feedback
         $this->render('setting_views', [
             'message' => $message,
             'css' => 'setting_views.css',   
@@ -736,12 +660,10 @@ class UserController extends Controller {
     public function logout() {
         $baseUrl = $_ENV['BASE_URL'];
         
-        // destroy all session data
         session_unset();
         session_destroy();
         
-        // send user to login page
-        header("Location: $baseUrl/user/login");
+        header("Location: $baseUrl/");
         exit;
     }
 
@@ -753,7 +675,6 @@ class UserController extends Controller {
     private function mergeGuestData($userId) {
         $imagesModel = new ImagesModel();
         
-        // link cart items to user id
         if (!empty($_SESSION['cart']) && is_array($_SESSION['cart'])) {
             foreach ($_SESSION['cart'] as $item) {
                 if (isset($item['image_id'])) {
@@ -762,7 +683,6 @@ class UserController extends Controller {
             }
         }
 
-        // link purchase context items to user id
         if (!empty($_SESSION['purchase_context']['items']) && is_array($_SESSION['purchase_context']['items'])) {
             foreach ($_SESSION['purchase_context']['items'] as $item) {
                 if (isset($item['image_id'])) {

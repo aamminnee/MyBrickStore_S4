@@ -25,6 +25,7 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    
 }
 
 .main-content, .main-container {
@@ -34,6 +35,7 @@ body {
     align-items: center;
     padding: 40px 20px;
     width: 100%;
+    min-height: calc(90vh - var(--header-height));
 }
 
 .login-container, .register-container {

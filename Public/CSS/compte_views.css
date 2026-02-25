@@ -1,19 +1,9 @@
-/* * styles for the account dashboard view
- * includes discord-like profile display and toggle edit form
- */
-
- body {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    margin: 0;
-}
-
 .account-wrapper {
     padding: 40px 20px;
     max-width: 1000px;
     margin: 0 auto;
     font-family: 'Inter', 'Segoe UI', sans-serif;
+    min-height: calc(90vh - 80px);
 }
 
 .account-header h1 {
@@ -57,7 +47,6 @@
     text-align: center;
 }
 
-/* status and info badges */
 .info-row {
     display: flex;
     flex-direction: column;
@@ -99,7 +88,6 @@
     color: #721c24;
 }
 
-/* discord-like data list */
 .profile-data-list {
     display: flex;
     flex-direction: column;
@@ -144,7 +132,6 @@
     color: #24292e;
 }
 
-/* edit icon button */
 .btn-edit-icon {
     background: #f1f3f4;
     border: none;
@@ -169,7 +156,6 @@
     color: #174ea6 !important;
 }
 
-/* form styles */
 .profile-form {
     display: flex;
     flex-direction: column;
@@ -213,7 +199,6 @@
     background-color: #fff;
 }
 
-/* action buttons */
 .form-actions {
     display: flex;
     gap: 15px;
@@ -253,7 +238,6 @@
     background-color: #d8dadf;
 }
 
-/* alerts */
 .alert-box {
     padding: 15px 20px;
     border-radius: 8px;
@@ -273,7 +257,49 @@
     border: 1px solid #f5c6cb;
 }
 
-/* responsive */
+.avatar-preview-container {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid #007bff;
+    cursor: pointer;
+}
+
+.avatar-large {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    font-size: 0.7em;
+    padding: 5px 0;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.avatar-preview-container:hover .avatar-overlay {
+    opacity: 1;
+}
+
+.card-icon-wrapper .avatar-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #eaeaea;
+}
+
 @media (max-width: 600px) {
     .form-row {
         flex-direction: column;

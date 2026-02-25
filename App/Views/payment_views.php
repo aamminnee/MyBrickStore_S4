@@ -1,19 +1,17 @@
 <?php
 /**
- * Payment checkout view
- * Displays the checkout form and a detailed order summary.
- * Handles saved address auto-filling.
- * * @var array $user  User data passed from controller
- * @var array $t     Translations
- * @var array $items Items in the current checkout session
- * @var float $total Total amount to pay
- */
+* Payment checkout view
+* Displays the checkout form and a detailed order summary.
+* Handles saved address auto-filling.
+* * @var array $user  User data passed from controller
+* @var array $t     Translations
+* @var array $items Items in the current checkout session
+* @var float $total Total amount to pay
+*/
 
-// combination of both versions: check for items (controller update) or cart (fallback)
 $itemsList = isset($items) ? (array)$items : (isset($cart) ? (array)$cart : []);
 $c = isset($client) ? (array)$client : [];
 
-// extract user info safely for the auto-fill feature
 $userEmail = $user['email'] ?? '';
 $userFirstName = $user['first_name'] ?? '';
 $userLastName = $user['last_name'] ?? '';
@@ -22,10 +20,8 @@ $userZip = $user['zip_code'] ?? '';
 $userCity = $user['city'] ?? '';
 $userPhone = $user['phone'] ?? '';
 
-// check if user has a complete saved address
 $hasSavedAddress = (!empty($userAddress) && !empty($userCity) && !empty($userZip));
 
-// calculate subtotal from items list
 $subTotal = 0;
 foreach ($itemsList as $item) {
     $price = is_object($item) ? ($item->price ?? 0) : ($item['price'] ?? 0);
@@ -75,7 +71,7 @@ $shippingCost = $total - $subTotal;
                 </h3>
                 
                 <form action="<?= $_ENV['BASE_URL'] ?>/payment/process" method="POST" id="checkout-form">
-                    
+    
                     <div class="form-row">
                         <div class="form-group">
                             <label for="first_name"><?= $t['payment_label_firstname'] ?? 'Prénom' ?> *</label>
@@ -114,15 +110,75 @@ $shippingCost = $total - $subTotal;
                         </div>
                     </div>
 
-                    <button type="submit" class="btn-pay-now">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2" ry="2"></rect><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                        Payer avec
-                        <span class="paypal-logo-text">Pay<span>Pal</span></span>
-                    </button>
+                    <div class="payment-selection" style="margin-top: 30px; border-top: 1px solid #eee; padding-top: 25px;">
+                        <h3 style="font-size: 1.2rem; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#006CB7" stroke-width="2"><path d="M21 4H3a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+                            <?= $t['payment_method_title'] ?? 'Mode de paiement' ?>
+                        </h3>
+                        
+                        <div class="payment-tabs-container">
+                            <button type="button" id="tab-paypal" class="payment-tab active" onclick="switchPayment('paypal')">
+                                <div class="tab-content">
+                                    <img src="https://www.paypalobjects.com/webstatic/mktg/logo/pp_cc_mark_37x23.jpg" alt="PayPal">
+                                    <span>PayPal</span>
+                                </div>
+                                <div class="tab-indicator"></div>
+                            </button>
+                            <button type="button" id="tab-card" class="payment-tab" onclick="switchPayment('card')">
+                                <div class="tab-content">
+                                    <div class="tab-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                                            <line x1="1" y1="10" x2="23" y2="10"/>
+                                        </svg>
+                                    </div>
+                                    <span class="tab-label"><?= $t['payment_bank_card'] ?? 'Carte Bancaire' ?></span>
+                                </div>
+                            </button>
+                        </div>
+
+                        <div id="section-paypal" class="payment-method-body active">
+                            <button type="submit" class="btn-pay-now paypal-btn">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                                <?= $t['payment_pay_with'] ?? 'Payer avec' ?><strong>PayPal</strong>
+                            </button>
+                        </div>
+
+                        <div id="section-card" class="payment-method-body">
+                            <div class="card-form-wrapper">
+                                
+                                <div class="form-group mb-15">
+                                    <label class="small-label"><?= $t['payment_card_number'] ?? 'NUMÉRO DE CARTE' ?></label>
+                                    <div class="input-with-icon">
+                                        <input type="text" id="card_num" name="card_num" placeholder="4242 4242 4242 4242" class="form-control card-input" maxlength="19">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="small-label"><?= $t['payment_card_expiry'] ?? 'EXPIRATION' ?></label>
+                                        <input type="text" id="card_exp" name="card_exp" placeholder="MM/YY" class="form-control" maxlength="5">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="small-label">CVV</label>
+                                        <div class="input-with-icon">
+                                            <input type="text" id="card_cvv" name="card_cvv" placeholder="123" class="form-control" maxlength="3">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <button type="button" onclick="submitCardPayment()" class="btn-pay-now card-btn">
+                                    <?= $t['payment_confirm'] ?? 'Confirmer le paiement par carte' ?>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                     
                     <div class="security-notice">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                        <span><?= $t['payment_secure_info'] ?? 'Paiement 100% sécurisé et cryptées.' ?></span>
+                        <span><?= $t['payment_secure_info'] ?? 'Paiement 100% sécurisé et crypté.' ?></span>
                     </div>
                 </form>
             </div>
@@ -145,8 +201,8 @@ $shippingCost = $total - $subTotal;
                                 <img src="<?= $imgSrc ?>" alt="Mosaïque" class="summary-item-img">
                                 <div class="summary-item-details">
                                     <h4 class="summary-item-title"><?= $t['cart_product_title'] ?? 'Mosaïque Personnalisée' ?></h4>
-                                    <p class="summary-item-meta">Taille: <?= $itemArray['size'] ?? '?' ?>x<?= $itemArray['size'] ?? '?' ?> &bull; Style: <?= ucfirst($itemArray['style'] ?? 'standard') ?></p>
-                                    <p class="summary-item-meta"><?= $itemArray['pieces_count'] ?? 0 ?> pièces Lego®</p>
+                                    <p class="summary-item-meta"><?= $t['cart_label_size'] ?? 'Taille' ?>: <?= $itemArray['size'] ?? '?' ?>x<?= $itemArray['size'] ?? '?' ?> &bull; Style: <?= ucfirst($itemArray['style'] ?? 'standard') ?></p>
+                                    <p class="summary-item-meta"><?= $itemArray['pieces_count'] ?? 0 ?><?= $t['cart_label_pieces'] ?? 'Pièces' ?></p>
                                 </div>
                                 <div class="summary-item-price">
                                     <?= number_format($itemArray['price'] ?? 0, 2, ',', ' ') ?> €
@@ -155,7 +211,7 @@ $shippingCost = $total - $subTotal;
                         <?php endforeach; ?>
                     </div>
                 <?php else: ?>
-                    <p style="color: #6b7280; font-style: italic; margin-bottom: 20px;">Aucun article à afficher.</p>
+                    <p style="color: #6b7280; font-style: italic; margin-bottom: 20px;"><?= $t['cart_show_article'] ?? 'Aucun article à afficher.' ?></p>
                 <?php endif; ?>
 
                 <div class="summary-totals">
@@ -196,13 +252,21 @@ $shippingCost = $total - $subTotal;
                     <h4><?= $t['payment_sandbox_title'] ?? 'Environnement de Test (Sandbox)' ?></h4>
                 </div>
                 
-                <p><?= $t['payment_sandbox_desc'] ?? 'Ce paiement est une simulation. Aucun montant réel ne sera débité. Pour valider le test PayPal, utilisez ces identifiants fictifs' ?></p>
+                <p><?= $t['payment_sandbox_desc'] ?? 'Ce paiement est une simulation. Aucun montant réel ne sera débité.' ?></p>
 
-                <div class="sandbox-credentials">
+                <div id="sandbox-paypal-info" class="sandbox-credentials">
+                    <p style="margin-bottom: 5px; font-weight: bold; color: #006CB7;"><?= $t['payment_sandbox_identifier'] ?? 'Identifiants test PayPal :' ?></p>
                     <p><strong><?= $t['payment_sandbox_email'] ?? 'Email :' ?></strong> sb-o00un48707050@personal.example.com</p>
                     <p><strong><?= $t['payment_sandbox_password'] ?? 'Mot de passe :' ?></strong> 0oH&XU{K</p>
                 </div>
-                
+
+                <div id="sandbox-card-info" class="sandbox-credentials" style="display: none;">
+                    <p style="margin-bottom: 5px; font-weight: bold; color: #28a745;"><?= $t['payment_sandbox_card'] ?? 'Coordonnées test Carte Bancaire :' ?></p>
+                    <p><strong><?= $t['payment_label_card'] ?? 'Numéro de carte :' ?></strong> : 4242 4242 4242 4242</p>
+                    <p><strong><?= $t['payment_label_expiry'] ?? 'Expiration :' ?></strong> : 12/34</p>
+                    <p><strong>CVV</strong> : 123</p>
+                </div>
+                            
                 <p class="sandbox-warning">
                     <?= $t['payment_sandbox_warning'] ?? '⚠️ Pensez bien à les copier dans un bloc-notes avant de cliquer sur "Payer" pour ne pas avoir à revenir en arrière !' ?>
                 </p>
@@ -212,44 +276,21 @@ $shippingCost = $total - $subTotal;
 </div>
 
 <script>
-    // auto-fill form using the saved address data
-    function useSavedAddress() {
-        const savedData = {
+    const CHECKOUT_CONFIG = {
+        savedAddress: {
             firstName: <?= json_encode($userFirstName) ?>,
-            lastName: <?= json_encode($userLastName) ?>,
-            address: <?= json_encode($userAddress) ?>,
-            zip: <?= json_encode($userZip) ?>,
-            city: <?= json_encode($userCity) ?>,
-            phone: <?= json_encode($userPhone) ?>
-        };
-
-        document.getElementById('first_name').value = savedData.firstName;
-        document.getElementById('last_name').value = savedData.lastName;
-        document.getElementById('address_line').value = savedData.address;
-        document.getElementById('zip_code').value = savedData.zip;
-        document.getElementById('city').value = savedData.city;
-        document.getElementById('phone').value = savedData.phone;
-
-        const card = document.getElementById('saved-address-card');
-        const btnText = document.getElementById('btn-use-address-text');
-        
-        card.classList.add('selected');
-        btnText.innerHTML = '✓ <?= $t['payment_address_selected'] ?? 'Adresse appliquée' ?>';
-        document.getElementById('checkout-form').scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-
-    // Toggle promo code input display
-    function togglePromoCode() {
-        const group = document.getElementById('promo-input-group');
-        const icon = document.getElementById('promo-icon');
-        
-        if (group.classList.contains('show')) {
-            group.classList.remove('show');
-            icon.innerHTML = '<path d="M12 5v14m-7-7h14"></path>';
-        } else {
-            group.classList.add('show');
-            icon.innerHTML = '<path d="M5 12h14"></path>';
-            document.getElementById('promo_code').focus();
+            lastName:  <?= json_encode($userLastName) ?>,
+            address:   <?= json_encode($userAddress) ?>,
+            zip:       <?= json_encode($userZip) ?>,
+            city:      <?= json_encode($userCity) ?>,
+            phone:     <?= json_encode($userPhone) ?>
+        },
+        urls: {
+            processCard: "<?= $_ENV['BASE_URL'] ?>/payment/processCard"
+        },
+        i18n: {
+            addressSelected: "<?= addslashes($t['payment_address_selected'] ?? 'Adresse appliquée') ?>"
         }
-    }
+    };
 </script>
+<script src="<?= $_ENV['BASE_URL'] ?>/JS/checkout.js"></script>

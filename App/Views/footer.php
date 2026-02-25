@@ -1,45 +1,37 @@
-<!-- footer main container -->
 <footer class="site-footer">
     <div class="footer-top">
-        <!-- brand and description -->
         <div class="footer-col">
             <h3 class="footer-logo">MyBrickStore</h3>
-            <p>votre boutique de briques en ligne préférée. construisez vos rêves pièce par pièce avec notre large sélection.</p>
+            <p><?= $t['footer_description'] ?? 'votre boutique de briques en ligne préférée. construisez vos rêves pièce par pièce avec notre large sélection.' ?></p>
         </div>
         
-        <!-- quick links -->
         <div class="footer-col">
-            <h4>navigation</h4>
+            <h4><?= $t['footer_nav_title'] ?? 'navigation' ?></h4>
             <ul>
-                <li><a href="<?= $baseUrl ?>/index.php">Accueil</a></li>
-                <li><a href="<?= $baseUrl ?>/cart">Panier</a></li>
-                <li><a href="<?= $baseUrl ?>/commande">Mes commandes</a></li>
-                <li><a href="<?= $baseUrl ?>/compte">Profil</a></li>
-                <li><a href="<?= $baseUrl ?>/setting">Paramètres</a></li>
+                <li><a href="<?= $baseUrl ?>/index.php"><?= $t['footer_nav_home'] ?? 'Accueil' ?></a></li>
+                <li><a href="<?= $baseUrl ?>/cart"><?= $t['footer_nav_cart'] ?? 'Panier' ?></a></li>
+                <li><a href="<?= $baseUrl ?>/commande"><?= $t['footer_nav_orders'] ?? 'Mes commandes' ?></a></li>
+                <li><a href="<?= $baseUrl ?>/compte"><?= $t['footer_nav_profile'] ?? 'Profil' ?></a></li>
+                <li><a href="<?= $baseUrl ?>/setting"><?= $t['footer_nav_settings'] ?? 'Paramètres' ?></a></li>
             </ul>
         </div>
 
-        <!-- about and partners -->
         <div class="footer-col">
-            <h4>à propos</h4>
+            <h4><?= $t['footer_about_title'] ?? 'à propos' ?></h4>
             <ul>
-                <!-- link to the team page, matching the TeamController name -->
-                <li><a  href="<?= $baseUrl ?>/team">notre équipe</a></li>
-                <!-- external link to azer ty -->
-                <li><a href="https://azer-ty.fr" target="_blank" rel="noopener noreferrer">partenaire : azer ty</a></li>
+                <li><a href="<?= $baseUrl ?>/team"><?= $t['footer_about_team'] ?? 'notre équipe' ?></a></li>
+                <li><a href="https://azer-ty.fr" target="_blank" rel="noopener noreferrer"><?= $t['footer_about_partner'] ?? 'partenaire : azer ty' ?></a></li>
             </ul>
         </div>
 
-        <!-- contact info -->
         <div class="footer-col">
-            <h4>contactez-nous</h4>
-            <p>email: contact@mybrickstore.com</p>
-            <p>téléphone: +33 1 23 45 67 89</p>
+            <h4><?= $t['footer_contact_title'] ?? 'contactez-nous' ?></h4>
+            <p><?= $t['footer_contact_email'] ?? 'email' ?>: contact@mybrickstore.com</p>
+            <p><?= $t['footer_contact_phone'] ?? 'téléphone' ?>: +33 1 23 45 67 89</p>
         </div>
     </div>
     
-    <!-- copyright section -->
     <div class="footer-bottom">
-        <p>&copy; 2026 MyBrickStore. tous droits réservés.</p>
+        <p>&copy; 2026 MyBrickStore. <?= $t['footer_rights_reserved'] ?? 'tous droits réservés.' ?></p>
     </div>
 </footer>

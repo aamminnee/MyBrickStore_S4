@@ -46,9 +46,9 @@
                 <span class="stat-label"><?= $t['dashboard_factory_balance'] ?? 'Solde Actuel' ?></span>
                 <span class="stat-value">
                     <?= isset($_SESSION['last_factory_balance']) ? number_format($_SESSION['last_factory_balance']) : '---' ?> 
-                    <small class="credit">Crédits</small>
+                    <small class="credit"><?= $t['supplier_credits'] ?? 'Crédits' ?></small>
                 </span>
-                <span class="stat-desc">Compte B2B Fournisseur</span>
+                <span class="stat-desc"><?= $t['dashboard_B2B'] ?? 'Compte B2B Fournisseur' ?></span>
             </div>
 
             <div class="stat-card alert"> 

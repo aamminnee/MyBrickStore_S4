@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
     window.addEventListener('drop', e => e.preventDefault(), false);
 
     if (!dropArea || !input) {
-        console.error("erreur critique : la zone de drop ou l'input est introuvable.");
+        console.error(translations.error_critical);
         return;
     }
 
@@ -54,10 +54,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const dataTransfer = new DataTransfer();
             dataTransfer.items.add(file);
             input.files = dataTransfer.files;
-            
             previewFile(file);
         } else {
-            alert("ce n'est pas une image valide !");
+            alert(translations.invalid_image);
         }
     }
 
@@ -86,14 +85,14 @@ document.addEventListener("DOMContentLoaded", () => {
         form.addEventListener('submit', (e) => {
             e.preventDefault();
             if (input.files.length === 0) {
-                alert("veuillez sélectionner une image.");
+                alert(translations.select_image);
                 return;
             }
 
             const formData = new FormData(form);
             const btn = form.querySelector('button[type="submit"]');
             const oldText = btn.innerText;
-            btn.innerText = "envoi...";
+            btn.innerText = translations.sending;
             btn.disabled = true;
 
             fetch(form.action, {
@@ -105,7 +104,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (data.status === 'success') {
                     Swal.fire({
                         icon: 'success',
-                        title: 'Image envoyée !',
+                        title: translations.image_sent,
                         toast: true,
                         position: 'top-end',
                         showConfirmButton: false,
@@ -117,15 +116,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 } else {
                     Swal.fire({
                         icon: 'warning',
-                        title: 'Oups...',
+                        title: translations.error_title,
                         text: data.message,
-                        confirmButtonText: 'Compris',
-                        confirmButtonColor: '#3085d6',
-                        footer: data.redirect ? '<a href="' + data.redirect + '">Se connecter maintenant</a>' : null
-                    }).then((result) => {
-                        if (data.redirect) {
-                            window.location.href = data.redirect;
-                        }
+                        confirmButtonText: translations.confirm_btn,
+                        confirmButtonColor: '#3085d6'
                     });
                 }
             })
@@ -133,8 +127,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 console.error(err);
                 Swal.fire({
                     icon: 'error',
-                    title: 'Erreur technique',
-                    text: "Impossible de contacter le serveur."
+                    title: translations.tech_error_title,
+                    text: translations.tech_error_text
                 });
             })
             .finally(() => {

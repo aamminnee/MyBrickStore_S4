@@ -177,7 +177,6 @@ class ReviewImagesController extends Controller {
             $imgType = $matches[1];
             $imgData = $matches[2];
         } else {
-            // Sécurité : On garde l'image d'origine en plan B si la mosaïque n'est plus en session
             $imgData = $image ? base64_encode($image->file) : '';
             $imgType = $image ? $image->file_type : 'image/png';
         }
@@ -194,7 +193,6 @@ class ReviewImagesController extends Controller {
         ];
 
         if ($action === 'buy_now') {
-            
             $_SESSION['purchase_context'] = [
                 'source' => 'direct',
                 'items' => [$newItem]
@@ -203,16 +201,25 @@ class ReviewImagesController extends Controller {
             exit;
 
         } else {
-           
             if (!isset($_SESSION['cart'])) {
                 $_SESSION['cart'] = [];
             }
             $_SESSION['cart'][] = $newItem;
             
-            $_SESSION['success_message'] = "La mosaïque a été ajoutée au panier !";
-
-            header("Location: " . ($_ENV['BASE_URL'] ?? '') . "/reviewImages?img=" . $imageId);
-            exit;
+            if (isset($_POST['is_ajax']) && $_POST['is_ajax'] === 'true') {
+                if (ob_get_length()) { ob_clean(); }
+                
+                $cartCount = isset($_SESSION['cart']) ? count($_SESSION['cart']) : 0;
+                
+                header('Content-Type: application/json');
+                
+                echo json_encode([
+                    'status' => 'success', 
+                    'message' => 'Ajouté au panier',
+                    'cart_count' => $cartCount
+                ]);
+                exit;
+            }
         }
     }
 }

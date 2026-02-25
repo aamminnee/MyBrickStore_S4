@@ -12,9 +12,6 @@
     --header-height: 90px;
 }
 
-/* =========================================
-   1. LAYOUT PRINCIPAL (Mix Collègue & Ton Design)
-   ========================================= */
 .checkout-wrapper {
     min-height: calc(100vh - var(--header-height));
     background-color: var(--bg-base);
@@ -51,14 +48,11 @@
     align-items: start;
 }
 
-/* =========================================
-   2. CARTES ET FORMULAIRES (Ton style de inputs)
-   ========================================= */
 .checkout-card {
     background: #ffffff;
-    border-radius: 20px; /* Ton border-radius */
+    border-radius: 20px; 
     padding: 30px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); /* Ton ombre douce */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
     border: 1px solid var(--border-color);
     margin-bottom: 30px;
 }
@@ -93,7 +87,6 @@
     font-size: 0.95rem;
 }
 
-/* Tes inputs avec le focus bleu Lego */
 .form-control {
     width: 100%;
     padding: 14px 16px;
@@ -120,9 +113,6 @@
     color: var(--text-muted);
 }
 
-/* =========================================
-   3. ADRESSES SAUVEGARDÉES (Code collègue + tes couleurs)
-   ========================================= */
 .saved-address-card {
     border: 2px dashed #cbd5e1;
     border-radius: 12px;
@@ -176,9 +166,6 @@
     background: rgba(0, 133, 43, 0.15);
 }
 
-/* =========================================
-   4. RÉSUMÉ DE LA COMMANDE
-   ========================================= */
 .summary-items-list {
     margin-bottom: 30px;
     max-height: 450px;
@@ -268,9 +255,6 @@
     letter-spacing: -0.5px;
 }
 
-/* =========================================
-   5. BOUTON PAYPAL (Style du collègue conservé)
-   ========================================= */
 .btn-pay-now {
     width: 100%;
     background-color: #0070ba; 
@@ -323,9 +307,239 @@
     color: var(--lego-green);
 }
 
-/* =========================================
-   6. SECTIONS RESTAURÉES (Tes blocs effacés par erreur)
-   ========================================= */
+.btn-tab {
+    background: #fff;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    color: #666;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-tab.active {
+    border-color: #006CB7 !important;
+    background-color: #f0f7ff !important;
+    color: #006CB7;
+    box-shadow: 0 2px 8px rgba(0, 108, 183, 0.1);
+}
+
+.btn-tab:hover:not(.active) {
+    border-color: #bbb;
+    background-color: #f9f9f9;
+}
+
+#section-card {
+    animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.card-input-container input {
+    letter-spacing: 1px;
+    font-family: 'Courier New', Courier, monospace; 
+}
+
+.card-input-container input::placeholder {
+    font-family: sans-serif;
+    letter-spacing: normal;
+}
+
+.payment-tabs-container {
+    display: flex;
+    background: #f4f4f4;
+    padding: 5px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    position: relative;
+}
+
+.payment-tab {
+    flex: 1;
+    border: none;
+    background: none;
+    padding: 12px;
+    cursor: pointer;
+    position: relative;
+    z-index: 1;
+    transition: color 0.3s;
+    font-weight: 600;
+    color: #666;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.payment-tab.active {
+    color: #006CB7;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.tab-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.tab-icon {
+    width: 42px;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e8f0fa;
+    transition: background .25s;
+}
+
+payment-tab.active .tab-icon {
+    background: rgba(0, 108, 183, .12);
+}
+
+.tab-icon img {
+    height: 18px;
+    width: auto;
+    display: block;
+    border-radius: 3px;
+}
+
+.tab-icon svg {
+    width: 18px;
+    height: 18px;
+    stroke: var(--text-muted);
+    transition: stroke .25s;
+}
+
+.payment-tab.active .tab-icon svg {
+    stroke: var(--lego-blue);
+}
+
+.tab-label {
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: .2px;
+}
+
+.payment-method-body {
+    display: none;
+    animation: slideUp 0.3s ease-out;
+}
+
+.payment-method-body.active {
+    display: block;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.card-form-wrapper {
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    padding: 20px;
+    border-radius: 12px;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.small-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.input-with-icon {
+    position: relative;
+}
+
+.input-with-icon svg {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.btn-link {
+    background: none;
+    border: none;
+    color: #006CB7;
+    text-decoration: underline;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.mb-15 { margin-bottom: 15px; }
+
+.payment-tabs-container {
+    display: flex;
+    background: #f0f0f0;
+    padding: 4px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+}
+
+.payment-tab {
+    flex: 1;
+    position: relative;
+    border: none;
+    background: transparent;
+    padding: 13px 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-muted);
+    transition: color .25s, background .25s, box-shadow .25s, transform .15s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    outline: none;
+}
+
+.payment-tab.active {
+    background: #ffffff;
+    color: #006CB7;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.card-input {
+    font-family: 'Courier New', monospace;
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+}
+
+.payment-method-body {
+    display: none;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.4s ease;
+}
+
+.payment-method-body.active {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
 .promo-code-container {
     margin: 15px 0;
     padding: 15px 0;
@@ -383,12 +597,9 @@
 }
 .sandbox-warning { font-size: 13px; margin-top: 10px; margin-bottom: 0; font-weight: 600; color: #b45309; }
 
-/* =========================================
-   7. RESPONSIVE
-   ========================================= */
 @media (max-width: 992px) {
     .checkout-grid { grid-template-columns: 1fr; }
-    .checkout-summary-container, .order-summary { order: -1; } /* Le résumé passe en haut sur mobile */
+    .checkout-summary-container, .order-summary { order: -1; }
 }
 
 @media (max-width: 600px) {

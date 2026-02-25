@@ -141,4 +141,25 @@ class FinancialModel extends Model {
         
         return \App\Core\Db::getInstance()->query($sql)->fetchAll(\PDO::FETCH_ASSOC);
     }
+
+    /**
+    * Saves the customer's bank and credit card details into the BankDetails table
+    *
+    * @param int $userId the customer identifier
+    * @param array $data an associative array containing payment details (bank_name, last_four, expire_at, payment_token, card_brand)
+    * @return mixed the result of the insert query execution (typically a boolean indicating success or failure)
+    */
+    public function saveBankDetails($userId, $data) {
+        $sql = "INSERT INTO BankDetails (id_Customer, bank_name, last_four, expire_at, payment_token, card_brand) 
+                VALUES (?, ?, ?, ?, ?, ?)";
+        
+        return $this->requete($sql, [
+            $userId,
+            $data['bank_name'] ?? 'Banque Client',
+            $data['last_four'],
+            $data['expire_at'],
+            $data['payment_token'],
+            $data['card_brand']
+        ]);
+    }
 }

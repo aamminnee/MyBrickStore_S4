@@ -9,14 +9,12 @@
     font-family: 'Fredoka', sans-serif !important;
 }
 
-/* team page main container */
 .team-page-container {
     max-width: 1400px;
     margin: 0 auto;
     padding: 60px 20px 80px 20px;
 }
 
-/* agency presentation section resembling the upload card */
 .agency-section {
     text-align: center;
     background: var(--card-bg, #ffffff);
@@ -30,7 +28,6 @@
     overflow: hidden;
 }
 
-/* colorful top border for the agency section */
 .agency-section::before {
     content: '';
     position: absolute;
@@ -41,7 +38,6 @@
     background: linear-gradient(90deg, var(--lego-blue, #006CB7), var(--lego-red, #D92328), var(--lego-yellow, #FFCF00), var(--lego-green, #00852B));
 }
 
-/* main title with the heading font */
 .page-title {
     font-family: var(--font-heading, 'Fredoka', sans-serif);
     font-size: 3.5rem;
@@ -50,7 +46,6 @@
     line-height: 1.1;
 }
 
-/* agency description text */
 .agency-description {
     font-size: 1.25rem;
     color: var(--text-grey, #475569);
@@ -59,7 +54,6 @@
     margin: 0 auto 40px auto;
 }
 
-/* call to action button styled like primary button */
 .agency-link {
     display: inline-flex;
     align-items: center;
@@ -85,13 +79,11 @@
     box-shadow: 0 0 0 var(--lego-red-dark, #b31217);
 }
 
-/* technical team section */
 .technical-team-section {
     max-width: 1200px;
     margin: 0 auto;
 }
 
-/* section title styled like how it works header */
 .section-title {
     text-align: center;
     font-family: var(--font-heading, 'Fredoka', sans-serif);
@@ -114,14 +106,12 @@
     margin-top: 10px;
 }
 
-/* grid layout for team members */
 .team-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 40px;
 }
 
-/* individual team member card styled like step cards */
 .team-member-card {
     background: white;
     padding: 40px 25px;
@@ -141,13 +131,11 @@
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
 }
 
-/* lego colored bottom borders for each card */
 .team-member-card:nth-child(4n+1) { border-bottom: 5px solid var(--lego-blue, #006CB7); }
 .team-member-card:nth-child(4n+2) { border-bottom: 5px solid var(--lego-red, #D92328); }
 .team-member-card:nth-child(4n+3) { border-bottom: 5px solid var(--lego-yellow, #FFCF00); }
 .team-member-card:nth-child(4n+4) { border-bottom: 5px solid var(--lego-green, #00852B); }
 
-/* member photo container */
 .member-photo {
     width: 200px;
     height: 250px;
@@ -159,11 +147,9 @@
     margin-bottom: 25px;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
     border: 4px solid white;
-    /* ensure the image does not overflow the container */
     overflow: hidden;
 }
 
-/* making sure the profile picture fits perfectly */
 .member-photo img {
     width: 100%;
     height: 100%;
@@ -171,13 +157,11 @@
     border-radius: 12px;
 }
 
-/* matching border colors for the photo */
 .team-member-card:nth-child(4n+1) .member-photo { border-color: var(--lego-blue, #006CB7); }
 .team-member-card:nth-child(4n+2) .member-photo { border-color: var(--lego-red, #D92328); }
 .team-member-card:nth-child(4n+3) .member-photo { border-color: var(--lego-yellow, #FFCF00); }
 .team-member-card:nth-child(4n+4) .member-photo { border-color: var(--lego-green, #00852B); }
 
-/* member typography */
 .member-name {
     font-family: var(--font-heading, 'Fredoka', sans-serif);
     font-size: 1.5rem;
@@ -198,12 +182,11 @@
     font-size: 0.95rem;
     color: var(--text-grey, #475569);
     line-height: 1.6;
-    margin-bottom: 25px; /* added margin to separate from the button */
+    margin-bottom: 25px; 
 }
 
-/* portfolio button styling */
 .portfolio-btn {
-    margin-top: auto; /* this pushes the button to the bottom if cards are different heights */
+    margin-top: auto;
     display: inline-block;
     padding: 10px 24px;
     background-color: transparent;
@@ -217,7 +200,6 @@
     transition: all 0.3s ease;
 }
 
-/* matching hover colors for the portfolio buttons based on the card's theme */
 .team-member-card:nth-child(4n+1) .portfolio-btn:hover {
     background-color: var(--lego-blue, #006CB7);
     border-color: var(--lego-blue, #006CB7);
@@ -242,7 +224,6 @@
     color: white;
 }
 
-/* responsive adjustments */
 @media (max-width: 768px) {
     .page-title { font-size: 2.5rem; }
     .agency-section { padding: 40px 20px; }

@@ -62,7 +62,6 @@ class CompteController extends Controller {
         $id_user = $_SESSION['user_id'];
         $user = $this->user_model->getUserById($id_user);
 
-        // retrieve flash messages for the view
         $success = $_SESSION['profile_success'] ?? null;
         $error = $_SESSION['profile_error'] ?? null;
         unset($_SESSION['profile_success'], $_SESSION['profile_error']);
@@ -85,7 +84,6 @@ class CompteController extends Controller {
     public function update() {
         $baseUrl = $_ENV['BASE_URL'] ?? '';
 
-        // check if user is logged in
         if (!isset($_SESSION['user_id'])) {
             header("Location: $baseUrl/user/login");
             exit;
@@ -93,6 +91,17 @@ class CompteController extends Controller {
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $id_user = $_SESSION['user_id'];
+
+            if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] === UPLOAD_ERR_OK) {
+                $tmpPath = $_FILES['avatar']['tmp_name'];
+                
+                $mimeType = mime_content_type($tmpPath);
+                if (strpos($mimeType, 'image/') === 0) {
+                    $binaryData = file_get_contents($tmpPath);
+                    $this->user_model->updateAvatarBlob($id_user, $binaryData);
+                    $_SESSION['user_avatar'] = 'data:' . $mimeType . ';base64,' . base64_encode($binaryData);
+                }
+            }
             
             $data = [
                 'email'        => trim($_POST['email'] ?? ''),
@@ -104,26 +113,20 @@ class CompteController extends Controller {
                 'city'         => trim($_POST['city'] ?? '')
             ];
 
-            // validate email format
             if (!empty($data['email']) && !filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-                $_SESSION['profile_error'] = $this->translations['invalid_email'] ?? "Le format de l'adresse email est invalide.";
+                $_SESSION['profile_error'] = $this->translations['error_invalid_email'] ?? "L'email est invalide.";
                 header("Location: $baseUrl/compte");
                 exit;
             }
 
-            // store pending data in session
             $_SESSION['pending_profile_update'] = $data;
 
-            // generate validation token for profile update
             $token = $this->token_model->generateToken($id_user, "profile_update");
             
-            // fetch current email to send the security code
             $currentEmail = $_SESSION['email']; 
             
-            // send the verification email
             $this->sendProfileUpdateEmail($currentEmail, $token);
 
-            // redirect user to the verification page
             header("Location: $baseUrl/user/verify");
             exit;
         }
@@ -156,7 +159,6 @@ class CompteController extends Controller {
             $this->mail->CharSet = 'UTF-8';
             $this->mail->Subject = "Validation de modification de votre profil";
             
-            // create a beautiful and professional html email template
             $body = "
             <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9; border-radius: 8px; border: 1px solid #e0e0e0;'>
                 <h2 style='color: #006CB7; text-align: center; font-size: 24px;'>Mise à jour de votre profil</h2>
@@ -183,7 +185,6 @@ class CompteController extends Controller {
             $this->mail->Body = $body;
             $this->mail->send();
         } catch (Exception $e) {
-            // log the error if email fails to send
             error_log("mail error: " . $this->mail->ErrorInfo);
         }
     }
@@ -238,7 +239,6 @@ class CompteController extends Controller {
             $this->mail->CharSet = 'UTF-8';
             $this->mail->Subject = "Code d'activation de votre compte";
             
-            // create a beautiful and professional html email template
             $body = "
             <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9; border-radius: 8px; border: 1px solid #e0e0e0;'>
                 <h2 style='color: #006CB7; text-align: center; font-size: 24px;'>Activez votre compte</h2>
@@ -265,5 +265,66 @@ class CompteController extends Controller {
         } catch (Exception $e) {
             error_log("Mail error: " . $this->mail->ErrorInfo);
         }
+    }
+
+    /**
+     * Updates only the profile picture 
+     * 
+     * @return void
+     */
+    public function updateAvatar() {
+        $baseUrl = $_ENV['BASE_URL'] ?? '';
+
+        if (!isset($_SESSION['user_id'])) {
+            header("Location: $baseUrl/user/login");
+            exit;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $id_user = $_SESSION['user_id'];
+
+            if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] === UPLOAD_ERR_OK) {
+                $tmpPath = $_FILES['avatar']['tmp_name'];
+                $mimeType = mime_content_type($tmpPath);
+                
+                if (strpos($mimeType, 'image/') === 0) {
+                    $binaryData = file_get_contents($tmpPath);
+                    $this->user_model->updateAvatarBlob($id_user, $binaryData);
+                    $_SESSION['user_avatar'] = 'data:' . $mimeType . ';base64,' . base64_encode($binaryData);
+                    $_SESSION['profile_success'] = $this->translations['profile_avatar_success'] ?? "Photo mise à jour.";
+                } else {
+                    $_SESSION['profile_error'] = $this->translations['profile_avatar_error'] ?? "Image invalide.";
+                }
+            }
+        }
+        
+        header("Location: $baseUrl/compte");
+        exit;
+    }
+
+    /**
+     * Remove the user's profile picture
+     * 
+     * @return void
+     */
+    public function removeAvatar() {
+        $baseUrl = $_ENV['BASE_URL'] ?? '';
+
+        if (!isset($_SESSION['user_id'])) {
+            header("Location: $baseUrl/user/login");
+            exit;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $id_user = $_SESSION['user_id'];
+
+            $this->user_model->updateAvatarBlob($id_user, null);
+            
+            $_SESSION['user_avatar'] = null;
+            $_SESSION['profile_success'] = $this->translations['profile_avatar_removed'] ?? "Photo supprimée.";
+        }
+
+        header("Location: $baseUrl/compte");
+        exit;
     }
 }

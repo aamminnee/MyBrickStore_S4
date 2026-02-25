@@ -33,7 +33,7 @@
             </div>
             
             <div class="form-group">
-                <label for="password"><?= $t['login_password_label'] ?? 'Mot de passe' ?></label>
+                <label for="password"><?= $t['login_label_password'] ?? 'Mot de passe' ?></label>
                 <div class="password-wrapper">
                     <input type="password" id="password" name="password" required placeholder="************">
                     <span class="toggle-password" onclick="togglePassword('password', this)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #666;">

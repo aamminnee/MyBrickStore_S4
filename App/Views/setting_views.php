@@ -77,7 +77,6 @@ $isSettingUpTotp = isset($_SESSION['setup_totp']) && $_SESSION['setup_totp'] ===
 
             <?php if (isset($_SESSION['user_id'])): ?>
                 
-                <!-- 2fa configuration section -->
                 <div class="setting-card">
                     <div class="card-icon">🔐</div>
                     <div class="card-content">
@@ -92,7 +91,6 @@ $isSettingUpTotp = isset($_SESSION['setup_totp']) && $_SESSION['setup_totp'] ===
 
                         <?php if ($isSettingUpTotp): ?>
                             
-                            <!-- totp configuration step display -->
                             <div class="totp-setup-box">
                                 <h4 class="totp-title"><?= $t['2fa_setup_title'] ?? 'Configuration Initiale' ?></h4>
                                 
@@ -134,7 +132,6 @@ $isSettingUpTotp = isset($_SESSION['setup_totp']) && $_SESSION['setup_totp'] ===
 
                         <?php else: ?>
 
-                            <!-- standard 2fa selection options -->
                             <div class="two-fa-options">
                                 
                                 <form action="<?= $_ENV['BASE_URL'] ?? '' ?>/setting/update2fa" method="POST">
@@ -171,8 +168,8 @@ $isSettingUpTotp = isset($_SESSION['setup_totp']) && $_SESSION['setup_totp'] ===
                 <div class="setting-card">
                     <div class="card-icon">🔑</div>
                     <div class="card-content">
-                        <h3><?= $t['settings_pwd_section_title'] ?? 'Mot de passe' ?></h3>
-                        <p class="card-desc"><?= $t['settings_pwd_desc'] ?? 'Modifiez votre mot de passe pour maintenir votre compte sécurisé.' ?></p>
+                        <h3><?= $t['login_label_password'] ?? 'Mot de passe' ?></h3>
+                        <p class="card-desc"><?= $t['settings_pwd_desc'] ?? 'Pour modifier votre mot de passe' ?></p>
                         
                         <a href="<?= $_ENV['BASE_URL'] ?>/user/resetPassword" class="btn-action btn-outline">
                             <?= $t['settings_btn_reset_link'] ?? 'Changer mon mot de passe' ?>
