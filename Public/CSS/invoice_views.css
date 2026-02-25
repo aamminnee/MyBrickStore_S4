@@ -26,7 +26,6 @@
     font-family: var(--font-b);
 }
 
-/* ── Controls ─────────────────────────────── */
 .invoice-controls {
     max-width: 794px;
     margin: 0 auto 24px;
@@ -71,20 +70,18 @@
 }
 .btn-download:hover { background: var(--red-dark); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(227, 0, 11, .35); }
 
-/* ── Paper ────────────────────────────────── */
 #invoice-content {
     background: var(--surface);
-    width: 210mm;      /* Largeur A4 fixe */
-    min-height: 297mm; /* Hauteur A4 fixe */
+    width: 210mm;    
+    min-height: 297mm; 
     margin: 0 auto;
-    border-radius: 0;  /* On retire les arrondis pour le PDF */
-    box-shadow: none;  /* L'ombre cause souvent la 2ème page */
+    border-radius: 0;  
+    box-shadow: none; 
     position: relative;
     display: flex;
     flex-direction: column;
 }
 
-/* Tricolor stripe */
 .invoice-stripe {
     height: 6px;
     background: linear-gradient(90deg,
@@ -95,13 +92,12 @@
 }
 
 .invoice-body {
-    padding: 40px 50px; /* Légère réduction des paddings (était 52px 60px) */
+    padding: 40px 50px; 
     flex-grow: 1;
     display: flex;
     flex-direction: column;
 }
 
-/* ── Watermark ────────────────────────────── */
 .watermark {
     position: absolute;
     top: 48%;
@@ -117,7 +113,6 @@
     letter-spacing: 14px;
 }
 
-/* ── Header ───────────────────────────────── */
 .paper-header {
     display: flex;
     justify-content: space-between;
@@ -196,14 +191,12 @@
     text-align: right;
 }
 
-/* ── Hairline ─────────────────────────────── */
 .hairline {
     border: 0;
     border-top: 1px solid var(--border);
     margin: 0 0 36px;
 }
 
-/* ── Addresses ────────────────────────────── */
 .addresses-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -258,7 +251,6 @@
     line-height: 1.75;
 }
 
-/* ── Items Table ──────────────────────────── */
 .items-table {
     width: 100%;
     border-collapse: collapse;
@@ -321,7 +313,6 @@
     background: #fafafa;
 }
 
-/* ── Totals ───────────────────────────────── */
 .invoice-footer-section {
     display: flex;
     justify-content: space-between;
@@ -387,9 +378,8 @@
     letter-spacing: -1px;
 }
 
-/* ── Paper Footer ─────────────────────────── */
 .paper-footer {
-    margin-top: auto; /* Pousse le footer tout en bas de la page A4 */
+    margin-top: auto;
     padding-top: 20px;
     padding-bottom: 10px;
 }

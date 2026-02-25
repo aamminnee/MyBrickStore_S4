@@ -184,7 +184,6 @@
     align-items: flex-end;
 }
 
-/* // style pour le bouton "acheter cet article" */
 .btn-buy-one {
     border: none;
     background-color: var(--lego-blue);
@@ -212,7 +211,6 @@
     box-shadow: none;
 }
 
-/* // style mis a jour pour le bouton poubelle */
 .btn-remove {
     background: transparent;
     border: none;

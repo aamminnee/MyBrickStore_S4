@@ -20,7 +20,6 @@ header {
     width: 100%;
 }
 
-/* adding a colorful bottom border to match the lego identity of the site */
 header::after {
     content: '';
     position: absolute;
@@ -68,7 +67,6 @@ header::after {
     padding: 0;
 }
 
-/* // design "brique lego" secondaire (blanche) pour le bouton connexion */
 .nav-link {
     text-decoration: none;
     color: var(--lego-blue);
@@ -93,13 +91,11 @@ header::after {
     background-color: #f8fafc;
 }
 
-/* // effet d'enfoncement de la brique au clic */
 .nav-link:active {
     transform: translateY(4px);
     box-shadow: none;
 }
 
-/* // design "brique lego" principale (bleue) pour le bouton inscription */
 .btn-header {
     background-color: var(--lego-blue);
     color: white;
@@ -132,7 +128,6 @@ header::after {
     box-shadow: none;
 }
 
-/* // design "brique lego" d'action (jaune) pour le bouton panier */
 .cart-btn {
     background-color: var(--lego-yellow);
     color: var(--text-dark);
@@ -168,7 +163,7 @@ header::after {
     font-weight: 800;
     font-family: 'Fredoka', sans-serif;
     border: 2px solid white;
-    box-shadow: 0 3px 0 #b31217; /* // ajout d'un petit effet 3d sur la pastille */
+    box-shadow: 0 3px 0 #b31217;
     z-index: 10;
     transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
@@ -273,7 +268,6 @@ header::after {
     background-color: #fff5f5 !important;
 }
 
-/* styles for the flags language switcher */
 .lang-switch-container {
     display: flex;
     align-items: center;
@@ -304,14 +298,12 @@ header::after {
     transition: all 0.2s ease;
 }
 
-/* yellow border for the active language */
 .lang-link.active .flag-icon {
     border-color: var(--lego-yellow);
     box-shadow: 0 0 0 2px var(--lego-yellow), 0 2px 5px rgba(0,0,0,0.15);
     transform: scale(1.05);
 }
 
-/* make inactive flags slightly faded */
 .lang-link:not(.active) .flag-icon {
     opacity: 0.7;
     filter: grayscale(20%);

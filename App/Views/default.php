@@ -31,6 +31,8 @@ $isAdmin = (isset($_SESSION['role']) && $_SESSION['role'] === 'admin');
         <link rel="stylesheet" href="<?= $baseUrl ?>/CSS/header.css">
     <?php endif; ?>
     <link rel="stylesheet" href="<?= $baseUrl ?>/CSS/footer.css">
+    <link rel="stylesheet" href="<?= $baseUrl ?>/CSS/style.css">
+
 
     <?php if (isset($css) && !empty($css)): ?>
         <link rel="stylesheet" href="<?= $baseUrl ?>/CSS/<?= htmlspecialchars($css) ?>">
@@ -52,7 +54,7 @@ $isAdmin = (isset($_SESSION['role']) && $_SESSION['role'] === 'admin');
         <?= $content ?>
     </main>
 
-    <?php require_once ROOT . '/App/Views/footer.html'; ?>
+    <?php require_once ROOT . '/App/Views/footer.php'; ?>
 
     <script>
         var _paq = window._paq = window._paq || [];

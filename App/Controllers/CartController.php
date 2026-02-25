@@ -95,7 +95,7 @@ class CartController extends Controller {
 
         $_SESSION['cart'][] = $newItem;
 
-        $_SESSION['success_message'] = "La mosaïque a été ajoutée au panier !";
+        $_SESSION['success_message'] = $this->t('js_cart_added_success', "La mosaïque a été ajoutée au panier !");
 
         session_write_close();
         $redirectUrl = ($_ENV['BASE_URL'] ?? '') . "/reviewImages?img=" . $imageId;
@@ -161,7 +161,7 @@ class CartController extends Controller {
             $_SESSION['purchase_context'] = [
                 'source' => 'single_cart_item',
                 'items' => [$selectedItem],
-                'origin_id' => $idToBuy // used to remove it from cart later
+                'origin_id' => $idToBuy 
             ];
             header("Location: " . ($_ENV['BASE_URL'] ?? '') . "/payment");
             exit;

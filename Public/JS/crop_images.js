@@ -3,26 +3,10 @@ const cropButton = document.getElementById('btn-crop');
 const aspectSelect = document.getElementById('aspect');
 const sizeSelect = document.getElementById('size');
 
-let message = document.getElementById('message');
-let warnings = document.getElementById('warnings');
-
-if (!message) {
-    message = document.createElement('div');
-    message.id = 'message';
-    message.style.textAlign = 'center';
-    message.style.marginTop = '10px';
-    message.style.fontWeight = 'bold';
-    cropButton.parentElement.insertBefore(message, cropButton);
-}
-
-if (!warnings) {
-    warnings = document.createElement('div');
-    warnings.id = 'warnings';
-    warnings.style.color = '#e67e22';
-    warnings.style.textAlign = 'center';
-    warnings.style.marginBottom = '10px';
-    message.parentElement.insertBefore(warnings, message);
-}
+const progressContainer = document.getElementById('progress-container');
+const progressText = document.getElementById('progress-text');
+const progressBarFill = document.getElementById('progress-bar-fill');
+const warnings = document.getElementById('warnings');
 
 let cropper = new Cropper(image, {
     aspectRatio: 1,
@@ -37,7 +21,8 @@ let cropper = new Cropper(image, {
 
 image.addEventListener('load', () => {
     if (image.naturalWidth > 3000 || image.naturalHeight > 3000) {
-        warnings.textContent = "L'image est très grande, les performances peuvent être réduites.";
+        progressContainer.style.display = 'block';
+        warnings.textContent = translations.crop_warning_large;
     }
 });
 
@@ -50,30 +35,35 @@ cropButton.addEventListener('click', () => {
     const cropData = cropper.getData(true);
     const cropWidth = Math.round(cropData.width);
     const cropHeight = Math.round(cropData.height);
-
     const minSize = 50; 
 
+    progressContainer.style.display = 'block';
+    progressBarFill.style.backgroundColor = "#006DB7"; 
+
     if (cropWidth < minSize || cropHeight < minSize) {
-        message.textContent = "Erreur : la zone sélectionnée est trop petite.";
-        message.style.color = "#E3000B";
+        progressText.textContent = translations.crop_error_small;
+        progressText.style.color = "#E3000B";
+        progressBarFill.style.width = "100%";
+        progressBarFill.style.backgroundColor = "#E3000B";
         return; 
     }
 
-    message.textContent = "Traitement en cours...";
-    message.style.color = "#333"; 
+    progressText.textContent = translations.crop_processing;
+    progressText.style.color = "#333"; 
     warnings.textContent = "";
     cropButton.disabled = true;
+    
+    progressBarFill.style.width = "100%";
+    progressBarFill.classList.add('processing');
 
     const boardSize = parseInt(sizeSelect.value);
-
     const canvasData = cropper.getCroppedCanvas({
         width: cropWidth,
         height: cropHeight
     });
 
     if (!canvasData) {
-        message.textContent = "Erreur lors de la génération de l'image.";
-        cropButton.disabled = false;
+        showError(translations.crop_prep_error);
         return;
     }
 
@@ -85,9 +75,7 @@ cropButton.addEventListener('click', () => {
         formData.append('original_name', originalName);
 
         const imageId = image.getAttribute('data-id');
-        if (imageId) {
-            formData.append('image_id', imageId);
-        }
+        if (imageId) { formData.append('image_id', imageId); }
 
         formData.append('size', boardSize); 
 
@@ -96,27 +84,30 @@ cropButton.addEventListener('click', () => {
             body: formData
         })
         .then(res => {
-            if (!res.ok) {
-                throw new Error("Erreur serveur (code " + res.status + ")");
-            }
+            if (!res.ok) throw new Error(translations.crop_server_error + " (code " + res.status + ")");
             return res.json();
         })
         .then(data => {
             if (data.status === 'success') {
-                message.textContent = "Image recadrée avec succès !";
-                message.style.color = "#006DB7";
+                progressBarFill.classList.remove('processing');
+                progressText.textContent = translations.crop_success;
+                progressText.style.color = "#006DB7";
                 window.location.href = "reviewImages?img=" + encodeURIComponent(data.file);
             } else {
-                message.textContent = "Erreur : " + (data.message || "Erreur inconnue");
-                message.style.color = "#E3000B";
-                cropButton.disabled = false;
+                showError(translations.error + ": " + (data.message || translations.crop_unknown_error));
             }
         })
         .catch(err => {
             console.error(err);
-            message.textContent = "Erreur : " + err.message + ". Vérifiez ImagesModel.php.";
-            message.style.color = "#E3000B";
-            cropButton.disabled = false;
+            showError(translations.error + ": " + err.message + ". " + translations.crop_check_model);
         });
     }, 'image/png');
 });
+
+function showError(msg) {
+    progressText.textContent = msg;
+    progressText.style.color = "#E3000B";
+    progressBarFill.classList.remove('processing');
+    progressBarFill.style.backgroundColor = "#E3000B";
+    cropButton.disabled = false;
+}

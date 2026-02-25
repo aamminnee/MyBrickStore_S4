@@ -28,6 +28,18 @@ class PaymentController extends Controller {
     private $paypalBaseUrl = 'https://api-m.sandbox.paypal.com';
 
     /**
+     * Retrieves a translation for a given key.
+     *
+     * @param string $key the translation key
+     * @param string $default default text if key is missing
+     * @return string translated text
+     */
+    private function t($key, $default = '') {
+        // return translated text or fallback default
+        return $this->translations[$key] ?? $default;
+    }
+
+    /**
      * Constructor.
      * Initializes the controller and loads translation strings.
      */
@@ -49,7 +61,13 @@ class PaymentController extends Controller {
             exit; 
         }
 
-        // fallback to full cart or redirect if no purchase context exists
+        if ($_SESSION['status'] !== 'valide') {
+            $_SESSION['verify_error'] = $this->t('payment_error_not_verified', "Vous devez valider votre compte pour payer.");
+            
+            header('Location: ' . ($_ENV['BASE_URL'] ?? '') . '/user/verify');
+            exit;
+        }
+
         if (!isset($_SESSION['purchase_context'])) {
             if (!empty($_SESSION['cart'])) {
                 $_SESSION['purchase_context'] = [
@@ -80,7 +98,7 @@ class PaymentController extends Controller {
             't' => $this->translations,
             'total' => $totalPrice,
             'items' => $itemsToPay,
-            'user' => $clientInfo, // fixed the variable name from 'client' to 'user'
+            'user' => $clientInfo,
             'css' => 'payment_views.css'
         ]);
     }
@@ -151,6 +169,54 @@ class PaymentController extends Controller {
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * Manages credit card payments
+     * 
+     * @return void
+     */
+    public function processCard() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $userId = $_SESSION['user_id'];
+            
+            // 1. Extraction et formatage des données de la carte
+            $cardNumber = str_replace(' ', '', $_POST['card_num']);
+            $lastFour = substr($cardNumber, -4); // Récupère les 4 derniers chiffres
+            
+            // Conversion MM/YY en YYYY-MM-01 (pour le format DATE de la BDD)
+            $expiry = $_POST['card_exp']; // Ex: "12/28"
+            $expiryParts = explode('/', $expiry);
+            $expireAt = "20" . $expiryParts[1] . "-" . $expiryParts[0] . "-01";
+            
+            $transactionId = 'CARD-' . strtoupper(uniqid());
+
+            // 2. Préparation des données pour la table Bank_Details
+            $bankData = [
+                'bank_name'     => 'Visa/Mastercard Checkout',
+                'last_four'     => $lastFour,
+                'expire_at'     => $expireAt,
+                'payment_token' => $transactionId,
+                'card_brand'    => 'Visa' // Idéalement détecté via le premier chiffre du numéro
+            ];
+
+            // 3. Enregistrement en BDD
+            $financialModel = new \App\Models\FinancialModel();
+            $financialModel->saveBankDetails($userId, $bankData);
+
+            // 4. Suite du processus de commande (Billing + Finalisation)
+            $_SESSION['billing_temp'] = [
+                'first_name'   => $_POST['first_name'] ?? '',
+                'last_name'    => $_POST['last_name'] ?? '',
+                'phone'        => $_POST['phone'] ?? '',
+                'address_line' => $_POST['address_line'] ?? '',
+                'zip_code'     => $_POST['zip_code'] ?? '',
+                'city'         => $_POST['city'] ?? ''
+            ];
+
+            $fakePaypalData = (object)['id' => $transactionId, 'status' => 'COMPLETED'];
+            $this->finalizeOrder($fakePaypalData);
         }
     }
 

@@ -688,7 +688,8 @@ class MosaicModel extends Model {
     }
 
     /**
-     * Récupère un pavage au hasard et le formate pour le jeu React
+     * Retrieves a random tiling and formats it
+     * 
      * @return array|null
      */
     public function getRandomGameMosaic() {

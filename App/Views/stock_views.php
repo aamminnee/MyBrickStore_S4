@@ -94,19 +94,21 @@
 
                 <div class="stock-tabs">
                     <a href="<?= getStatusLink('all') ?>" 
-                       class="btn-tab tab-all <?= $currentStatus == 'all' ? 'active' : '' ?>">
-                        Tout le stock
+                    class="btn-tab tab-all <?= $currentStatus == 'all' ? 'active' : '' ?>">
+                        <?= $t['stock_tab_all'] ?? 'Tout le stock' ?>
                     </a>
+
                     <a href="<?= getStatusLink('low') ?>" 
-                       class="btn-tab tab-low <?= $currentStatus == 'low' ? 'active' : '' ?>">
-                        Stock Faible
+                    class="btn-tab tab-low <?= $currentStatus == 'low' ? 'active' : '' ?>">
+                        <?= $t['stock_tab_low'] ?? 'Stock Faible' ?>
                     </a>
+
                     <a href="<?= getStatusLink('critical') ?>" 
-                       class="btn-tab tab-critical <?= $currentStatus == 'critical' ? 'active' : '' ?>">
-                        Ruptures
+                    class="btn-tab tab-critical <?= $currentStatus == 'critical' ? 'active' : '' ?>">
+                        <?= $t['stock_tab_critical'] ?? 'Ruptures' ?>
                     </a>
                 </div>
-
+                
                 <form method="GET" action="<?= ($_ENV['BASE_URL'] ?? '') ?>/stock" class="filters-bar">
                     
                     <input type="hidden" name="filter_status" value="<?= htmlspecialchars($currentStatus) ?>">
@@ -176,15 +178,11 @@
                                         </span>
                                     </td>
                                     <td>
-                                        <a href="#" class="btn-icon" 
-                                        onclick="
-                                            document.getElementById('item_search').value = '<?= $row->id_Item ?> - <?= htmlspecialchars($row->shape_name . ' ' . $row->color_name) ?>'; 
-                                            document.getElementById('real_item_id').value = '<?= $row->id_Item ?>'; 
-                                            window.scrollTo({ top: 0, behavior: 'smooth' }); 
-                                            return false;
-                                        "
-                                        title="<?= $t['stock_tooltip_edit'] ?? 'Modifier le stock' ?>">
-                                        ➕/➖
+                                        <a href="#" class="btn-icon btn-stock-edit"
+                                            data-id="<?= $row->id_Item ?>"
+                                            data-label="<?= htmlspecialchars($row->shape_name . ' ' . $row->color_name) ?>"
+                                            title="<?= $t['stock_tooltip_edit'] ?? 'Modifier le stock' ?>">
+                                            ➕/➖
                                         </a>
                                     </td>
                                 </tr>
@@ -251,29 +249,10 @@
 </div>
 
 <script>
-    document.getElementById('item_search').addEventListener('input', function() {
-        var val = this.value;
-        var opts = document.getElementById('items_list').childNodes;
-        var found = false;
-        
-        for (var i = 0; i < opts.length; i++) {
-            if (opts[i].value === val) {
-                var id = val.split(' - ')[0];
-                document.getElementById('real_item_id').value = id;
-                found = true;
-                break;
-            }
+    const STOCK_CONFIG = {
+        i18n: {
+            invalidItem: "<?= addslashes($t['stock_js_alert'] ?? 'Veuillez sélectionner une pièce valide dans la liste déroulante.') ?>"
         }
-        if (!found && val === '') {
-            document.getElementById('real_item_id').value = '';
-        }
-    });
-
-    document.querySelector('.form-admin').addEventListener('submit', function(e) {
-        var id = document.getElementById('real_item_id').value;
-        if (!id) {
-            e.preventDefault();
-            alert("<?= $t['stock_js_alert'] ?? 'Veuillez sélectionner une pièce valide dans la liste déroulante.' ?>");
-        }
-    });
+    };
 </script>
+<script src="<?= $_ENV['BASE_URL'] ?>/JS/stock.js"></script>

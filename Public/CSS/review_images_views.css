@@ -328,6 +328,14 @@
     text-decoration: none;
 }
 
+.btn-success-anim {
+    background-color: #28a745 !important;
+    color: white !important;
+    transform: scale(1.05);
+    transition: all 0.3s ease-in-out;
+    border-color: #28a745 !important;
+}
+
 @keyframes zoomIn {
     from {transform: scale(0.8); opacity: 0;}
     to {transform: scale(1); opacity: 1;}

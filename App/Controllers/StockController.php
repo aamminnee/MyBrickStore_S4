@@ -112,10 +112,6 @@ class StockController extends Controller {
      * @param int $qty The quantity to purchase.
      * @return void
      */
-    /**
-     * Executes the external Java application to process a purchase.
-     * Nettoyage agressif pour éviter les problèmes d'encodage.
-     */
     private function runJavaBuy($ref, $qty) {
         $projectRoot = dirname(__DIR__, 2);
     

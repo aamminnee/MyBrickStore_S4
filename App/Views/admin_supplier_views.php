@@ -20,7 +20,7 @@
 
     <?php if (isset($_SESSION['factory_output'])): ?>
         <div class="admin-card factory-terminal">
-            <h3>Résultat Opération :</h3>
+            <h3><?= $t['supplier_op_result'] ?? 'Résultat Opération :' ?></h3>
             <pre><?= htmlspecialchars($_SESSION['factory_output'], ENT_QUOTES, 'UTF-8') ?></pre>
         </div>
         <?php unset($_SESSION['factory_output']); ?>
@@ -29,11 +29,11 @@
     <div class="admin-card factory-wallet-card">
         
         <div class="wallet-header">
-            <h2>Portefeuille MyBrickFactory</h2>
+            <h2><?= $t['supplier_wallet_title'] ?? 'Portefeuille MyBrickFactory' ?></h2>
             <p>
-                Solde actuel estimé : 
+                <?= $t['supplier_wallet_balance'] ?? 'Solde actuel estimé : ' ?>
                 <strong class="wallet-balance">
-                    <?= isset($_SESSION['last_factory_balance']) ? number_format($_SESSION['last_factory_balance']) : '?' ?> Crédits
+                    <?= isset($_SESSION['last_factory_balance']) ? number_format($_SESSION['last_factory_balance']) : '?' ?> <?= $t['supplier_credits'] ?? 'Crédits' ?> 
                 </strong>
             </p>
         </div>
@@ -43,7 +43,7 @@
             <form action="<?= ($_ENV['BASE_URL'] ?? '') ?>/admin/runFactory" method="POST">
                 <input type="hidden" name="action" value="refill">
                 <button type="submit" class="btn-primary btn-mine">
-                    Minage (+ Crédits)
+                    <?= $t['supplier_btn_mining'] ?? 'Minage (+ Crédits)' ?>
                 </button>
             </form>
 
@@ -51,7 +51,7 @@
                 <input type="hidden" name="action" value="proactive">
                 <button type="submit" class="btn-primary btn-proactive">
                     <?= $t['supplier_history_title'] ?? 'Espace Fournisseur - Historique des Commandes Usine' ?>
-                    Auto-Réapprovisionnement (Proactive)
+                    <?= $t['supplier_btn_proactive'] ?? 'Auto-Réapprovisionnement (Proactive)' ?>
                 </button>
             </form>
         </div>
