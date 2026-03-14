@@ -127,6 +127,7 @@ class UserController extends Controller {
                     exit;
                 }
 
+                $user = $this->processLoyaltyId($user);
                 $this->finalizeLogin($user);
                 exit;
             } else {
@@ -249,6 +250,7 @@ class UserController extends Controller {
             
             if ($result === true) {
                 $user = $this->user_model->getUserByEmail($email);
+                $user = $this->processLoyaltyId($user);
                 $userId = is_object($user) ? ($user->id_user ?? null) : ($user['id_user'] ?? null);
                 
                 if ($userId) {
@@ -690,5 +692,92 @@ class UserController extends Controller {
                 }
             }
         }
+    }
+
+    /**
+     * handle loyalty id during registration or login
+     *
+     * @param object|array $user the user data from database
+     * @return object|array updated user data
+     */
+    protected function processLoyaltyId($user) {
+        $usersModel = new \App\Models\UsersModel();
+        
+        // gracefully handle both array and object types for user id, looking explicitly for 'id_User'
+        $userId = is_object($user) ? ($user->id_User ?? $user->id_user ?? $user->id ?? null) : ($user['id_User'] ?? $user['id_user'] ?? $user['id'] ?? null);
+        
+        // fallback to session if not found in the object
+        if (!$userId) {
+            $userId = $_SESSION['user_id'] ?? null;
+        }
+
+        // if still no user id, return early
+        if (!$userId) {
+            return $user;
+        }
+
+        // extract current loyalty id safely
+        $currentLoyaltyId = is_object($user) ? ($user->loyalty_id ?? null) : ($user['loyalty_id'] ?? null);
+
+        // if user already has a loyalty id in database, just save it in session
+        if (!empty($currentLoyaltyId)) {
+            $_SESSION['user']['loyalty_id'] = $currentLoyaltyId;
+            return $user;
+        }
+
+        // check if there is a loyalty id in the url or post data (from the react game)
+        $loyaltyId = $_GET['loyalty_id'] ?? $_POST['loyalty_id'] ?? null;
+        
+        // if no id provided, generate a brand new one
+        if (!$loyaltyId) {
+            $loyaltyId = $usersModel->generateLoyaltyId();
+        }
+
+        // save the new loyalty id to the database for this user
+        $usersModel->setLoyaltyId($userId, $loyaltyId);
+        
+        // update session with the new loyalty id
+        if (!isset($_SESSION['user'])) {
+            $_SESSION['user'] = [];
+        }
+        $_SESSION['user']['loyalty_id'] = $loyaltyId;
+        
+        // dynamically update the user object or array so the rest of the script has it
+        if (is_object($user)) {
+            $user->loyalty_id = $loyaltyId;
+        } else {
+            $user['loyalty_id'] = $loyaltyId;
+        }
+        
+        return $user;
+    }
+
+    /**
+     * retrieves the loyalty_id from the active session for the react application.
+     * handles cors to allow the react app to read the php session cookie.
+     *
+     * @return void
+     */
+    public function getSessionLoyalty() {
+        // allow react app (port 5173) to make requests with cookies
+        header('Access-Control-Allow-Origin: http://localhost:5173');
+        header('Access-Control-Allow-Credentials: true');
+        header('Access-Control-Allow-Headers: Content-Type, Accept');
+        
+        // handle preflight options request from browser
+        if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+            http_response_code(200);
+            exit;
+        }
+
+        header('Content-Type: application/json');
+
+        // check if user is logged in and has a loyalty id
+        if (isset($_SESSION['user']) && !empty($_SESSION['user']['loyalty_id'])) {
+            echo json_encode(['loyalty_id' => $_SESSION['user']['loyalty_id']]);
+        } else {
+            echo json_encode(['loyalty_id' => null]);
+        }
+        exit;
     }
 }

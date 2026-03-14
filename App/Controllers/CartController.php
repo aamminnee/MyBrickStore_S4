@@ -189,4 +189,38 @@ class CartController extends Controller {
         header("Location: " . ($_ENV['BASE_URL'] ?? '') . "/payment");
         exit;
     }
+
+    /**
+     * apply loyalty points as a discount to the cart
+     *
+     * @return void
+     */
+    public function applyLoyaltyDiscount() {
+        // check if user is logged in and has submitted points
+        if (isset($_SESSION['user_id']) && isset($_POST['points_to_use'])) {
+            $pointsToUse = (int)$_POST['points_to_use'];
+            
+            // assume we have the loyalty_id stored in session or fetched from user model
+            $loyaltyId = $_SESSION['loyalty_id'] ?? null;
+            
+            if ($loyaltyId && $pointsToUse > 0) {
+                $loyaltyModel = new \App\Models\LoyaltyApiModel();
+                $balance = $loyaltyModel->getBalance($loyaltyId);
+                
+                // verify user has enough points
+                if ($pointsToUse <= $balance) {
+                    // save the requested points in session for checkout
+                    $_SESSION['cart_discount_points'] = $pointsToUse;
+                    
+                    // calculate monetary value (e.g., 100 points = 1 euro)
+                    $discountValue = $pointsToUse * 0.01; 
+                    $_SESSION['cart_discount_value'] = $discountValue;
+                }
+            }
+        }
+        
+        // redirect back to cart
+        header('Location: /cart');
+        exit;
+    }
 }

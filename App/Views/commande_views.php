@@ -12,6 +12,7 @@
  * @var array $t            Associative array of translations
  */
 ?>
+
 <div class="orders-container">
     <a href="<?= $_ENV['BASE_URL'] ?>/index.php" class="btn-home-back">
         <?= $t['orders_back'] ?? '&larr; Retour à l\'accueil' ?>

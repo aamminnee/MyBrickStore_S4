@@ -1,3 +1,15 @@
+<?php
+/**
+ * footer view component
+ * * displays site-wide footer with multilingual support.
+ * utilizes translation array $t passed from controller.
+ * * @package App\Views
+ */
+
+// ensure base url is available
+$baseUrl = $baseUrl ?? ($_ENV['BASE_URL'] ?? '');
+?>
+
 <footer class="site-footer">
     <div class="footer-top">
         <div class="footer-col">
@@ -32,6 +44,6 @@
     </div>
     
     <div class="footer-bottom">
-        <p>&copy; 2026 MyBrickStore. <?= $t['footer_rights_reserved'] ?? 'tous droits réservés.' ?></p>
+        <p>&copy; <?= date('Y') ?> MyBrickStore. <?= $t['footer_rights_reserved'] ?? 'tous droits réservés.' ?></p>
     </div>
 </footer>

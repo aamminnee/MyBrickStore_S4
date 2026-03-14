@@ -1,13 +1,13 @@
 <?php
 /**
-* Payment checkout view
-* Displays the checkout form and a detailed order summary.
-* Handles saved address auto-filling.
-* * @var array $user  User data passed from controller
-* @var array $t     Translations
-* @var array $items Items in the current checkout session
-* @var float $total Total amount to pay
-*/
+ * payment checkout view
+ * displays the checkout form and a detailed order summary.
+ * handles saved address auto-filling.
+ * * @var array $user  user data passed from controller
+ * @var array $t     translations
+ * @var array $items items in the current checkout session
+ * @var float $total total amount to pay
+ */
 
 $itemsList = isset($items) ? (array)$items : (isset($cart) ? (array)$cart : []);
 $c = isset($client) ? (array)$client : [];
@@ -27,7 +27,25 @@ foreach ($itemsList as $item) {
     $price = is_object($item) ? ($item->price ?? 0) : ($item['price'] ?? 0);
     $subTotal += $price;
 }
-$shippingCost = $total - $subTotal;
+
+// fetch standard delivery fee from model
+$shippingCost = \App\Models\MosaicModel::DELIVERY_FEE;
+
+// fetch user loyalty points if loyalty id exists in session
+$loyaltyId = $_SESSION['user']['loyalty_id'] ?? null;
+$availablePoints = 0;
+if ($loyaltyId) {
+    $loyaltyModel = new \App\Models\LoyaltyApiModel();
+    // fixed: removed double dollar sign and used getPoints
+    $availablePoints = $loyaltyModel->getPoints($loyaltyId);
+}
+
+// get currently applied points and discount from session
+$appliedPoints = $_SESSION['applied_points'] ?? 0;
+$loyaltyDiscount = $_SESSION['loyalty_discount'] ?? 0.0;
+
+// final total calculation for display
+$displayTotal = max(0, $subTotal + $shippingCost - $loyaltyDiscount);
 ?>
 
 <div class="checkout-wrapper">
@@ -185,6 +203,48 @@ $shippingCost = $total - $subTotal;
         </div>
 
         <div class="checkout-summary-container">
+
+            <!-- loyalty points card section -->
+            <div class="checkout-card" style="margin-bottom: 20px; background-color: #f0f7ff; border: 1px solid #cce0ff;">
+                <h3 style="color: #006CB7; font-size: 1.1rem; margin-bottom: 10px;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px; vertical-align: middle;"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
+                    <?= $t['loyalty_use_points'] ?? 'Points de fidélité' ?>
+                </h3>
+                
+                <p style="font-size: 0.9rem; margin-bottom: 15px;">
+                    <?= $t['loyalty_current_points'] ?? 'Vous avez actuellement' ?> <strong><?= htmlspecialchars($availablePoints) ?> points</strong>.
+                    <br><em style="color: #666; font-size: 0.85rem;"><?= $t['loyalty_conversion_rule'] ?? '(1000 points = 0.10 € de réduction)' ?></em>
+                </p>
+
+                <div style="margin: 15px 0; text-align: center;">
+                    <a href="<?= htmlspecialchars($_ENV['MYBRICKGAME'] ?? '#') ?>" 
+                       class="btn-play-game" 
+                       target="_blank" 
+                       rel="noopener noreferrer"
+                       style="background-color: #e3000b; color: #ffffff; padding: 10px 15px; text-decoration: none; border-radius: 4px; font-weight: bold; display: block; font-size: 0.95rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: opacity 0.2s;">
+                       <?= $t['loyalty_play_games'] ?? 'Jouer pour gagner plus de points !' ?>
+                    </a>
+                </div>
+                
+                <form action="<?= $_ENV['BASE_URL'] ?>/commande/appliquerPoints" method="POST">
+                    <input type="hidden" name="redirect_to" value="/payment">
+                    
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <input type="number" name="points_a_utiliser" min="0" max="<?= htmlspecialchars($availablePoints) ?>" value="<?= htmlspecialchars($appliedPoints) ?>" required class="form-control" style="width: 100px; padding: 8px;">
+                        <button type="submit" class="btn-action" style="padding: 9px 15px; background-color: #006CB7; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
+                            <?= $t['loyalty_apply'] ?? 'Appliquer' ?>
+                        </button>
+                    </div>
+                </form>
+
+                <?php if ($appliedPoints > 0): ?>
+                    <div style="color: #155724; background-color: #d4edda; border: 1px solid #c3e6cb; padding: 10px; border-radius: 4px; margin-top: 15px; font-size: 0.9rem;">
+                        ✓ <?= htmlspecialchars($appliedPoints) ?> <?= $t['loyalty_points_applied'] ?? 'points appliqués.' ?><br>
+                        <?= sprintf($t['loyalty_discount_deducted'] ?? 'Une réduction de %s a été déduite.', '<strong>' . number_format($loyaltyDiscount, 2, ',', ' ') . ' €</strong>') ?>
+                    </div>
+                <?php endif; ?>
+            </div>
+
             <div class="checkout-card">
                 <h3>
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#006CB7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
@@ -202,7 +262,7 @@ $shippingCost = $total - $subTotal;
                                 <div class="summary-item-details">
                                     <h4 class="summary-item-title"><?= $t['cart_product_title'] ?? 'Mosaïque Personnalisée' ?></h4>
                                     <p class="summary-item-meta"><?= $t['cart_label_size'] ?? 'Taille' ?>: <?= $itemArray['size'] ?? '?' ?>x<?= $itemArray['size'] ?? '?' ?> &bull; Style: <?= ucfirst($itemArray['style'] ?? 'standard') ?></p>
-                                    <p class="summary-item-meta"><?= $itemArray['pieces_count'] ?? 0 ?><?= $t['cart_label_pieces'] ?? 'Pièces' ?></p>
+                                    <p class="summary-item-meta"><?= $itemArray['pieces_count'] ?? 0 ?> <?= $t['cart_label_pieces'] ?? 'Pièces' ?></p>
                                 </div>
                                 <div class="summary-item-price">
                                     <?= number_format($itemArray['price'] ?? 0, 2, ',', ' ') ?> €
@@ -224,9 +284,17 @@ $shippingCost = $total - $subTotal;
                         <span><?= number_format($shippingCost, 2, ',', ' ') ?> €</span>
                     </div>
                     
+                    <!-- loyalty discount line -->
+                    <?php if ($loyaltyDiscount > 0): ?>
+                        <div class="summary-line" style="color: #28a745; font-weight: 500;">
+                            <span><?= $t['cart_label_discount'] ?? 'Remise fidélité' ?></span>
+                            <span>- <?= number_format($loyaltyDiscount, 2, ',', ' ') ?> €</span>
+                        </div>
+                    <?php endif; ?>
+                    
                     <div class="summary-total-line">
                         <span><?= $t['cart_label_total'] ?? 'Total TTC' ?></span>
-                        <span style="color: #006CB7;"><?= number_format($total, 2, ',', ' ') ?> €</span>
+                        <span style="color: #006CB7;"><?= number_format($displayTotal, 2, ',', ' ') ?> €</span>
                     </div>
                 </div>
 

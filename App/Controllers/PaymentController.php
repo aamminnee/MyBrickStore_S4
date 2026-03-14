@@ -8,13 +8,14 @@ use App\Models\MosaicModel;
 use App\Models\CommandeModel;
 use App\Models\UsersModel;
 use App\Models\ImagesModel;
+use App\Models\LoyaltyApiModel;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
 /**
- * Class PaymentController
- * * Handles the checkout process, payment simulation, and order finalization.
- * Supports full cart checkout, single item checkout, and direct buy.
+ * class PaymentController
+ * * handles the checkout process, payment simulation, and order finalization.
+ * supports full cart checkout, single item checkout, and direct buy.
  * * @package App\Controllers
  */
 class PaymentController extends Controller {
@@ -89,7 +90,10 @@ class PaymentController extends Controller {
         }
 
         $delivery = \App\Models\MosaicModel::DELIVERY_FEE;
-        $totalPrice = $subTotal + $delivery;
+        
+        // apply loyalty discount if any
+        $loyaltyDiscount = $_SESSION['loyalty_discount'] ?? 0.0;
+        $totalPrice = max(0, $subTotal + $delivery - $loyaltyDiscount);
 
         $usersModel = new UsersModel();
         $clientInfo = (array) $usersModel->getUserById($_SESSION['user_id']);
@@ -101,6 +105,46 @@ class PaymentController extends Controller {
             'user' => $clientInfo,
             'css' => 'payment_views.css'
         ]);
+    }
+
+    /**
+     * apply loyalty points to the current order in session
+     * * @return void
+     */
+    public function appliquerPoints() {
+        $baseUrl = $_ENV['BASE_URL'] ?? '';
+        
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['points_a_utiliser'])) {
+            $points = (int)$_POST['points_a_utiliser'];
+            
+            // if user submits 0 points, we just clear the discount and return
+            if ($points === 0) {
+                unset($_SESSION['applied_points'], $_SESSION['loyalty_discount']);
+                header("Location: " . $baseUrl . "/payment");
+                exit();
+            }
+
+            $loyaltyId = $_SESSION['user']['loyalty_id'] ?? null;
+            
+            if ($loyaltyId) {
+                $loyaltyModel = new \App\Models\LoyaltyApiModel();
+                $availablePoints = $loyaltyModel->getPoints($loyaltyId);
+                
+                if ($points <= $availablePoints && $points > 0) {
+                    $_SESSION['applied_points'] = $points;
+                    // calculation: 1000 points = 0.10 euro
+                    $discount = $points * 0.0001;
+                    $_SESSION['loyalty_discount'] = $discount;
+                    
+                    header("Location: " . $baseUrl . "/payment?success=points_appliques");
+                    exit();
+                }
+            }
+        }
+        
+        // error redirection must use the project base url to avoid 404
+        header("Location: " . $baseUrl . "/payment?error=points_invalides");
+        exit();
     }
 
     /**
@@ -131,7 +175,10 @@ class PaymentController extends Controller {
                 $subTotal += $item['price']; 
             }
             $delivery = \App\Models\MosaicModel::DELIVERY_FEE;
-            $totalAmount = $subTotal + $delivery;
+            
+            // apply loyalty discount for paypal checkout
+            $loyaltyDiscount = $_SESSION['loyalty_discount'] ?? 0.0;
+            $totalAmount = max(0, $subTotal + $delivery - $loyaltyDiscount);
 
             $accessToken = $this->getPayPalAccessToken();
             if (!$accessToken) die("Erreur connexion PayPal Sandbox. Vérifie ton PAYPAL_ID et PAYPAL_KEY.");
@@ -174,8 +221,7 @@ class PaymentController extends Controller {
 
     /**
      * Manages credit card payments
-     * 
-     * @return void
+     * * @return void
      */
     public function processCard() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -183,10 +229,10 @@ class PaymentController extends Controller {
             
             // 1. Extraction et formatage des données de la carte
             $cardNumber = str_replace(' ', '', $_POST['card_num']);
-            $lastFour = substr($cardNumber, -4); // Récupère les 4 derniers chiffres
+            $lastFour = substr($cardNumber, -4); 
             
-            // Conversion MM/YY en YYYY-MM-01 (pour le format DATE de la BDD)
-            $expiry = $_POST['card_exp']; // Ex: "12/28"
+            // Conversion MM/YY en YYYY-MM-01 
+            $expiry = $_POST['card_exp']; 
             $expiryParts = explode('/', $expiry);
             $expireAt = "20" . $expiryParts[1] . "-" . $expiryParts[0] . "-01";
             
@@ -198,14 +244,14 @@ class PaymentController extends Controller {
                 'last_four'     => $lastFour,
                 'expire_at'     => $expireAt,
                 'payment_token' => $transactionId,
-                'card_brand'    => 'Visa' // Idéalement détecté via le premier chiffre du numéro
+                'card_brand'    => 'Visa' 
             ];
 
             // 3. Enregistrement en BDD
             $financialModel = new \App\Models\FinancialModel();
             $financialModel->saveBankDetails($userId, $bankData);
 
-            // 4. Suite du processus de commande (Billing + Finalisation)
+            // 4. Suite du processus de commande 
             $_SESSION['billing_temp'] = [
                 'first_name'   => $_POST['first_name'] ?? '',
                 'last_name'    => $_POST['last_name'] ?? '',
@@ -294,7 +340,11 @@ class PaymentController extends Controller {
             $item = (array)$item; 
             $subTotal += $item['price']; 
         }
-        $totalAmount = $subTotal + \App\Models\MosaicModel::DELIVERY_FEE;
+        
+        // apply loyalty discount to final order amount
+        $delivery = \App\Models\MosaicModel::DELIVERY_FEE;
+        $loyaltyDiscount = $_SESSION['loyalty_discount'] ?? 0.0;
+        $totalAmount = max(0, $subTotal + $delivery - $loyaltyDiscount);
 
         $cardInfo = [
             'number' => $paypalData->id,
@@ -356,6 +406,21 @@ class PaymentController extends Controller {
         }
         
         $orderId = (int)$result;
+
+        // consume loyalty points now that order is confirmed
+        $appliedPoints = $_SESSION['applied_points'] ?? 0;
+        $loyaltyId = $_SESSION['user']['loyalty_id'] ?? null;
+        
+        if ($appliedPoints > 0 && $loyaltyId) {
+            // contact node api to deduct the used points
+            $loyaltyModel = new LoyaltyApiModel();
+            // consumePoints should be implemented in LoyaltyApiModel
+            // $loyaltyModel->consumePoints($loyaltyId, $appliedPoints);
+            
+            // clear loyalty data from session
+            unset($_SESSION['applied_points']);
+            unset($_SESSION['loyalty_discount']);
+        }
 
         foreach ($realMosaicIds as $idMosaic) {
             $mosaicModel->requete("UPDATE Mosaic SET id_Order = ? WHERE id_Mosaic = ?", [$orderId, $idMosaic]);

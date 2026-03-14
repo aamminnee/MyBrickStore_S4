@@ -6,18 +6,18 @@ use App\Core\Db;
 use PDOException;
 
 /**
- * Class UsersModel
- * Manages user accounts data layer
- * Handles operations across 'user' (credentials) and 'savecustomer' (profile) tables
+ * class usersmodel
+ * manages user accounts data layer
+ * handles operations across 'user' (credentials) and 'savecustomer' (profile) tables
  * @package App\Models
  */
 class UsersModel extends Model {
 
-    /** @var string The database table associated with the model. */
+    /** @var string the database table associated with the model. */
     protected $table = 'User';
 
     /**
-     * Retrieves full user profile by internal id
+     * retrieves full user profile by internal id
      *
      * @param int $id_user the user identifier
      * @return object|false user data object or false if not found
@@ -46,7 +46,7 @@ class UsersModel extends Model {
     }
 
     /**
-     * Retrieves user data by email for authentication
+     * retrieves user data by email for authentication
      *
      * @param string $email the login email
      * @return object|false user data
@@ -68,7 +68,7 @@ class UsersModel extends Model {
     }
 
     /**
-     * Fetches only the email address for a specific user
+     * fetches only the email address for a specific user
      *
      * @param int $id_user
      * @return object|false
@@ -79,7 +79,7 @@ class UsersModel extends Model {
     }
 
     /**
-     * Checks the account status (e.g., active, banned, pending)
+     * checks the account status (e.g., active, banned, pending)
      *
      * @param int $id_user
      * @return object|false
@@ -89,10 +89,10 @@ class UsersModel extends Model {
     }
     
     /**
-     * Retrieves the 2fa mode setting for the user
+     * retrieves the 2fa mode setting for the user
      *
      * @param int $id_user
-     * @return string|null '2FA' or null
+     * @return string|null '2fa' or null
      */
     public function getModeById($id_user) {
         $result = $this->requete("SELECT two_factor_method as mode FROM User WHERE id_Customer = ?", [$id_user])->fetch();
@@ -100,10 +100,10 @@ class UsersModel extends Model {
     }
 
     /**
-     * Updates the 2fa preference for a user
+     * updates the 2fa preference for a user
      *
      * @param int $id_user
-     * @param string|null $mode '2FA' to enable, null to disable
+     * @param string|null $mode '2fa' to enable, null to disable
      * @return mixed
      */
     public function setModeById($id_user, $mode) {
@@ -111,7 +111,7 @@ class UsersModel extends Model {
     }
 
     /**
-     * Registers a new user by creating records in both required tables
+     * registers a new user by creating records in both required tables
      *
      * @param string $email
      * @param string $password plain text password
@@ -129,6 +129,7 @@ class UsersModel extends Model {
             return true;
 
         } catch (PDOException $e) {
+            // catch duplicate entry error
             if ($e->getCode() == '23000') { 
                 return "duplicate";
             }
@@ -138,7 +139,7 @@ class UsersModel extends Model {
     }
 
     /**
-     * Activates a user account after successful email verification
+     * activates a user account after successful email verification
      *
      * @param int $id_user
      * @return mixed
@@ -148,7 +149,7 @@ class UsersModel extends Model {
     }
 
     /**
-     * Validates password complexity and history requirements
+     * validates password complexity and history requirements
      *
      * @param int $userId
      * @param string $plainPassword
@@ -163,6 +164,7 @@ class UsersModel extends Model {
         $stmt = $this->requete($sql, [$userId]);
         $currentHash = $stmt->fetchColumn();
 
+        // check if new password is the same as the old one
         if ($currentHash && password_verify($plainPassword, $currentHash)) {
             return "Le nouveau mot de passe doit être différent de l'ancien.";
         }
@@ -170,7 +172,7 @@ class UsersModel extends Model {
     }
 
     /**
-     * Updates the user's password with a new hash
+     * updates the user's password with a new hash
      *
      * @param int $userId
      * @param string $plainPassword
@@ -183,7 +185,7 @@ class UsersModel extends Model {
     }
 
     /**
-     * Counts total registered standard users for admin statistics
+     * counts total registered standard users for admin statistics
      *
      * @return int
      */
@@ -194,7 +196,7 @@ class UsersModel extends Model {
     }
 
     /**
-     * Updates user profile information in both User and SaveCustomer tables
+     * updates user profile information in both user and savecustomer tables
      *
      * @param int $id_user
      * @param array $data
@@ -257,11 +259,11 @@ class UsersModel extends Model {
     }
 
     /**
-     * Update the two-factor authentication method for a user.
+     * update the two-factor authentication method for a user.
      *
-     * @param int $userId The ID of the user.
-     * @param string $type The 2FA type ('email', 'app', 'none').
-     * @return bool Returns true on success, false on failure.
+     * @param int $userId the id of the user.
+     * @param string $type the 2fa type ('email', 'app', 'none').
+     * @return bool returns true on success, false on failure.
      */
     public function update2FAType(int $userId, string $type): bool {
         $mode = ($type === 'none') ? null : $type;
@@ -274,7 +276,7 @@ class UsersModel extends Model {
     }
 
     /**
-     * Stores the generated google authenticator secret for a user
+     * stores the generated google authenticator secret for a user
      *
      * @param int $userId
      * @param string $secret
@@ -286,7 +288,7 @@ class UsersModel extends Model {
     }
 
     /**
-     * Verifies a totp code against a secret key mathematically
+     * verifies a totp code against a secret key mathematically
      *
      * @param string $secret the user's base32 secret
      * @param string $code the 6 digit code entered
@@ -335,14 +337,35 @@ class UsersModel extends Model {
     }
 
     /**
-     * Saves the image's binary data directly to the database
+     * saves the image's binary data directly to the database
      *
      * @param int $userId
-     * @param string $binaryData Raw content of the image file
+     * @param string $binaryData raw content of the image file
      * @return bool
      */
     public function updateAvatarBlob($userId, $binaryData) {
         $sql = "UPDATE User SET avatar = ? WHERE id_Customer = ?";
         return $this->requete($sql, [$binaryData, $userId]);
+    }
+
+    /**
+     * generate a unique loyalty id for a new user
+     *
+     * @return string
+     */
+    public function generateLoyaltyId() {
+        return bin2hex(random_bytes(16));
+    }
+
+    /**
+     * link a loyalty id to an existing user account
+     *
+     * @param int $userId
+     * @param string $loyaltyId
+     * @return mixed
+     */
+    public function setLoyaltyId($userId, $loyaltyId) {
+        // use id_customer as per the database schema
+        return $this->requete("UPDATE {$this->table} SET loyalty_id = ? WHERE id_Customer = ?", [$loyaltyId, $userId]);
     }
 }
