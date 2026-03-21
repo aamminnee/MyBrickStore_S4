@@ -8,13 +8,14 @@ use App\Models\MosaicModel;
 use App\Models\CommandeModel;
 use App\Models\UsersModel;
 use App\Models\ImagesModel;
+use App\Models\LoyaltyApiModel;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
 /**
- * Class PaymentController
- * * Handles the checkout process, payment simulation, and order finalization.
- * Supports full cart checkout, single item checkout, and direct buy.
+ * class PaymentController
+ * * handles the checkout process, payment simulation, and order finalization.
+ * supports full cart checkout, single item checkout, and direct buy.
  * * @package App\Controllers
  */
 class PaymentController extends Controller {
@@ -89,7 +90,10 @@ class PaymentController extends Controller {
         }
 
         $delivery = \App\Models\MosaicModel::DELIVERY_FEE;
-        $totalPrice = $subTotal + $delivery;
+        
+        // apply loyalty discount if any
+        $loyaltyDiscount = $_SESSION['loyalty_discount'] ?? 0.0;
+        $totalPrice = max(0, $subTotal + $delivery - $loyaltyDiscount);
 
         $usersModel = new UsersModel();
         $clientInfo = (array) $usersModel->getUserById($_SESSION['user_id']);
@@ -101,6 +105,59 @@ class PaymentController extends Controller {
             'user' => $clientInfo,
             'css' => 'payment_views.css'
         ]);
+    }
+
+    /**
+     * apply loyalty points to the current order in session
+     * * @return void
+     */
+    public function appliquerPoints() {
+        $baseUrl = $_ENV['BASE_URL'] ?? '';
+        $conversionRate = 0.001;
+        
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['points_a_utiliser'])) {
+            $points = (int)$_POST['points_a_utiliser'];
+            
+            // Si le client tape 0 (ou clique sur Retirer), on vide la session
+            if ($points <= 0) {
+                unset($_SESSION['applied_points'], $_SESSION['loyalty_discount']);
+                header("Location: " . $baseUrl . "/payment");
+                exit();
+            }
+
+            $usersModel = new \App\Models\UsersModel();
+            $currentUser = (array) $usersModel->getUserById($_SESSION['user_id']);
+            $loyaltyId = $currentUser['loyalty_id'] ?? null;
+            
+            if ($loyaltyId) {
+                $loyaltyModel = new \App\Models\LoyaltyApiModel();
+                $availablePoints = $loyaltyModel->getPoints($loyaltyId);
+                
+                $itemsToProcess = $_SESSION['purchase_context']['items'] ?? [];
+                $subTotal = 0;
+                foreach ($itemsToProcess as $item) { 
+                    $itemArray = (array)$item; 
+                    $subTotal += $itemArray['price']; 
+                }
+                $delivery = \App\Models\MosaicModel::DELIVERY_FEE;
+                $orderTotal = $subTotal + $delivery;
+
+                $maxPointsNeeded = (int)ceil($orderTotal / $conversionRate);
+                $maxUsable = min($availablePoints, $maxPointsNeeded);
+                $pointsToApply = min($points, $maxUsable);
+                
+                if ($pointsToApply > 0) {
+                    $_SESSION['applied_points'] = $pointsToApply;
+                    $discount = $pointsToApply * $conversionRate; // Application du nouveau taux
+                    $_SESSION['loyalty_discount'] = $discount;
+                    
+                    header("Location: " . $baseUrl . "/payment?success=points_appliques");
+                    exit();
+                }
+            }
+        }
+        header("Location: " . $baseUrl . "/payment?error=points_invalides");
+        exit();
     }
 
     /**
@@ -131,7 +188,10 @@ class PaymentController extends Controller {
                 $subTotal += $item['price']; 
             }
             $delivery = \App\Models\MosaicModel::DELIVERY_FEE;
-            $totalAmount = $subTotal + $delivery;
+            
+            // apply loyalty discount for paypal checkout
+            $loyaltyDiscount = $_SESSION['loyalty_discount'] ?? 0.0;
+            $totalAmount = max(0, $subTotal + $delivery - $loyaltyDiscount);
 
             $accessToken = $this->getPayPalAccessToken();
             if (!$accessToken) die("Erreur connexion PayPal Sandbox. Vérifie ton PAYPAL_ID et PAYPAL_KEY.");
@@ -174,8 +234,7 @@ class PaymentController extends Controller {
 
     /**
      * Manages credit card payments
-     * 
-     * @return void
+     * * @return void
      */
     public function processCard() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -183,10 +242,10 @@ class PaymentController extends Controller {
             
             // 1. Extraction et formatage des données de la carte
             $cardNumber = str_replace(' ', '', $_POST['card_num']);
-            $lastFour = substr($cardNumber, -4); // Récupère les 4 derniers chiffres
+            $lastFour = substr($cardNumber, -4); 
             
-            // Conversion MM/YY en YYYY-MM-01 (pour le format DATE de la BDD)
-            $expiry = $_POST['card_exp']; // Ex: "12/28"
+            // Conversion MM/YY en YYYY-MM-01 
+            $expiry = $_POST['card_exp']; 
             $expiryParts = explode('/', $expiry);
             $expireAt = "20" . $expiryParts[1] . "-" . $expiryParts[0] . "-01";
             
@@ -198,14 +257,14 @@ class PaymentController extends Controller {
                 'last_four'     => $lastFour,
                 'expire_at'     => $expireAt,
                 'payment_token' => $transactionId,
-                'card_brand'    => 'Visa' // Idéalement détecté via le premier chiffre du numéro
+                'card_brand'    => 'Visa' 
             ];
 
             // 3. Enregistrement en BDD
             $financialModel = new \App\Models\FinancialModel();
             $financialModel->saveBankDetails($userId, $bankData);
 
-            // 4. Suite du processus de commande (Billing + Finalisation)
+            // 4. Suite du processus de commande 
             $_SESSION['billing_temp'] = [
                 'first_name'   => $_POST['first_name'] ?? '',
                 'last_name'    => $_POST['last_name'] ?? '',
@@ -294,7 +353,11 @@ class PaymentController extends Controller {
             $item = (array)$item; 
             $subTotal += $item['price']; 
         }
-        $totalAmount = $subTotal + \App\Models\MosaicModel::DELIVERY_FEE;
+        
+        // apply loyalty discount to final order amount
+        $delivery = \App\Models\MosaicModel::DELIVERY_FEE;
+        $loyaltyDiscount = $_SESSION['loyalty_discount'] ?? 0.0;
+        $totalAmount = max(0, $subTotal + $delivery - $loyaltyDiscount);
 
         $cardInfo = [
             'number' => $paypalData->id,
@@ -350,12 +413,40 @@ class PaymentController extends Controller {
         $financialModel = new FinancialModel();
         $result = $financialModel->processOrder($userId, $realMosaicIds[0], $cardInfo, $totalAmount, $billingInfo);
 
+        if (is_numeric($result)) {
+            $appliedPoints = $_SESSION['applied_points'] ?? 0;
+            $loyaltyId = $_SESSION['user']['loyalty_id'] ?? null;
+
+            if ($appliedPoints > 0 && $loyaltyId) {
+                $loyaltyModel = new \App\Models\LoyaltyApiModel();
+                // Appel effectif au backend Node.js pour vider les points MongoDB
+                $success = $loyaltyModel->consumePoints($loyaltyId, $appliedPoints);
+                
+                if ($success) {
+                    unset($_SESSION['applied_points'], $_SESSION['loyalty_discount']);
+                }
+            }
+        }
+
         if (!is_numeric($result)) { 
             echo "Erreur BDD : " . $result; 
             return; 
         }
         
         $orderId = (int)$result;
+
+        // consume loyalty points now that order is confirmed
+        $appliedPoints = $_SESSION['applied_points'] ?? 0;
+        $loyaltyId = $userInfo['loyalty_id'] ?? null;
+        
+        if ($appliedPoints > 0 && $loyaltyId) {
+            $loyaltyModel = new \App\Models\LoyaltyApiModel();
+            // On déduit réellement les points sur Node.js / MongoDB
+            $loyaltyModel->consumePoints($loyaltyId, $appliedPoints);
+        }
+
+        unset($_SESSION['applied_points']);
+        unset($_SESSION['loyalty_discount']);
 
         foreach ($realMosaicIds as $idMosaic) {
             $mosaicModel->requete("UPDATE Mosaic SET id_Order = ? WHERE id_Mosaic = ?", [$orderId, $idMosaic]);
@@ -558,5 +649,29 @@ class PaymentController extends Controller {
         $result = curl_exec($ch);
         curl_close($ch);
         return json_decode($result);
+    }
+
+    /**
+     * Relie le compte MyBrickGames (loyalty_id) au compte utilisateur PHP
+     */
+    public function lierCompteJeux() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['loyalty_id'])) {
+            $loyaltyId = trim($_POST['loyalty_id']);
+            $userId = $_SESSION['user_id'];
+            
+            // On met à jour la base de données
+            $usersModel = new \App\Models\UsersModel();
+            $usersModel->setLoyaltyId($userId, $loyaltyId);
+            
+            // On met à jour la session pour que l'affichage soit immédiat
+            $_SESSION['user']['loyalty_id'] = $loyaltyId;
+            
+            // On redirige vers la page de paiement
+            header("Location: " . ($_ENV['BASE_URL'] ?? '') . "/payment?success=compte_lie");
+            exit();
+        }
+        
+        header("Location: " . ($_ENV['BASE_URL'] ?? '') . "/payment?error=identifiant_vide");
+        exit();
     }
 }

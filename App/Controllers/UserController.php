@@ -127,6 +127,7 @@ class UserController extends Controller {
                     exit;
                 }
 
+                $user = $this->processLoyaltyId($user);
                 $this->finalizeLogin($user);
                 exit;
             } else {
@@ -249,6 +250,7 @@ class UserController extends Controller {
             
             if ($result === true) {
                 $user = $this->user_model->getUserByEmail($email);
+                $user = $this->processLoyaltyId($user);
                 $userId = is_object($user) ? ($user->id_user ?? null) : ($user['id_user'] ?? null);
                 
                 if ($userId) {
@@ -690,5 +692,60 @@ class UserController extends Controller {
                 }
             }
         }
+    }
+
+    /**
+     * Gère le loyalty_id lors de la connexion.
+     * Se contente de lire la base de données sans jamais générer d'ID automatique.
+     *
+     * @param object|array $user the user data from database
+     * @return object|array updated user data
+     */
+    protected function processLoyaltyId($user) {
+        // On extrait l'identifiant actuel en toute sécurité
+        $currentLoyaltyId = is_object($user) ? ($user->loyalty_id ?? null) : ($user['loyalty_id'] ?? null);
+
+        if (!isset($_SESSION['user'])) {
+            $_SESSION['user'] = [];
+        }
+
+        // Si le joueur a un identifiant, on le garde en mémoire
+        if (!empty($currentLoyaltyId)) {
+            $_SESSION['user']['loyalty_id'] = $currentLoyaltyId;
+        } else {
+            // Sinon, on s'assure qu'il reste bien vide (NULL) en mémoire
+            $_SESSION['user']['loyalty_id'] = null;
+        }
+        
+        return $user;
+    }
+
+    /**
+     * retrieves the loyalty_id from the active session for the react application.
+     * handles cors to allow the react app to read the php session cookie.
+     *
+     * @return void
+     */
+    public function getSessionLoyalty() {
+        // allow react app (port 5173) to make requests with cookies
+        header('Access-Control-Allow-Origin: http://localhost:5173');
+        header('Access-Control-Allow-Credentials: true');
+        header('Access-Control-Allow-Headers: Content-Type, Accept');
+        
+        // handle preflight options request from browser
+        if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+            http_response_code(200);
+            exit;
+        }
+
+        header('Content-Type: application/json');
+
+        // check if user is logged in and has a loyalty id
+        if (isset($_SESSION['user']) && !empty($_SESSION['user']['loyalty_id'])) {
+            echo json_encode(['loyalty_id' => $_SESSION['user']['loyalty_id']]);
+        } else {
+            echo json_encode(['loyalty_id' => null]);
+        }
+        exit;
     }
 }

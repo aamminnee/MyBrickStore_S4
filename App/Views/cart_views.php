@@ -17,6 +17,126 @@
  */
 ?>
 
+<style>
+    .games-ad-banner {
+        background-color: #006CB7; /* Lego Blue */
+        color: white;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 30px;
+        position: relative;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        border: 4px solid #FFCF00; /* Lego Yellow */
+        overflow: hidden;
+    }
+
+    .games-ad-close {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        background: none;
+        border: none;
+        color: white;
+        font-size: 24px;
+        font-weight: bold;
+        cursor: pointer;
+        opacity: 0.7;
+        transition: opacity 0.2s;
+        z-index: 10;
+    }
+
+    .games-ad-close:hover {
+        opacity: 1;
+        color: #FFCF00;
+    }
+
+    .games-ad-content {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .games-ad-icon {
+        font-size: 50px;
+        background-color: rgba(255,255,255,0.2);
+        padding: 15px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .games-ad-text h3 {
+        color: #FFCF00; /* Lego Yellow */
+        font-size: 1.6rem;
+        margin: 0 0 5px 0;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .games-ad-text p {
+        margin: 0;
+        font-size: 1.1rem;
+        line-height: 1.4;
+    }
+
+    .games-ad-button {
+        background-color: #e3000b; /* Lego Red */
+        color: white !important;
+        text-decoration: none !important;
+        padding: 12px 25px;
+        border-radius: 4px;
+        font-weight: bold;
+        font-size: 1.1rem;
+        text-transform: uppercase;
+        border: 2px solid #b30009;
+        transition: transform 0.2s, box-shadow 0.2s;
+        white-space: nowrap;
+    }
+
+    .games-ad-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        background-color: #f3000c;
+    }
+
+    /* Décoration style Lego Bricks */
+    .games-ad-banner::before {
+        content: "";
+        position: absolute;
+        bottom: -20px;
+        right: -20px;
+        width: 100px;
+        height: 100px;
+        background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjEpIiBkPSJNMiAyNWgyMHYtMjRoLTIwdjI0em00LTE5YzEuMTA1IDAgMiAuODk1IDIgMnMtLjg5NSAyLTIgMi0yLS44OTUtMi0yIC44OTUtMiAyIDJ6bTggMGMxLjEwNSAwIDIgLjg5NSAyIDJzLS44OTUgMi0yIDItMi0uODk1LTItMiAuODk1LTIgMiAyem0tOCA4YzEuMTA1IDAgMiAuODk1IDIgMnMtLjg5NSAyLTIgMi0yLS44OTUtMi0yIC44OTUtMiAyIDJ6bTggMGMxLjEwNSAwIDIgLjg5NSAyIDJzLS44OTUgMi0yIDItMi0uODk1LTItMiAuODk1LTIgMiAyem0tOCA4YzEuMTA1IDAgMiAuODk1IDIgMnMtLjg5NSAyLTIgMi0yLS44OTUtMi0yIC44OTUtMiAyIDJ6bTggMGMxLjEwNSAwIDIgLjg5NSAyIDJzLS44OTUgMi0yIDItMi0uODk1LTItMiAuODk1LTIgMiAyem0tOC0xNmg4djI0aC04di0yNHptMCA0aDh2NGgtOHYtNHptMCA4aDh2NGgtOHYtNHptMCA4aDh2NGgtOHYtNHoiLz48L3N2Zz4=');
+        background-size: 24px;
+        opacity: 0.3;
+        transform: rotate(15deg);
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+        .games-ad-banner {
+            flex-direction: column;
+            text-align: center;
+            padding-top: 35px;
+        }
+        .games-ad-content {
+            flex-direction: column;
+            gap: 10px;
+        }
+        .games-ad-icon {
+            font-size: 40px;
+            padding: 10px;
+        }
+    }
+</style>
+
 <div class="cart-wrapper">
     <div class="cart-container">
         
@@ -47,6 +167,23 @@
             </div>
 
         <?php else: ?>
+
+            <div class="games-ad-banner" id="myBrickGamesAd">
+                <button class="games-ad-close" onclick="closeGamesAd()" title="Fermer la publicité">&times;</button>
+                <div class="games-ad-content">
+                    <div class="games-ad-icon">🎮</div>
+                    <div class="games-ad-text">
+                        <h3>Transformez vos scores en réductions !</h3>
+                        <p>Jouez 5 minutes à nos jeux MyBrickGames et gagnez des points de fidélité valables dès maintenant sur ce panier.</p>
+                    </div>
+                </div>
+                <a href="<?= htmlspecialchars($_ENV['MYBRICKGAME'] ?? 'http://localhost:5173') ?>" 
+                   class="games-ad-button"
+                   target="_blank" 
+                   rel="noopener noreferrer">
+                   Aller Jouer
+                </a>
+            </div>
 
             <div class="cart-layout">
                 
@@ -137,3 +274,22 @@
         <?php endif; ?>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // On utilise sessionStorage : la pub reviendra à sa prochaine visite (demain)
+        if (sessionStorage.getItem('hideMyBrickGamesAd') === 'true') {
+            const adBanner = document.getElementById('myBrickGamesAd');
+            if (adBanner) adBanner.style.display = 'none';
+        }
+    });
+
+    function closeGamesAd() {
+        const adBanner = document.getElementById('myBrickGamesAd');
+        if (adBanner) {
+            adBanner.style.display = 'none';
+            // On sauvegarde le choix uniquement pour cette session de navigation
+            sessionStorage.setItem('hideMyBrickGamesAd', 'true');
+        }
+    }
+</script>
