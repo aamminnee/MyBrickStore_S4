@@ -3,7 +3,8 @@
  * payment checkout view
  * displays the checkout form and a detailed order summary.
  * handles saved address auto-filling.
- * * @var array $user  user data passed from controller
+ *
+ * @var array $user  user data passed from controller
  * @var array $t     translations
  * @var array $items items in the current checkout session
  * @var float $total total amount to pay
@@ -36,7 +37,6 @@ $loyaltyId = $user['loyalty_id'] ?? $_SESSION['user']['loyalty_id'] ?? null;
 $availablePoints = 0;
 if ($loyaltyId) {
     $loyaltyModel = new \App\Models\LoyaltyApiModel();
-    // fixed: removed double dollar sign and used getPoints
     $availablePoints = $loyaltyModel->getPoints($loyaltyId);
 }
 
@@ -44,14 +44,14 @@ if ($loyaltyId) {
 $appliedPoints = $_SESSION['applied_points'] ?? 0;
 $loyaltyDiscount = $_SESSION['loyalty_discount'] ?? 0.0;
 
-// Nouveau taux de conversion (1000 points = 1€)
+// new conversion rate (1000 points = 1€)
 $conversionRate = 0.001;
 
 $orderTotalBeforeDiscount = $subTotal + $shippingCost;
 $maxPointsNeededForCart = (int)ceil($orderTotalBeforeDiscount / $conversionRate);
 $maxPointsInput = min($availablePoints, $maxPointsNeededForCart);
 
-// NOUVEAU : Points virtuellement restants à afficher au client
+// virtually remaining points to display to the customer
 $displayAvailablePoints = max(0, $availablePoints - $appliedPoints);
 
 // final total calculation for display
@@ -214,7 +214,6 @@ $displayTotal = max(0, $subTotal + $shippingCost - $loyaltyDiscount);
 
         <div class="checkout-summary-container">
 
-            <!-- loyalty points card section -->
             <div class="checkout-card" style="margin-bottom: 20px; background-color: #f0f7ff; border: 1px solid #cce0ff;">
                 <h3 style="color: #006CB7; font-size: 1.1rem; margin-bottom: 10px;">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px; vertical-align: middle;"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
@@ -314,7 +313,6 @@ $displayTotal = max(0, $subTotal + $shippingCost - $loyaltyDiscount);
                         <span><?= number_format($shippingCost, 2, ',', ' ') ?> €</span>
                     </div>
                     
-                    <!-- loyalty discount line -->
                     <?php if ($loyaltyDiscount > 0): ?>
                         <div class="summary-line" style="color: #28a745; font-weight: 500;">
                             <span><?= $t['cart_label_discount'] ?? 'Remise fidélité' ?></span>

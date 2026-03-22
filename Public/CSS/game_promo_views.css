@@ -1,0 +1,151 @@
+/* custom styles for the promotional page */
+.promo-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    font-family: 'Arial', sans-serif;
+}
+
+/* hero section */
+.promo-hero {
+    background-color: #D92328;
+    color: white;
+    text-align: center;
+    padding: 4rem 2rem;
+    border-radius: 15px;
+    margin-bottom: 3rem;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.promo-hero h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+/* play button */
+.btn-play {
+    display: inline-block;
+    background-color: #FFCF00;
+    color: #333;
+    font-size: 1.5rem;
+    font-weight: bold;
+    padding: 15px 40px;
+    border-radius: 30px;
+    text-decoration: none;
+    margin-top: 2rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.btn-play:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(255, 207, 0, 0.4);
+    color: #000;
+    text-decoration: none;
+}
+
+/* sections and grid */
+.promo-section-title {
+    text-align: center;
+    color: #006CB7;
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    font-weight: bold;
+}
+
+.promo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 4rem;
+}
+
+/* cards */
+.promo-card {
+    background: #ffffff;
+    border: 2px solid #e9ecef;
+    border-radius: 15px;
+    padding: 2rem;
+    text-align: center;
+    transition: transform 0.3s, border-color 0.3s;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.promo-card:hover {
+    transform: translateY(-10px);
+    border-color: #006CB7;
+    box-shadow: 0 10px 15px rgba(0,108,183,0.1);
+}
+
+.promo-card-image {
+    width: 100%;
+    height: 200px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+    font-style: italic;
+    border: 2px dashed #dee2e6;
+    overflow: hidden;
+}
+
+.promo-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* policy section */
+.policy-section {
+    background-color: #fff;
+    padding: 3rem;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    border-left: 8px solid #237841;
+}
+
+.policy-list {
+    list-style: none;
+    padding: 0;
+}
+
+.policy-list li {
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.policy-list li::before {
+    content: "⭐";
+    margin-right: 15px;
+    font-size: 1.5rem;
+}
+
+.promo-badge {
+    background-color: #D92328;
+    color: white;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    margin-left: auto;
+}
+
+/* responsive */
+@media (max-width: 768px) {
+    .policy-list li {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .promo-badge {
+        margin-left: 0;
+        margin-top: 10px;
+    }
+}
