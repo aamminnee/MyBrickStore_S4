@@ -702,18 +702,15 @@ class UserController extends Controller {
      * @return object|array updated user data
      */
     protected function processLoyaltyId($user) {
-        // On extrait l'identifiant actuel en toute sécurité
         $currentLoyaltyId = is_object($user) ? ($user->loyalty_id ?? null) : ($user['loyalty_id'] ?? null);
 
         if (!isset($_SESSION['user'])) {
             $_SESSION['user'] = [];
         }
 
-        // Si le joueur a un identifiant, on le garde en mémoire
         if (!empty($currentLoyaltyId)) {
             $_SESSION['user']['loyalty_id'] = $currentLoyaltyId;
         } else {
-            // Sinon, on s'assure qu'il reste bien vide (NULL) en mémoire
             $_SESSION['user']['loyalty_id'] = null;
         }
         

@@ -115,7 +115,7 @@ class SettingController extends Controller {
                 
                 unset($_SESSION['setup_totp']);
                 
-                $_SESSION['success_message'] = $this->t('js_2fa_update_success', 'Vos préférences 2FA ont été mises à jour.');
+                $_SESSION['success_message'] = $this->trans['js_2fa_update_success'] ?? 'Vos préférences 2FA ont été mises à jour.';
             }
 
             header('Location: ' . ($_ENV['BASE_URL'] ?? '') . '/setting');
@@ -175,9 +175,9 @@ class SettingController extends Controller {
                 $this->usersModel->update2FAType($userId, 'app');
                 $_SESSION['mode'] = 'app';
                 unset($_SESSION['setup_totp']);
-                $_SESSION['success_message'] = $this->t('js_2fa_app_success', 'Authentification par application activée avec succès !');
+                $_SESSION['success_message'] = $this->trans['js_2fa_app_success'] ?? 'Authentification par application activée avec succès !';
             } else {
-                $_SESSION['error'] = $this->t('js_2fa_code_error', 'Le code saisi est incorrect. Veuillez réessayer.');
+                $_SESSION['error'] = $this->trans['js_2fa_code_error'] ?? 'Le code saisi est incorrect. Veuillez réessayer.';
                 $_SESSION['setup_totp'] = true; 
             }
         }

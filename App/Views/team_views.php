@@ -53,7 +53,7 @@
                 </div>
                 <h3 class="member-name">Rayan ESSAIDI</h3>
                 <div class="member-role"><?= $t['team_role_dev'] ?? 'Dev Full Stack' ?></div>
-                <a href="#" target="_blank" class="portfolio-btn"><?= $t['team_btn_portfolio'] ?? 'Mon Portfolio' ?></a>
+                <a href="https://rayan-essaidi.alwaysdata.net/" target="_blank" class="portfolio-btn"><?= $t['team_btn_portfolio'] ?? 'Mon Portfolio' ?></a>
                 <p class="member-description"><?= $t['team_desc_rayan'] ?? 'Rayan intervient sur l\'ensemble de la chaîne...' ?></p>
             </div>
             
