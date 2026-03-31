@@ -18,7 +18,7 @@
 <div class="admin-container">
     <div class="admin-header">
         <h1><?= $t['dashboard_title'] ?? 'Tableau de bord' ?></h1>
-        <p class="text-muted"><?= $t['dashboard_subtitle'] ?? 'Aperçu de l\'activité de MyBrixStore' ?></p>
+        <p class="text-muted"><?= $t['dashboard_subtitle'] ?? 'Aperçu de l\'activité de MyBrickStore' ?></p>
     </div>
 
     <div class="admin-content">

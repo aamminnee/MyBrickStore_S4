@@ -6,86 +6,85 @@
 ![MariaDB](https://img.shields.io/badge/MariaDB-10.6-003545?logo=mariadb)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
-> **De l'image à la brique.**
-> MyBrickStore est une solution e-commerce complète permettant de transformer n'importe quelle image en mosaïque LEGO®, de commander les pièces et de gérer les stocks via une simulation d'usine connectée.
+> **From image to brick.**
+> MyBrickStore is a complete e-commerce solution that transforms any image into a LEGO® mosaic, allowing users to order the pieces and manage stocks via a connected factory simulation.
 
 ---
 
-## 🚀 Accès Rapide
+## 🚀 Quick Access
 
-| Ressource | Lien | Description |
+| Resource | Link | Description |
 | :--- | :--- | :--- |
-| **📘 Documentation** | [**Consulter la Doc Technique**](https://alkzhab.github.io/MyBrickStore-Doc/) | Architecture, Javadoc, PHPDoc, SQL. |
-| **🌐 Site Web** | [http://localhost/MyBrickStore](http://localhost/MyBrickStore) | Application principale (PHP MVC). |
-| **🗃️ Base de Données** | [http://localhost/phpmyadmin](http://localhost/phpmyadmin) | Administration SQL (User: `root`). |
-| **📄 Rapports** | [Voir le dossier /Rapports](/Rapports) | Dossiers techniques et fonctionnels (PDF). |
-| **📺 Vidéos** | [Voir le dossier /videos](/videos) | Démonstrations du site et du module Java. |
+| **📘 Documentation** | [**View Technical Doc**](https://alkzhab.github.io/MyBrickStore-Doc/) | Architecture, Javadoc, PHPDoc, SQL. |
+| **🌐 Website** | [https://mybrickstore.duckdns.org](https://mybrickstore.duckdns.org) | Main application (PHP MVC). |
+| **📄 Reports** | [See /Rapports folder](/Rapports) | Technical and functional reports (PDF). |
+| **📺 Videos** | [See /videos folder](/videos) | Website and Java module demonstrations. |
 
 ---
 
-## 🔐 Identifiants de Test (Cheat Sheet)
+## 🔐 Test Credentials (Cheat Sheet)
 
-Pour faciliter la correction et les tests, voici les comptes pré-configurés :
+To facilitate grading and testing, here are the pre-configured accounts:
 
-### 👨‍💻 Administrateur (Back-Office)
-Accès au tableau de bord complet (Gestion stocks, commandes, statistiques, réapprovisionnement).
-* **Login / Email :** `admin`
-* **Mot de passe :** `123456789aA!`
+### 👨‍💻 Administrator (Back-Office)
+Access to the full dashboard (Stock management, orders, statistics, restocking).
+* **Login / Email:** `admin`
+* **Password:** `123456789aA!`
 
-### 💳 Paiement (PayPal Sandbox)
-Pour valider une commande fictive lors du paiement :
-* **Email :** `sb-o00un48707050@personal.example.com`
-* **Mot de passe :** `0oH&XU{K`
-
----
-
-## ✨ Fonctionnalités Clés
-
-### 🎨 Expérience Utilisateur (Front-End)
-* **Mode Invité :** Possibilité de créer une mosaïque et d'ajouter au panier sans inscription (connexion requise uniquement au paiement).
-* **Traitement d'Image :** Upload, recadrage (Cropper.js) et pixelisation en temps réel.
-* **Ergonomie :** Sécurisation des formulaires (double confirmation de MDP, bouton "voir le mot de passe").
-
-### ⚙️ Moteur & Algorithmique (Backend)
-* **Architecture MVC :** Framework PHP propriétaire (Router, Controllers, Models).
-* **Algorithmes de Pavage (C/Java) :**
-    * *Mode Rentabilité :* Compromis optimisé entre coût et fidélité.
-    * *Mode Forme Libre :* Algorithme glouton priorisant les grandes pièces.
-* **Base de Données Intelligente :**
-    * Triggers de sécurité (Immuabilité des factures et commandes).
-    * Procédures stockées pour le calcul de stock temps réel.
-
-### 🏭 Simulation Usine (Java)
-* Gestion des ordres de fabrication.
-* Validation des transactions par **Proof of Work** (Minage cryptographique).
-* Synchronisation bidirectionnelle avec le site Web.
+### 💳 Payment (PayPal Sandbox)
+To validate a dummy order during checkout:
+* **Email:** `sb-o00un48707050@personal.example.com`
+* **Password:** `0oH&XU{K`
 
 ---
 
-## 📚 Qualité & Documentation
+## ✨ Key Features
 
-Dans une optique de professionnalisation, le code respecte les standards industriels. Chaque module dispose de sa documentation normative générée automatiquement :
+### 🎨 User Experience (Front-End)
+* **Guest Mode:** Ability to create a mosaic and add to cart without registration (login only required at checkout).
+* **Image Processing:** Real-time upload, cropping (Cropper.js), and pixelation.
+* **Ergonomics:** Secure forms (password double-confirmation, "show password" button).
 
-| Module | Standard | Outil |
+### ⚙️ Engine & Algorithms (Backend)
+* **MVC Architecture:** Proprietary PHP framework (Router, Controllers, Models).
+* **Tiling Algorithms (C/Java):**
+    * *Profitability Mode:* Optimized compromise between cost and accuracy.
+    * *Freeform Mode:* Greedy algorithm prioritizing large pieces.
+* **Intelligent Database:**
+    * Security triggers (Immutability of invoices and orders).
+    * Stored procedures for real-time stock calculation.
+
+### 🏭 Factory Simulation (Java)
+* Production order management.
+* Transaction validation via **Proof of Work** (Cryptographic mining).
+* Two-way synchronization with the website.
+
+---
+
+## 📚 Quality & Documentation
+
+With a focus on professional standards, the code follows industry best practices. Each module has its automatically generated normative documentation:
+
+| Module | Standard | Tool |
 | :--- | :--- | :--- |
 | **☕ Java** | Oracle Javadoc | *Javadoc* |
 | **🐘 PHP** | PSR-5 / PSR-19 | *phpDocumentor* |
 | **⚙️ C** | Doxygen Style | *Doxygen* |
 | **🗃️ SQL** | DBML | *DBDocs* |
 
-🚀 **[Accéder au Portail de Documentation](https://alkzhab.github.io/MyBrickStore-Doc/)**
+🚀 **[Access the Documentation Portal](https://alkzhab.github.io/MyBrickStore-Doc/)**
 
 ---
 
-## 🛠️ Installation & Démarrage
+## 🛠️ Installation & Setup
 
-### Prérequis
-* Serveur Web (Apache/Nginx via XAMPP, WAMP ou MAMP).
-* PHP >= 8.0 avec extension GD activée.
-* Base de données MariaDB ou MySQL.
-* Java Runtime (JRE 17) pour le module usine.
+### Prerequisites
+* Web Server (Apache/Nginx via XAMPP, WAMP, or MAMP).
+* PHP >= 8.0 with GD extension enabled.
+* MariaDB or MySQL database.
+* Java Runtime (JRE 17) for the factory module.
 
-### Procédure
-1. **Cloner le projet** dans votre dossier serveur (`htdocs` ou `www`) :
+### Procedure
+1. **Clone the project** into your server folder (`htdocs` or `www`):
    ```bash
    git clone [https://github.com/aamminnee/SAE_S3_BUT2_INFO.git](https://github.com/aamminnee/SAE_S3_BUT2_INFO.git) MyBrickStore

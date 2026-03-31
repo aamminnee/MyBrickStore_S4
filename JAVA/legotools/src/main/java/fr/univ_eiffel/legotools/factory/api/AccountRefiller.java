@@ -4,7 +4,6 @@ import fr.univ_eiffel.legotools.factory.security.ProofOfWorkSolver;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URI;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.HexFormat;
 
@@ -60,7 +59,6 @@ public class AccountRefiller {
      * @throws IOException Si l'API est inaccessible ou rejette les identifiants.
      */
     public Challenge fetchChallenge() throws IOException {
-        @SuppressWarnings("deprecation")
         var connection = (HttpURLConnection) URI.create(serverUrl + "/billing/challenge").toURL().openConnection();
 
         // Authentification via headers personnalisés
@@ -107,7 +105,6 @@ public class AccountRefiller {
      * @throws IOException Si la connexion échoue ou si la réponse est rejetée (Status != 200).
      */
     public void submitChallengeAnswer(ChallengeAnswer challengeAnswer) throws IOException {
-        @SuppressWarnings("deprecation")
         var connection = (HttpURLConnection) URI.create(serverUrl + "/billing/challenge-answer").toURL().openConnection();
 
         connection.setRequestMethod("POST");
@@ -136,7 +133,6 @@ public class AccountRefiller {
      * @throws IOException Si la requête échoue.
      */
     public String fetchAccountBalance() throws IOException {
-        @SuppressWarnings("deprecation")
         var connection = (HttpURLConnection) URI.create(serverUrl + "/billing/balance").toURL().openConnection();
 
         connection.addRequestProperty("X-Email", email);

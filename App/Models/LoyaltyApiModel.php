@@ -22,7 +22,7 @@ class LoyaltyApiModel {
         $ch = curl_init();
         
         // build the url with the customer loyalty id
-        $url = 'http://localhost:3000/api/player/' . urlencode($loyaltyId) . '/points';
+        $url = $this->apiUrl . '/' . urlencode($loyaltyId) . '/points';
         
         // configure curl options
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -59,22 +59,36 @@ class LoyaltyApiModel {
         return 0;
     }
 
+    /**
+     * consumes loyalty points from the node.js api
+     *
+     * @param string $loyaltyId the unique loyalty identifier
+     * @param int $points the number of points to consume
+     * @return bool true if successfully consumed, false otherwise
+     */
     public function consumePoints(string $loyaltyId, int $points): bool {
+        // initialize curl session
         $ch = curl_init();
+        
+        // build the url to consume points
         $url = $this->apiUrl . '/' . urlencode($loyaltyId) . '/consume';
         
+        // prepare json payload
         $payload = json_encode(['pointsToConsume' => $points]);
 
+        // configure curl options
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
         curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
 
+        // execute the request
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
+        // return true if the api responds with a 200 ok
         return ($httpCode === 200);
     }
 }

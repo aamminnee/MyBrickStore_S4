@@ -11,28 +11,32 @@ use PHPMailer\PHPMailer\Exception;
 use Dotenv\Dotenv;
 
 /**
- * Class UserController
- * * Manages user authentication lifecycle including login, registration,
+ * class UserController
+ * manages user authentication lifecycle including login, registration,
  * password recovery and security settings like 2fa.
  * * @package App\Controllers
  */
 class UserController extends Controller {
 
-    /** @var UsersModel Handles user database operations. */
+    /** * @var UsersModel handles user database operations
+     */
     private $user_model;
 
-    /** @var TokensModel Handles token generation and verification. */
+    /** * @var TokensModel handles token generation and verification
+     */
     private $token_model;
 
-    /** @var PHPMailer Instance of the mailer service. */
+    /** * @var PHPMailer instance of the mailer service
+     */
     private $mail;
 
-    /** @var array Key/Value pair of translations. */
+    /** * @var array key/value pair of translations
+     */
     private $translations;
 
     /**
-     * Constructor.
-     * Initializes models and mailer configuration.
+     * constructor.
+     * initializes models and mailer configuration.
      */
     public function __construct() {
         parent::__construct();
@@ -49,7 +53,7 @@ class UserController extends Controller {
     }
 
     /**
-     * Retrieves a translation for a given key.
+     * retrieves a translation for a given key.
      *
      * @param string $key the translation key
      * @param string $default default text if key is missing
@@ -60,7 +64,7 @@ class UserController extends Controller {
     }
 
     /**
-     * Private method for verifying the hCaptcha.
+     * private method for verifying the hcaptcha.
      * * @return bool true if verified, false otherwise
      */
     private function verifyHCaptcha() {
@@ -82,7 +86,7 @@ class UserController extends Controller {
     }
 
     /**
-     * Handles user login process with captcha and 2fa support.
+     * handles user login process with captcha and 2fa support.
      *
      * @return void
      */
@@ -140,7 +144,7 @@ class UserController extends Controller {
     }
 
     /**
-     * finalizes the login process by setting session variables and redirecting
+     * finalizes the login process by setting session variables and redirecting.
      *
      * @param object|array $userFull user data object or array
      * @return void
@@ -195,7 +199,7 @@ class UserController extends Controller {
     }
 
     /**
-     * Redirects authorized users to the admin dashboard.
+     * redirects authorized users to the admin dashboard.
      *
      * @return void
      */
@@ -212,7 +216,7 @@ class UserController extends Controller {
     }
 
     /**
-     * Handles new user registration and validation email sending.
+     * handles new user registration and validation email sending.
      *
      * @return void
      */
@@ -279,7 +283,7 @@ class UserController extends Controller {
     }
 
     /**
-     * Processes the final password update after validation.
+     * processes the final password update after validation.
      *
      * @return void
      */
@@ -322,7 +326,7 @@ class UserController extends Controller {
     }
 
     /**
-     * Initiates the password reset flow by sending an email link.
+     * initiates the password reset flow by sending an email link.
      *
      * @return void
      */
@@ -464,7 +468,7 @@ class UserController extends Controller {
     }
 
     /**
-     * resends the verification code based on the current session context
+     * resends the verification code based on the current session context.
      *
      * @return void
      */
@@ -511,8 +515,8 @@ class UserController extends Controller {
     }
 
     /**
-     * Sends an email using smtp with mailjet configuration.
-     * Contains a beautifully designed HTML template for better user experience.
+     * sends an email using smtp with mailjet configuration.
+     * contains a beautifully designed html template for better user experience.
      *
      * @param string $email recipient address
      * @param string $token verification code to embed
@@ -561,13 +565,14 @@ class UserController extends Controller {
             $this->mail->Body = $body;
             $this->mail->send();
         } catch (Exception $e) {
-            error_log("Mail error: " . $this->mail->ErrorInfo);
+            // log error
+            error_log("mail error: " . $this->mail->ErrorInfo);
         }
     }
 
     /**
-     * dispatches the profile update verification email via smtp
-     * included here so resendCode can access it directly
+     * dispatches the profile update verification email via smtp.
+     * included here so resendcode can access it directly.
      *
      * @param string $email recipient address
      * @param string $token verification code
@@ -615,12 +620,13 @@ class UserController extends Controller {
             $this->mail->Body = $body;
             $this->mail->send();
         } catch (Exception $e) {
+            // log error
             error_log("mail error: " . $this->mail->ErrorInfo);
         }
     }
 
     /**
-     * Enables or disables 2fa for the current user.
+     * enables or disables 2fa for the current user.
      *
      * @return void
      */
@@ -655,7 +661,7 @@ class UserController extends Controller {
     }
 
     /**
-     * Destroys user session and redirects to login.
+     * destroys user session and redirects to login.
      *
      * @return void
      */
@@ -670,9 +676,10 @@ class UserController extends Controller {
     }
 
     /**
-     * Merges guest session data (cart images) into the logged-in user account.
+     * merges guest session data (cart images) into the logged-in user account.
      *
      * @param int $userId
+     * @return void
      */
     private function mergeGuestData($userId) {
         $imagesModel = new ImagesModel();
@@ -695,8 +702,8 @@ class UserController extends Controller {
     }
 
     /**
-     * Gère le loyalty_id lors de la connexion.
-     * Se contente de lire la base de données sans jamais générer d'ID automatique.
+     * handles the loyalty_id during login.
+     * only reads from the database without ever generating an automatic id.
      *
      * @param object|array $user the user data from database
      * @return object|array updated user data
@@ -713,7 +720,7 @@ class UserController extends Controller {
         } else {
             $_SESSION['user']['loyalty_id'] = null;
         }
-        
+
         return $user;
     }
 

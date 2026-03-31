@@ -24,6 +24,7 @@ $baseUrl = $baseUrl ?? ($_ENV['BASE_URL'] ?? '');
                 <li><a href="<?= $baseUrl ?>/cart"><?= $t['footer_nav_cart'] ?? 'Panier' ?></a></li>
                 <li><a href="<?= $baseUrl ?>/commande"><?= $t['footer_nav_orders'] ?? 'Mes commandes' ?></a></li>
                 <li><a href="<?= $baseUrl ?>/compte"><?= $t['footer_nav_profile'] ?? 'Profil' ?></a></li>
+                <li><a href="<?= $baseUrl ?>/game">MyBrickGame</a></li>
                 <li><a href="<?= $baseUrl ?>/setting"><?= $t['footer_nav_settings'] ?? 'Paramètres' ?></a></li>
             </ul>
         </div>
@@ -32,7 +33,8 @@ $baseUrl = $baseUrl ?? ($_ENV['BASE_URL'] ?? '');
             <h4><?= $t['footer_about_title'] ?? 'à propos' ?></h4>
             <ul>
                 <li><a href="<?= $baseUrl ?>/team"><?= $t['footer_about_team'] ?? 'notre équipe' ?></a></li>
-                <li><a href="https://azer-ty.fr" target="_blank" rel="noopener noreferrer"><?= $t['footer_about_partner'] ?? 'partenaire : azer ty' ?></a></li>
+                <li><a href="https://alkzhab.github.io/AZER-TY/" target="_blank" rel="noopener noreferrer"><?= $t['footer_about_partner'] ?? 'partenaire : azer ty' ?></a></li>
+                <li><a href="https://github.com/aamminnee/MyBrickStore_S4" target="_blank" rel="noopener noreferrer">GitHub</a></li>
             </ul>
         </div>
 

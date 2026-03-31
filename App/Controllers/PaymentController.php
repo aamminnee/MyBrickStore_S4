@@ -13,23 +13,25 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
 /**
- * class PaymentController
- * * handles the checkout process, payment simulation, and order finalization.
+ * handles the checkout process, payment simulation, and order finalization.
  * supports full cart checkout, single item checkout, and direct buy.
- * * @package App\Controllers
+ *
+ * @package App\Controllers
  */
 class PaymentController extends Controller {
 
-    /** * @var array Key/Value pair of translations. 
+    /**
+     * @var array key/value pair of translations
      */
     private $translations;
 
-    /** * @var string Base URL for PayPal API (Sandbox). 
+    /**
+     * @var string base url for paypal api sandbox
      */
     private $paypalBaseUrl = 'https://api-m.sandbox.paypal.com';
 
     /**
-     * Retrieves a translation for a given key.
+     * retrieves a translation for a given key.
      *
      * @param string $key the translation key
      * @param string $default default text if key is missing
@@ -41,8 +43,8 @@ class PaymentController extends Controller {
     }
 
     /**
-     * Constructor.
-     * Initializes the controller and loads translation strings.
+     * constructor.
+     * initializes the controller and loads translation strings.
      */
     public function __construct() {
         $lang = $_SESSION['lang'] ?? 'fr';
@@ -51,8 +53,8 @@ class PaymentController extends Controller {
     }
 
     /**
-     * Displays the checkout page with order summary.
-     * Uses 'purchase_context' session to determine what is being bought.
+     * displays the checkout page with order summary.
+     * uses 'purchase_context' session to determine what is being bought.
      *
      * @return void
      */
@@ -108,8 +110,9 @@ class PaymentController extends Controller {
     }
 
     /**
-     * apply loyalty points to the current order in session
-     * * @return void
+     * apply loyalty points to the current order in session.
+     *
+     * @return void
      */
     public function appliquerPoints() {
         $baseUrl = $_ENV['BASE_URL'] ?? '';
@@ -118,7 +121,7 @@ class PaymentController extends Controller {
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['points_a_utiliser'])) {
             $points = (int)$_POST['points_a_utiliser'];
             
-            // Si le client tape 0 (ou clique sur Retirer), on vide la session
+            // if the client types 0 (or clicks remove), clear the session
             if ($points <= 0) {
                 unset($_SESSION['applied_points'], $_SESSION['loyalty_discount']);
                 header("Location: " . $baseUrl . "/payment");
@@ -148,7 +151,8 @@ class PaymentController extends Controller {
                 
                 if ($pointsToApply > 0) {
                     $_SESSION['applied_points'] = $pointsToApply;
-                    $discount = $pointsToApply * $conversionRate; // Application du nouveau taux
+                    // applying the new rate
+                    $discount = $pointsToApply * $conversionRate; 
                     $_SESSION['loyalty_discount'] = $discount;
                     
                     header("Location: " . $baseUrl . "/payment?success=points_appliques");
@@ -156,12 +160,14 @@ class PaymentController extends Controller {
                 }
             }
         }
+        
+        // error redirection must use the project base url to avoid 404
         header("Location: " . $baseUrl . "/payment?error=points_invalides");
         exit();
     }
 
     /**
-     * Initiates the paypal payment flow.
+     * initiates the paypal payment flow.
      *
      * @return void
      */
@@ -233,25 +239,26 @@ class PaymentController extends Controller {
     }
 
     /**
-     * Manages credit card payments
-     * * @return void
+     * manages credit card payments.
+     *
+     * @return void
      */
     public function processCard() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $userId = $_SESSION['user_id'];
             
-            // 1. Extraction et formatage des données de la carte
+            // extract and format card data
             $cardNumber = str_replace(' ', '', $_POST['card_num']);
             $lastFour = substr($cardNumber, -4); 
             
-            // Conversion MM/YY en YYYY-MM-01 
+            // convert mm/yy to yyyy-mm-01
             $expiry = $_POST['card_exp']; 
             $expiryParts = explode('/', $expiry);
             $expireAt = "20" . $expiryParts[1] . "-" . $expiryParts[0] . "-01";
             
             $transactionId = 'CARD-' . strtoupper(uniqid());
 
-            // 2. Préparation des données pour la table Bank_Details
+            // prepare data for bank_details table
             $bankData = [
                 'bank_name'     => 'Visa/Mastercard Checkout',
                 'last_four'     => $lastFour,
@@ -260,11 +267,11 @@ class PaymentController extends Controller {
                 'card_brand'    => 'Visa' 
             ];
 
-            // 3. Enregistrement en BDD
+            // save to database
             $financialModel = new \App\Models\FinancialModel();
             $financialModel->saveBankDetails($userId, $bankData);
 
-            // 4. Suite du processus de commande 
+            // continue order process
             $_SESSION['billing_temp'] = [
                 'first_name'   => $_POST['first_name'] ?? '',
                 'last_name'    => $_POST['last_name'] ?? '',
@@ -280,7 +287,7 @@ class PaymentController extends Controller {
     }
 
     /**
-     * Handles the callback from paypal after user approval.
+     * handles the callback from paypal after user approval.
      *
      * @return void
      */
@@ -312,7 +319,7 @@ class PaymentController extends Controller {
     }
 
     /**
-     * Handles cases where the user aborts the payment process.
+     * handles cases where the user aborts the payment process.
      *
      * @return void
      */
@@ -322,7 +329,7 @@ class PaymentController extends Controller {
     }
 
     /**
-     * Persists the order to the database, generates final mosaic files, and updates stock.
+     * persists the order to the database, generates final mosaic files, and updates stock.
      *
      * @param object $paypalData response data from paypal api
      * @return void
@@ -419,7 +426,7 @@ class PaymentController extends Controller {
 
             if ($appliedPoints > 0 && $loyaltyId) {
                 $loyaltyModel = new \App\Models\LoyaltyApiModel();
-                // Appel effectif au backend Node.js pour vider les points MongoDB
+                // call nodejs backend to consume mongodb points
                 $success = $loyaltyModel->consumePoints($loyaltyId, $appliedPoints);
                 
                 if ($success) {
@@ -441,10 +448,11 @@ class PaymentController extends Controller {
         if ($appliedPoints > 0 && $loyaltyId) {
             $loyaltyModel = new \App\Models\LoyaltyApiModel();
             $loyaltyModel->consumePoints($loyaltyId, $appliedPoints);
+            
+            // clear loyalty data from session
+            unset($_SESSION['applied_points']);
+            unset($_SESSION['loyalty_discount']);
         }
-
-        unset($_SESSION['applied_points']);
-        unset($_SESSION['loyalty_discount']);
 
         foreach ($realMosaicIds as $idMosaic) {
             $mosaicModel->requete("UPDATE Mosaic SET id_Order = ? WHERE id_Mosaic = ?", [$orderId, $idMosaic]);
@@ -489,7 +497,7 @@ class PaymentController extends Controller {
     }
 
     /**
-     * Renders the order confirmation and invoice breakdown view.
+     * renders the order confirmation and invoice breakdown view.
      *
      * @return void
      */
@@ -558,7 +566,7 @@ class PaymentController extends Controller {
     }
 
     /**
-     * Sends the order invoice via email to the client.
+     * sends the order invoice via email to the client.
      *
      * @param string $email
      * @param array $order
@@ -608,7 +616,7 @@ class PaymentController extends Controller {
     }
 
     /**
-     * Retrieves a new oauth2 access token from paypal.
+     * retrieves a new oauth2 access token from paypal.
      *
      * @return string|null access token
      */
@@ -629,7 +637,7 @@ class PaymentController extends Controller {
     }
 
     /**
-     * Helper to make API calls to PayPal.
+     * helper to make api calls to paypal.
      *
      * @param string $endpoint
      * @param mixed $postData
@@ -650,21 +658,22 @@ class PaymentController extends Controller {
     }
 
     /**
-     * Relie le compte MyBrickGames (loyalty_id) au compte utilisateur PHP
+     * links the mybrickgames account (loyalty_id) to the php user account.
+     * * @return void
      */
     public function lierCompteJeux() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['loyalty_id'])) {
             $loyaltyId = trim($_POST['loyalty_id']);
             $userId = $_SESSION['user_id'];
             
-            // On met à jour la base de données
+            // update database
             $usersModel = new \App\Models\UsersModel();
             $usersModel->setLoyaltyId($userId, $loyaltyId);
             
-            // On met à jour la session pour que l'affichage soit immédiat
+            // update session for immediate display
             $_SESSION['user']['loyalty_id'] = $loyaltyId;
             
-            // On redirige vers la page de paiement
+            // redirect to payment page
             header("Location: " . ($_ENV['BASE_URL'] ?? '') . "/payment?success=compte_lie");
             exit();
         }
