@@ -442,13 +442,11 @@ class PaymentController extends Controller {
         
         $orderId = (int)$result;
 
-        // consume loyalty points now that order is confirmed
         $appliedPoints = $_SESSION['applied_points'] ?? 0;
         $loyaltyId = $userInfo['loyalty_id'] ?? null;
         
         if ($appliedPoints > 0 && $loyaltyId) {
-            // contact node api to deduct the used points
-            $loyaltyModel = new LoyaltyApiModel();
+            $loyaltyModel = new \App\Models\LoyaltyApiModel();
             $loyaltyModel->consumePoints($loyaltyId, $appliedPoints);
             
             // clear loyalty data from session
