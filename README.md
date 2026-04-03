@@ -17,6 +17,7 @@
 | :--- | :--- | :--- |
 | **📘 Documentation** | [**View Technical Doc**](https://alkzhab.github.io/MyBrickStore-Doc/) | Architecture, Javadoc, PHPDoc, SQL. |
 | **🌐 Website** | [https://mybrickstore.duckdns.org](https://mybrickstore.duckdns.org) | Main application (PHP MVC). |
+| **🗄️ phpMyAdmin** | [http://90.25.224.22/phpmyadmin](http://90.25.224.22/phpmyadmin/) | Database management interface. |
 | **📄 Reports** | [See /Rapports folder](/Rapports) | Technical and functional reports (PDF). |
 | **📺 Videos** | [See /videos folder](/videos) | Website and Java module demonstrations. |
 
