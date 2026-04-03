@@ -7,7 +7,7 @@
         <p class="agency-description">
             <?= $t['team_agency_desc'] ?? 'Nous sommes une agence web spécialisée dans le développement sur mesure, le design UX/UI et la création de plateformes digitales performantes.' ?>
         </p>
-        <a href="https://www.azerty.com" target="_blank" class="agency-link">
+        <a href="https://alkzhab.github.io/AZER-TY/" target="_blank" class="agency-link">
             <?= $t['team_agency_link'] ?? 'Visiter le site de notre agence' ?>
         </a>
     </section>
@@ -23,7 +23,7 @@
                 </div>
                 <h3 class="member-name">Amine AISSYNE</h3>
                 <div class="member-role"><?= $t['team_role_leader'] ?? 'Chef d\'équipe & Dev Full Stack' ?></div>
-                <a href="#" target="_blank" class="portfolio-btn"><?= $t['team_btn_portfolio'] ?? 'Mon Portfolio' ?></a>
+                <a href="https://amineaissyne.duckdns.org" target="_blank" class="portfolio-btn"><?= $t['team_btn_portfolio'] ?? 'Mon Portfolio' ?></a>
                 <p class="member-description"><?= $t['team_desc_amine'] ?? 'Amine supervise l\'architecture globale du projet...' ?></p>
             </div>
 

@@ -1,15 +1,17 @@
 <?php
 /**
- * Style Selection View (Review)
+ * style selection view (review)
  *
- * Displays the generated preview of the uploaded image in 4 different algorithmic styles.
- * Allows the user to compare price, piece count, and visual result before adding to cart.
+ * displays the generated preview of the uploaded image in different algorithmic styles.
+ * allows the user to compare price, piece count, and visual result before adding to cart.
+ * applies promotional visual indicators if applicable.
  *
- * @var array $image        Original uploaded image data
- * @var array $previews     Associative array of base64 preview images (key = style)
- * @var array $prices       Associative array of calculated prices (key = style)
- * @var array $counts       Associative array of piece counts (key = style)
- * @var array $t            Associative array of translations
+ * @var array $image        original uploaded image data
+ * @var array $previews     associative array of base64 preview images (key = style)
+ * @var array $prices       associative array of calculated prices (key = style)
+ * @var array $counts       associative array of piece counts (key = style)
+ * @var array $t            associative array of translations
+ * @var bool $isDailyDiscount indicates if the 15% discount is applied
  */
 $baseUrl = $_ENV['BASE_URL'] ?? ''; 
 ?>
@@ -91,8 +93,14 @@ $baseUrl = $_ENV['BASE_URL'] ?? '';
                         </div>
 
                         <div class="card-stats">
+                            
                             <div class="stat-item">
                                 <span class="stat-label"><?= $t['review_stat_price'] ?? 'Prix estimé' ?></span>
+                                <?php if (isset($isDailyDiscount) && $isDailyDiscount): ?>
+                                    <div class="discount-badge" style="background-color: #28a745; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; display: inline-block; margin-bottom: 2px;">
+                                        <?= $t['review_daily_discount'] ?? '-15% Image du Jour !' ?>
+                                    </div>
+                                <?php endif; ?>
                                 <span class="stat-value price">
                                     <?php 
                                         if (isset($prices[$key]) && $prices[$key] > 0) {
@@ -157,4 +165,3 @@ $baseUrl = $_ENV['BASE_URL'] ?? '';
     </script>
     <script src="<?= ($_ENV['BASE_URL'] ?? '') ?>/JS/cart_animation.js"></script>
 </div>
-

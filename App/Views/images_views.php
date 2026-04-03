@@ -1,15 +1,16 @@
 <?php 
 /**
- * Landing Page & Image Upload View
+ * landing page & image upload view
  *
- * The main entry point for the "Mosaic Creator" feature.
- * Features:
- * - Hero section with value proposition and "Before/After" visual.
- * - Drag & Drop upload form.
- * - "How it works" 3-step guide.
+ * the main entry point for the "mosaic creator" feature.
+ * features:
+ * - hero section with value proposition.
+ * - daily image promotional section.
+ * - drag & drop upload form.
  *
- * @var array $t            Associative array of translations
- * @var string $baseUrl     Base URL environment variable
+ * @var array $t            associative array of translations
+ * @var string $baseUrl     base url environment variable
+ * @var bool $hasDailyImage boolean indicating if a daily image is available
  */
 
 $baseUrl = $_ENV['BASE_URL'] ?? ''; 
@@ -54,6 +55,8 @@ $baseUrl = $_ENV['BASE_URL'] ?? '';
                 </div>
 
                 <form action="<?= $baseUrl ?>/images/upload" method="post" enctype="multipart/form-data" id="upload-form">
+                    <input type="hidden" name="is_daily" id="is_daily" value="0">
+                    
                     <div id="drop-zone" class="drop-zone">
                         <div class="drop-content">
                             <svg class="upload-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -77,6 +80,32 @@ $baseUrl = $_ENV['BASE_URL'] ?? '';
             </div>
         </div>
     </div>
+
+    <?php if (isset($hasDailyImage) && $hasDailyImage): ?>
+    <section class="daily-image-section">
+        <div class="section-header">
+            <h3 class="daily-title"><?= $t['home_daily_title'] ?? 'L\'image du jour' ?></h3>
+            <p class="daily-intro">
+                <?= $t['home_daily_intro'] ?? 'Découvrez notre sélection quotidienne et transformez-la en un magnifique tableau de briques !' ?>
+            </p>
+        </div>
+        <div class="daily-card-container">
+            <div class="daily-card">
+                <div class="daily-img-wrapper">
+                    <img src="<?= $baseUrl ?>/images/getDailyImage" alt="<?= $t['home_daily_img_alt'] ?? 'Image du jour' ?>" id="daily-img">
+                </div>
+                <button id="btn-buy-daily" class="btn-primary btn-daily">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="daily-icon">
+                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <path d="M16 10a4 4 0 0 1-8 0"></path>
+                    </svg>
+                    <span><?= $t['home_btn_buy_daily'] ?? 'Commander cette image' ?></span>
+                </button>
+            </div>
+        </div>
+    </section>
+    <?php endif; ?>
 
     <section class="how-it-works">
         <div class="section-header">
@@ -135,5 +164,4 @@ $baseUrl = $_ENV['BASE_URL'] ?? '';
     };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 <script src="<?= $baseUrl ?>/JS/drag_drop.js?v=<?= time() ?>"></script>
