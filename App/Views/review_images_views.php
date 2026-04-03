@@ -96,11 +96,6 @@ $baseUrl = $_ENV['BASE_URL'] ?? '';
                             
                             <div class="stat-item">
                                 <span class="stat-label"><?= $t['review_stat_price'] ?? 'Prix estimé' ?></span>
-                                <?php if (isset($isDailyDiscount) && $isDailyDiscount): ?>
-                                    <div class="discount-badge" style="background-color: #28a745; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; display: inline-block; margin-bottom: 2px;">
-                                        <?= $t['review_daily_discount'] ?? '-15% Image du Jour !' ?>
-                                    </div>
-                                <?php endif; ?>
                                 <span class="stat-value price">
                                     <?php 
                                         if (isset($prices[$key]) && $prices[$key] > 0) {
