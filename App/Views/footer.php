@@ -24,7 +24,7 @@ $baseUrl = $baseUrl ?? ($_ENV['BASE_URL'] ?? '');
                 <li><a href="<?= $baseUrl ?>/cart"><?= $t['footer_nav_cart'] ?? 'Panier' ?></a></li>
                 <li><a href="<?= $baseUrl ?>/commande"><?= $t['footer_nav_orders'] ?? 'Mes commandes' ?></a></li>
                 <li><a href="<?= $baseUrl ?>/compte"><?= $t['footer_nav_profile'] ?? 'Profil' ?></a></li>
-                <li><a href="<?= $baseUrl ?>/game">MyBrickGame</a></li>
+                <li><a href="<?= $baseUrl ?>/game">MyBrickGames</a></li>
                 <li><a href="<?= $baseUrl ?>/setting"><?= $t['footer_nav_settings'] ?? 'Paramètres' ?></a></li>
             </ul>
         </div>
