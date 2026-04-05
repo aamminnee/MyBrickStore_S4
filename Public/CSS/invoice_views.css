@@ -1,4 +1,3 @@
-
 :root {
     --red:         #e3000b;
     --red-dark:    #b50009;
@@ -407,5 +406,164 @@
     #invoice-content { 
         box-shadow: none !important; 
         border: none !important;
+    }
+}
+
+/* ─── RESPONSIVE MOBILE ──────────────────────────────────────────────────── */
+@media (max-width: 680px) {
+
+    /* Page wrapper */
+    .invoice-page {
+        padding: 16px 0 40px;
+        background: var(--bg);
+    }
+
+    /* Boutons de contrôle : pleine largeur, empilés */
+    .invoice-controls {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        padding: 0 16px;
+        margin-bottom: 16px;
+    }
+    .btn-back,
+    .btn-download {
+        justify-content: center;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* Contenu facture : largeur fluide, sans min-height A4 */
+    #invoice-content {
+        width: 100%;
+        min-height: unset;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    /* Corps : padding réduit */
+    .invoice-body {
+        padding: 24px 16px 28px;
+    }
+
+    /* Filigrane réduit pour ne pas déborder */
+    .watermark {
+        font-size: 64px;
+        letter-spacing: 6px;
+    }
+
+    /* En-tête : logo + meta empilés */
+    .paper-header {
+        flex-direction: column;
+        gap: 20px;
+        margin-bottom: 24px;
+    }
+
+    .logo-img {
+        height: 36px;
+    }
+
+    /* Bloc méta (N° facture, date…) : aligné à gauche sur mobile */
+    .invoice-meta-block {
+        text-align: left;
+    }
+
+    .invoice-label {
+        font-size: 32px;
+        letter-spacing: -1px;
+    }
+
+    .meta-grid {
+        margin-left: 0;
+        gap: 5px 16px;
+    }
+
+    /* Séparateur */
+    .hairline {
+        margin: 0 0 24px;
+    }
+
+    /* Adresses : une colonne */
+    .addresses-row {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+
+    .address-block {
+        padding: 16px 16px;
+    }
+
+    /* Tableau : scroll horizontal pour ne rien couper */
+    .items-table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        /* Largeur minimale pour que les colonnes restent lisibles */
+        min-width: 480px;
+    }
+
+    /* Wrapper de scroll autour du tableau */
+    .items-table-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin-bottom: 0;
+        border-radius: 10px;
+    }
+
+    .items-table td,
+    .items-table th {
+        padding: 12px 10px;
+        font-size: 12px;
+    }
+
+    .item-title {
+        font-size: 12px;
+    }
+
+    .item-sub {
+        font-size: 11px;
+        flex-wrap: wrap;
+    }
+
+    /* Section totaux + note : une colonne */
+    .invoice-footer-section {
+        flex-direction: column;
+        gap: 20px;
+        margin-top: 20px;
+        padding-top: 20px;
+    }
+
+    .invoice-note {
+        max-width: 100%;
+    }
+
+    .totals-block {
+        min-width: unset;
+        width: 100%;
+    }
+
+    .totals-grand {
+        padding: 16px 20px;
+    }
+
+    .totals-grand .tg-amount {
+        font-size: 24px;
+    }
+
+    /* Pied de page */
+    .paper-footer {
+        padding-top: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .footer-legal {
+        text-align: left;
+    }
+
+    .footer-thanks {
+        font-size: 15px;
     }
 }

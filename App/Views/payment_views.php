@@ -222,32 +222,32 @@ $displayTotal = max(0, $subTotal + $shippingCost - $loyaltyDiscount);
                 
                 <?php if (empty($loyaltyId)): ?>
                     <p style="font-size: 0.9rem; margin-bottom: 15px;">
-                        Associez votre compte <strong>MyBrickGames</strong> pour utiliser vos points et obtenir des réductions !
+                        <?= $t['loyalty_link_desc'] ?? 'Associez votre compte MyBrickGames pour utiliser vos points et obtenir des réductions !' ?>
                     </p>
                     
                     <form action="<?= $_ENV['BASE_URL'] ?>/payment/lierCompteJeux" method="POST">
                         <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 15px;">
-                            <input type="text" name="loyalty_id" required placeholder="Ex: visitor_x8y9z0" class="form-control" style="flex: 1; padding: 8px;">
+                            <input type="text" name="loyalty_id" required placeholder="Ex: anon_x8y9z0" class="form-control" style="flex: 1; padding: 8px;">
                             <button type="submit" class="btn-action" style="padding: 9px 15px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
-                                Lier mon compte
+                                <?= $t['loyalty_link_btn'] ?? 'Lier mon compte' ?>
                             </button>
                         </div>
                     </form>
                     
                     <div style="margin-top: 15px; text-align: center; border-top: 1px dashed #cce0ff; padding-top: 15px;">
-                        <p style="font-size: 0.85rem; color: #666; margin-bottom: 10px;">Vous n'avez pas encore d'identifiant ?</p>
+                        <p style="font-size: 0.85rem; color: #666; margin-bottom: 10px;"><?= $t['loyalty_no_account'] ?? 'Vous n\'avez pas encore d\'identifiant ?' ?></p>
                         <a href="<?= htmlspecialchars($_ENV['MYBRICKGAME'] ?? 'http://localhost:5173') ?>" 
                            target="_blank" 
                            rel="noopener noreferrer"
                            style="background-color: #e3000b; color: #ffffff; padding: 8px 15px; text-decoration: none; border-radius: 4px; font-weight: bold; display: inline-block; font-size: 0.85rem;">
-                           Jouer pour créer un compte !
+                           <?= $t['loyalty_play_btn'] ?? 'Jouer pour créer un compte !' ?>
                         </a>
                     </div>
 
                 <?php else: ?>
                     <p style="font-size: 0.9rem; margin-bottom: 15px;">
-                        <?= $t['loyalty_current_points'] ?? 'Vous avez actuellement' ?> <strong><?= htmlspecialchars($displayAvailablePoints) ?> points</strong> utilisables.
-                        <br><em style="color: #666; font-size: 0.85rem;">(1000 points = 1,00 € de réduction)</em>
+                        <?= $t['loyalty_current_points'] ?? 'Vous avez actuellement' ?> <strong><?= htmlspecialchars($displayAvailablePoints) ?> points</strong> <?= $t['loyalty_points_usable'] ?? 'utilisables.' ?>
+                        <br><em style="color: #666; font-size: 0.85rem;"><?= $t['loyalty_conversion_rule'] ?? '(1000 points = 1,00 € de réduction)' ?></em>
                     </p>
                     
                     <?php if ($appliedPoints == 0): ?>
@@ -255,19 +255,19 @@ $displayTotal = max(0, $subTotal + $shippingCost - $loyaltyDiscount);
                             <div style="display: flex; gap: 10px; align-items: center;">
                                 <input type="number" name="points_a_utiliser" min="1" max="<?= htmlspecialchars($maxPointsInput) ?>" required class="form-control" style="width: 100px; padding: 8px;" placeholder="Points">
                                 <button type="submit" class="btn-action" style="padding: 9px 15px; background-color: #006CB7; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
-                                    Appliquer
+                                    <?= $t['loyalty_apply'] ?? 'Appliquer' ?>
                                 </button>
                             </div>
                         </form>
                     <?php else: ?>
                         <div style="color: #155724; background-color: #d4edda; border: 1px solid #c3e6cb; padding: 10px; border-radius: 4px; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center;">
                             <div>
-                                ✓ <?= htmlspecialchars($appliedPoints) ?> points appliqués.<br>
-                                Réduction : <strong>- <?= number_format($loyaltyDiscount, 2, ',', ' ') ?> €</strong>
+                                ✓ <?= htmlspecialchars($appliedPoints) ?> <?= $t['loyalty_points_applied'] ?? 'points appliqués.' ?><br>
+                                <?= $t['loyalty_points_reduction'] ?? 'Réduction' ?> : <strong>- <?= number_format($loyaltyDiscount, 2, ',', ' ') ?> €</strong>
                             </div>
                             <form action="<?= $_ENV['BASE_URL'] ?>/payment/appliquerPoints" method="POST" style="margin: 0;">
                                 <input type="hidden" name="points_a_utiliser" value="0">
-                                <button type="submit" style="background: none; border: none; color: #721c24; text-decoration: underline; cursor: pointer; font-weight: bold; padding: 0;">Retirer</button>
+                                <button type="submit" style="background: none; border: none; color: #721c24; text-decoration: underline; cursor: pointer; font-weight: bold; padding: 0;"><?= $t['loyalty_points_cancel'] ?? 'Retirer' ?></button>
                             </form>
                         </div>
                     <?php endif; ?>
@@ -315,7 +315,7 @@ $displayTotal = max(0, $subTotal + $shippingCost - $loyaltyDiscount);
                     
                     <?php if ($loyaltyDiscount > 0): ?>
                         <div class="summary-line" style="color: #28a745; font-weight: 500;">
-                            <span><?= $t['cart_label_discount'] ?? 'Remise fidélité' ?></span>
+                            <span><?= $t['loyalty_points_discount'] ?? 'Remise fidélité' ?></span>
                             <span>- <?= number_format($loyaltyDiscount, 2, ',', ' ') ?> €</span>
                         </div>
                     <?php endif; ?>
@@ -333,7 +333,7 @@ $displayTotal = max(0, $subTotal + $shippingCost - $loyaltyDiscount);
                     </button>
                     <div id="promo-input-group" class="promo-input-group">
                         <input type="text" id="promo_code" name="promo_code" placeholder="<?= $t['payment_promo_placeholder'] ?? 'Entrez votre code' ?>" class="promo-input">
-                        <button type="button" class="btn-promo" onclick="alert('<?= addslashes($t['payment_promo_alert'] ?? 'La fonctionnalité de code promo sera bientôt disponible !') ?>')"><?= $t['payment_promo_apply'] ?? 'Appliquer' ?></button>
+                        <button type="button" class="btn-promo"><?= $t['payment_promo_apply'] ?? 'Appliquer' ?></button>
                     </div>
                 </div>
             </div> 

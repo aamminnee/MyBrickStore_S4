@@ -87,6 +87,7 @@
                 </div>
             </div>
 
+            <div class="items-table-wrapper">
             <table class="items-table">
                 <thead>
                     <tr>
@@ -128,6 +129,7 @@
                     </tr>
                 </tbody>
             </table>
+            </div><!-- /.items-table-wrapper -->
 
             <div class="invoice-footer-section">
                 <div class="invoice-note">

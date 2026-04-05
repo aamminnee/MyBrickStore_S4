@@ -13,7 +13,11 @@
 <div class="promo-page-wrapper">
     <div class="promo-container">
         <div class="promo-hero">
-            <h1 class="promo-hero-title"><?= $t['promo_hero_title'] ?? 'découvrez mybrickgame' ?></h1>
+            <div class="promo-logo">
+                <img src="<?= $_ENV['BASE_URL']?>/img/logo_jeux.png" alt="Logo MyBrickGames" style="max-width: 600px; margin-bottom: 10px;">
+            </div>
+            
+            <h1 class="promo-hero-title"><?= $t['promo_hero_title'] ?? 'découvrez' ?></h1>
             <p class="promo-hero-subtitle"><?= $t['promo_hero_subtitle'] ?? 'jouez, construisez, et gagnez des points de fidélité !' ?></p>
             
             <div class="hero-actions">
