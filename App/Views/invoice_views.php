@@ -8,6 +8,7 @@
  * @var float $totalTVA     Total VAT amount
  * @var float $totalTTC     Grand total price (Tax Included)
  * @var array $t            Associative array of translations
+ * @var bool  $justConfirmed Indique si la commande vient tout juste d'être payée (pour notification)
  */
 ?>
 
@@ -194,3 +195,14 @@
         html2pdf().set(opt).from(element).save();
     }
 </script>
+
+<?php if (isset($justConfirmed) && $justConfirmed): ?>
+<script>
+    if (typeof ApplicationAndroid !== 'undefined') {
+        ApplicationAndroid.declencherNotification(
+            "Commande validée !", 
+            "Merci pour votre achat, votre commande est en cours de préparation."
+        );
+    }
+</script>
+<?php endif; ?>

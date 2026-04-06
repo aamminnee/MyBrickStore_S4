@@ -6,21 +6,18 @@ use App\Core\Db;
 use PDO;
 
 /**
- * Class CommandeModel
- * 
- ** Manages order data and status updates
- ** Handles retrieval of order details, history, and invoice information
- * 
+ * class commandemodel
+ * manages order data and status updates.
+ * handles retrieval of order details, history, and invoice information, and triggers shipping notifications.
  * @package App\Models
  */
 class CommandeModel extends Model {
 
-    /** @var string The database table associated with the model. */
+    /** @var string the database table associated with the model. */
     protected $table = 'CustomerOrder';
 
     /**
-     * Updates the status of a specific order
-     *
+     * updates the status of a specific order and triggers a notification if shipped.
      * @param int $id order identifier
      * @param string $status new status string
      * @return bool true on success
@@ -29,13 +26,28 @@ class CommandeModel extends Model {
         $db = Db::getInstance();
         $sql = "UPDATE " . $this->table . " SET status = ? WHERE id_Order = ?";
         $stmt = $db->prepare($sql);
-        return $stmt->execute([$status, $id]);
+        $result = $stmt->execute([$status, $id]);
+
+        // trigger a notification if the order is shipped
+        if ($result && (strtolower($status) === 'expédiée' || strtolower($status) === 'shipped')) {
+            $sqlUser = "SELECT id_Customer FROM " . $this->table . " WHERE id_Order = ?";
+            $stmtUser = $db->prepare($sqlUser);
+            $stmtUser->execute([$id]);
+            $userId = $stmtUser->fetchColumn();
+            
+            if ($userId) {
+                // assume NotificationModel is available
+                $modeleNotif = new \App\Models\NotificationModel();
+                $modeleNotif->ajouterNotification($userId, "Commande Expédiée", "Bonne nouvelle ! Votre commande #$id est en route vers chez vous.");
+            }
+        }
+
+        return $result;
     }
     
     /**
-     * Retrieves comprehensive order details including invoice and customer info
-     *
-     * @param int $orderId
+     * retrieves comprehensive order details including invoice and customer info.
+     * @param int $orderId the order identifier
      * @return array|false associative array of order details
      */
     public function getOrderDetails($orderId) {
@@ -60,9 +72,8 @@ class CommandeModel extends Model {
     }
 
     /**
-     * Fetches the order history for a logged-in user
-     *
-     * @param int $userId
+     * fetches the order history for a logged-in user.
+     * @param int $userId the customer identifier
      * @return array list of order objects
      */
     public function getCommandeByUserId($userId) {
@@ -85,9 +96,8 @@ class CommandeModel extends Model {
     }
 
     /**
-     * Retrieves a single order by its identifier
-     *
-     * @param int $id
+     * retrieves a single order by its identifier.
+     * @param int $id the order identifier
      * @return object|false
      */
     public function getCommandeById($id) {
@@ -102,9 +112,8 @@ class CommandeModel extends Model {
     }
 
     /**
-     * Fetches the current status of an order
-     *
-     * @param int $id
+     * fetches the current status of an order.
+     * @param int $id the order identifier
      * @return string status or 'inconnu'
      */
     public function getCommandeStatusById($id) {
