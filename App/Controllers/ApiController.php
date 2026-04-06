@@ -42,4 +42,25 @@ class ApiController extends Controller {
         echo json_encode($notifications);
         exit;
     }
+
+    /**
+     * returns the daily image data to be pushed to the mobile app.
+     * @return void
+     */
+    public function dailyImage() {
+        // set response type to json
+        header('Content-Type: application/json');
+
+        // define the content of the daily image notification
+        // this could be fetched from a database for dynamic images
+        $data = [
+            'title' => 'Image du jour',
+            'message' => 'Découvrez notre nouvelle création en briques à prix préférentiel !',
+            'url' => '/image-du-jour'
+        ];
+
+        // output data as json
+        echo json_encode($data);
+        exit;
+    }
 }

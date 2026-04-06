@@ -85,5 +85,21 @@ $isAdmin = (isset($_SESSION['role']) && $_SESSION['role'] === 'admin');
         }
     </script>
     <?php endif; ?>
+
+    <script>
+        // check and expose daily image notification status to the global window
+        window.androidDailyImageNotifEnabled = true;
+        if (typeof ApplicationAndroid !== 'undefined' && ApplicationAndroid.isDailyImageNotificationEnabled) {
+            window.androidDailyImageNotifEnabled = ApplicationAndroid.isDailyImageNotificationEnabled();
+        }
+
+        // global function to let any page (like settings) toggle the daily image notification
+        function toggleDailyImageNotification(enabled) {
+            if (typeof ApplicationAndroid !== 'undefined' && ApplicationAndroid.setDailyImageNotification) {
+                ApplicationAndroid.setDailyImageNotification(enabled);
+                window.androidDailyImageNotifEnabled = enabled;
+            }
+        }
+    </script>
 </body>
 </html>
