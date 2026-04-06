@@ -498,6 +498,9 @@ class PaymentController extends Controller {
         unset($_SESSION['purchase_context']);
         unset($_SESSION['billing_temp']);
 
+        // on indique a la session que la commande vient d'etre confirmee pour la notification immediate
+        $_SESSION['order_just_confirmed'] = true;
+
         header("Location: " . ($_ENV['BASE_URL'] ?? '') . "/payment/confirmation?id=" . $orderId);
         exit;
     }
@@ -554,6 +557,10 @@ class PaymentController extends Controller {
         $totalHT = $totalTTC / $coeff;        
         $totalTVA = $totalTTC - $totalHT;
 
+        // recuperation de l'indicateur de nouvelle commande pour la notification
+        $justConfirmed = $_SESSION['order_just_confirmed'] ?? false;
+        unset($_SESSION['order_just_confirmed']);
+
         $this->render('invoice_views', [
             't' => $this->translations, 
             'order' => $orderDetails,   
@@ -567,6 +574,7 @@ class PaymentController extends Controller {
             'totalHT' => $totalHT,
             'totalTVA' => $totalTVA,
             'totalTTC' => $totalTTC,
+            'justConfirmed' => $justConfirmed,
             'css' => 'invoice_views.css'
         ]);
     }
