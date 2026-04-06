@@ -57,6 +57,7 @@ $isAdmin = (isset($_SESSION['role']) && $_SESSION['role'] === 'admin');
     <?php require_once ROOT . '/App/Views/footer.php'; ?>
 
     <script>
+        // matomo analytics tracker
         var _paq = window._paq = window._paq || [];
         _paq.push(['trackPageView']);
         _paq.push(['enableLinkTracking']);
@@ -68,5 +69,21 @@ $isAdmin = (isset($_SESSION['role']) && $_SESSION['role'] === 'admin');
             g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
         })();
     </script>
+
+    <?php if (isset($_SESSION['user_id'])): ?>
+    <script>
+        // synchronisation de l'utilisateur avec l'application android
+        if (typeof ApplicationAndroid !== 'undefined' && ApplicationAndroid.sauvegarderUserId) {
+            ApplicationAndroid.sauvegarderUserId("<?= htmlspecialchars((string)$_SESSION['user_id']) ?>");
+        }
+    </script>
+    <?php else: ?>
+    <script>
+        // deconnexion de l'utilisateur coté application android
+        if (typeof ApplicationAndroid !== 'undefined' && ApplicationAndroid.deconnecterUser) {
+            ApplicationAndroid.deconnecterUser();
+        }
+    </script>
+    <?php endif; ?>
 </body>
 </html>
