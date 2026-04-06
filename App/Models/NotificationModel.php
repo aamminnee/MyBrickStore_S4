@@ -59,11 +59,42 @@ class NotificationModel extends Model {
     /**
      * checks if the user has been inactive for a certain period.
      * @param int $idUtilisateur the user id
-     * @return bool true if inactive and eligible for loyalty notification
+     * @return bool true if inactive for more than 7 days
      */
     public function verifierInactiviteFidelite($idUtilisateur) {
-        // query logic to check last login or last order date goes here
-        // returning true as a simulation to trigger the loyalty notification
-        return true;
+        $db = Db::getInstance();
+        
+        // on recupere la date de la derniere activite depuis la table user
+        $sql = "SELECT last_activity_date FROM User WHERE id_Customer = ?";
+        $stmt = $db->prepare($sql);
+        $stmt->execute([$idUtilisateur]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($user && $user['last_activity_date']) {
+            $dateDerniereActivite = strtotime($user['last_activity_date']);
+            $maintenant = time();
+            
+            // calcul de la difference en jours (86400 secondes = 1 jour)
+            $joursInactivite = floor(($maintenant - $dateDerniereActivite) / 86400);
+
+            // si l'utilisateur est inactif depuis 7 jours ou plus, il est eligible
+            if ($joursInactivite >= 7) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * updates the last activity date for a user.
+     * @param int $idUtilisateur the user id
+     * @return void
+     */
+    public function actualiserActivite($idUtilisateur) {
+        $db = Db::getInstance();
+        $sql = "UPDATE User SET last_activity_date = NOW() WHERE id_Customer = ?";
+        $stmt = $db->prepare($sql);
+        $stmt->execute([$idUtilisateur]);
     }
 }

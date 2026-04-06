@@ -109,4 +109,30 @@ class ApiController extends Controller {
         }
         exit;
     }
+
+    /**
+     * updates the user's last activity date when they open the app or login.
+     * @return void
+     */
+    public function marquerPresence() {
+        // allowing cors
+        header("Access-Control-Allow-Origin: *");
+        header("Content-Type: application/json; charset=UTF-8");
+        header("Access-Control-Allow-Methods: POST");
+
+        // get json payload
+        $donneesRecues = json_decode(file_get_contents("php://input"));
+
+        if (isset($donneesRecues->id_utilisateur)) {
+            $modeleNotification = new NotificationModel();
+            $modeleNotification->actualiserActivite($donneesRecues->id_utilisateur);
+            
+            http_response_code(200);
+            echo json_encode(["message" => "activite mise a jour avec succes"]);
+        } else {
+            http_response_code(400);
+            echo json_encode(["erreur" => "id_utilisateur manquant"]);
+        }
+        exit;
+    }
 }
