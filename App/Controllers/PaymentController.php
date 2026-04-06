@@ -11,10 +11,12 @@ use App\Models\ImagesModel;
 use App\Models\LoyaltyApiModel;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
+use App\Models\NotificationModel;
 
 /**
  * handles the checkout process, payment simulation, and order finalization.
  * supports full cart checkout, single item checkout, and direct buy.
+ * triggers notifications upon order completion.
  *
  * @package App\Controllers
  */
@@ -66,7 +68,6 @@ class PaymentController extends Controller {
 
         if ($_SESSION['status'] !== 'valide') {
             $_SESSION['verify_error'] = $this->t('payment_error_not_verified', "Vous devez valider votre compte pour payer.");
-            
             header('Location: ' . ($_ENV['BASE_URL'] ?? '') . '/user/verify');
             exit;
         }
@@ -329,7 +330,7 @@ class PaymentController extends Controller {
     }
 
     /**
-     * persists the order to the database, generates final mosaic files, and updates stock.
+     * persists the order to the database, generates final mosaic files, updates stock, and triggers notifications.
      *
      * @param object $paypalData response data from paypal api
      * @return void
@@ -441,6 +442,11 @@ class PaymentController extends Controller {
         }
         
         $orderId = (int)$result;
+
+        // trigger notifications for the application
+        $modeleNotif = new NotificationModel();
+        $modeleNotif->ajouterNotification($userId, "Commande Confirmée", "Votre commande #$orderId a été enregistrée avec succès.");
+        $modeleNotif->ajouterNotification($userId, "Paiement Validé", "Le paiement de votre commande #$orderId a bien été reçu. Merci !");
 
         $appliedPoints = $_SESSION['applied_points'] ?? 0;
         $loyaltyId = $userInfo['loyalty_id'] ?? null;

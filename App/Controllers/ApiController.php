@@ -1,0 +1,45 @@
+<?php
+namespace App\Controllers;
+
+use App\Core\Controller;
+use App\Models\NotificationModel;
+
+/**
+ * class apicontroller
+ * handles api requests for the mobile application.
+ * @package App\Controllers
+ */
+class ApiController extends Controller {
+
+    /**
+     * fetches unread notifications for a given user id and marks them as read.
+     * @return void
+     */
+    public function notifications() {
+        // set response type to json
+        header('Content-Type: application/json');
+
+        // retrieve user_id from the get request
+        $idClient = $_GET['user_id'] ?? null;
+
+        // return empty array if no user id provided
+        if (!$idClient) {
+            echo json_encode([]);
+            exit;
+        }
+
+        $modeleNotif = new NotificationModel();
+        // fetch unread notifications
+        $notifications = $modeleNotif->getNotificationsNonLues($idClient);
+
+        // extract ids to mark as read immediately
+        $ids = array_column($notifications, 'id');
+        if (!empty($ids)) {
+            $modeleNotif->marquerCommeLues($ids);
+        }
+
+        // return notifications as json
+        echo json_encode($notifications);
+        exit;
+    }
+}
