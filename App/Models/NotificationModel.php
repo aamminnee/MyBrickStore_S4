@@ -7,7 +7,7 @@ use PDO;
 
 /**
  * class notificationmodel
- * manages user notifications for order updates.
+ * manages user notifications for order updates and loyalty.
  * @package App\Models
  */
 class NotificationModel extends Model {
@@ -54,5 +54,16 @@ class NotificationModel extends Model {
         $sql = "UPDATE Notification SET is_read = 1 WHERE id_Notification IN ($placeholders)";
         $stmt = $db->prepare($sql);
         $stmt->execute($ids);
+    }
+
+    /**
+     * checks if the user has been inactive for a certain period.
+     * @param int $idUtilisateur the user id
+     * @return bool true if inactive and eligible for loyalty notification
+     */
+    public function verifierInactiviteFidelite($idUtilisateur) {
+        // query logic to check last login or last order date goes here
+        // returning true as a simulation to trigger the loyalty notification
+        return true;
     }
 }

@@ -63,4 +63,50 @@ class ApiController extends Controller {
         echo json_encode($data);
         exit;
     }
+
+    /**
+     * endpoint called periodically by the mobile app to check for loyalty notifications.
+     * @return void
+     */
+    public function verifierFidelite() {
+        // allowing cors if needed
+        header("Access-Control-Allow-Origin: *");
+        header("Content-Type: application/json; charset=UTF-8");
+        header("Access-Control-Allow-Methods: POST");
+
+        // get json payload from the app
+        $donneesRecues = json_decode(file_get_contents("php://input"));
+
+        // check if user id is provided in the ping request
+        if (isset($donneesRecues->id_utilisateur)) {
+            $modeleNotification = new NotificationModel();
+            
+            // check inactivity status
+            $doitAfficherNotification = $modeleNotification->verifierInactiviteFidelite($donneesRecues->id_utilisateur);
+
+            if ($doitAfficherNotification) {
+                // prepare the notification payload to send back to the app
+                $reponse = [
+                    "afficher_notification" => true,
+                    "titre" => "Vous nous manquez !",
+                    "message" => "Cela fait un moment ! Venez découvrir nos nouveautés ou faire une partie."
+                ];
+            } else {
+                // no notification needed
+                $reponse = [
+                    "afficher_notification" => false
+                ];
+            }
+
+            // send the json response
+            http_response_code(200);
+            echo json_encode($reponse);
+
+        } else {
+            // return bad request if user id is missing
+            http_response_code(400);
+            echo json_encode(["erreur" => "id_utilisateur manquant"]);
+        }
+        exit;
+    }
 }
