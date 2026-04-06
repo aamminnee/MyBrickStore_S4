@@ -196,25 +196,11 @@
 
 <?php if (isset($justConfirmed) && $justConfirmed): ?>
 <script>
-    // recuperation des donnees pour la notification
-    var numFacture = "<?= htmlspecialchars($order['invoice_number'] ?? $order['id_Order'], ENT_QUOTES) ?>";
-    var titreNotif = "commande validée";
-    var messageNotif = "votre paiement a été reçu et votre commande " + numFacture + " est confirmée !";
-
-    // declencher la notification instantanee dans l'application android
-    if (typeof ApplicationAndroid !== 'undefined' && ApplicationAndroid.declencherNotification) {
-        ApplicationAndroid.declencherNotification(titreNotif, messageNotif);
-    } else if ("Notification" in window) {
-        // notification web standard pour les utilisateurs sur le site hors application (fallback desktop)
-        if (Notification.permission === "granted") {
-            new Notification(titreNotif, { body: messageNotif });
-        } else if (Notification.permission !== "denied") {
-            Notification.requestPermission().then(function (permission) {
-                if (permission === "granted") {
-                    new Notification(titreNotif, { body: messageNotif });
-                }
-            });
-        }
+    if (typeof ApplicationAndroid !== 'undefined') {
+        ApplicationAndroid.declencherNotification(
+            "Commande validée !", 
+            "Merci pour votre achat, votre commande est en cours de préparation."
+        );
     }
 </script>
 <?php endif; ?>
