@@ -314,7 +314,7 @@ header::after {
     filter: grayscale(0%);
 }
 
-@media (max-width: 1080px) {
+@media (max-width: 1500px) {
     .main-nav ul li a.nav-link {
         display: none;
     }
