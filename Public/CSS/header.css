@@ -371,12 +371,17 @@ header::after {
 }
 
 @media (max-width: 480px) {
+
+    .header-container {
+        padding: 0 10px;
+    }
+
     .logo img {
         height: 35px; 
     }
 
     .main-nav ul {
-        gap: 8px;
+        gap: 5px;
     }
 
     .main-nav a.nav-link {
