@@ -371,6 +371,9 @@ header::after {
 }
 
 @media (max-width: 480px) {
+    .main-nav ul li a.btn-header:not(.cart-btn) {
+        display: none;
+    }
 
     .header-container {
         padding: 0 10px;
