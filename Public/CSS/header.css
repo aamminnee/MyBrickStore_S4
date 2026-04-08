@@ -314,7 +314,18 @@ header::after {
     filter: grayscale(0%);
 }
 
+@media (max-width: 1080px) {
+    .main-nav ul li a.nav-link {
+        display: none;
+    }
+}
+
 @media (max-width: 900px) {
+
+    .main-nav ul li a.btn-header:not(.cart-btn) {
+        display: none;
+    }
+
     header {
         height: 75px;
     }
@@ -338,6 +349,11 @@ header::after {
 }
 
 @media (max-width: 768px) {
+
+    .main-nav ul li a.btn-header:not(.cart-btn) {
+        display: none;
+    }
+
     .profile-trigger span {
         display: none;
     }
