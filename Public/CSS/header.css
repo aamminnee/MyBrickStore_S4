@@ -389,17 +389,18 @@ header::after {
     }
 
     .btn-header {
-        padding: 6px 12px;
-        font-size: 0.8rem;
+        padding: 6px 10px;
+        font-size: 0.75rem;
+        letter-spacing: 0;
     }
 
     .lang-switch-container {
-        margin-left: 5px;
-        gap: 5px;
+        margin-left: 2px;
+        gap: 3px;
     }
     
     .flag-icon {
-        width: 24px;
-        height: 24px;
+        width: 22px;
+        height: 22px;
     }
 }
