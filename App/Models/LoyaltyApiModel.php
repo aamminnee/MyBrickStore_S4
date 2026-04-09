@@ -9,7 +9,7 @@ class LoyaltyApiModel {
     /**
      * @var string the base url of the node.js api (adjust port if needed)
      */
-    private $apiUrl = 'http://localhost:3000/api/player';
+    private $apiUrl = 'https://mybrickgames.alwaysdata.net/api/player';
 
     /**
      * fetches the total loyalty points for a given customer from node.js
