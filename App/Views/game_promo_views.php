@@ -8,6 +8,7 @@
  * @var array  $policy          loyalty points policy configuration
  */
 ?>
+<?php // load the specific stylesheet for the promo page ?>
 <link rel="stylesheet" href="/css/game_promo_views.css">
 
 <div class="promo-page-wrapper">
@@ -22,7 +23,7 @@
             
             <div class="hero-actions">
                 <a href="<?= htmlspecialchars($gameUrl ?? '#') ?>" class="btn-play" target="_blank"><?= $t['promo_btn_play'] ?? 'jouer maintenant !' ?></a>
-                <a href="<?= htmlspecialchars($appDownloadUrl ?? '#') ?>" class="btn-download" target="_blank"><?= $t['promo_btn_download'] ?? 'télécharger mybrickapp' ?></a>
+                <a href="<?= htmlspecialchars($appDownloadUrl ?? '#') ?>" class="btn-download" target="_blank" download><?= $t['promo_btn_download'] ?? 'télécharger mybrickapp' ?></a>
             </div>
         </div>
 
@@ -88,7 +89,6 @@
                     <span class="promo-badge badge-yellow"><?= $t['promo_policy_boost'] ?? 'boost' ?> x<?= htmlspecialchars($policy['dynamicBoosts']['weekend']['multiplier'] ?? '1.5') ?></span>
                 </li>
             </ul>
-            
             <p class="policy-disclaimer">
                 <?= $t['promo_disclaimer_1'] ?? '* les points de participation expirent après' ?> <?= htmlspecialchars($policy['participation']['expirationDays'] ?? '7') ?> <?= $t['promo_disclaimer_2'] ?? 'jours. les bonus majeurs sont valables jusqu\'à' ?> <?= htmlspecialchars($policy['reproduction']['perfectBonus']['expirationDays'] ?? '90') ?> <?= $t['promo_disclaimer_3'] ?? 'jours. n\'oubliez pas de les convertir en bons d\'achat lors de votre prochaine commande !' ?>
             </p>

@@ -33,10 +33,14 @@ class GameController extends Controller
         // get the game url from environment variables (fallback to localhost if missing)
         $gameUrl = $_ENV['MYBRICKGAME'];
 
+        // define the app download url pointing to the public folder
+        $appDownloadUrl = $_ENV['BASE_URL'] . '/app-release.apk';
+
         // pass data to the view, which will be injected into default.php
         $this->render('game_promo_views', [
             'policy' => $pointsPolicy,
             'gameUrl' => $gameUrl,
+            'appDownloadUrl' => $appDownloadUrl,
             'css' => 'game_promo_views.css'
         ]);
     }
